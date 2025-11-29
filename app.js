@@ -1,60 +1,53 @@
-// نحاول نمسك جسم الجدول إما بـ id="itemsBody"
-// أو أول tbody داخل الجدول إذا الـ id غير موجود
+// الحصول على جسم الجدول
 const itemsBody =
   document.getElementById("itemsBody") ||
   document.querySelector(".items-table tbody");
 
-// أزرار التحكم
+// الأزرار
 const addRowBtn = document.getElementById("addRowBtn");
 const printBtn = document.getElementById("printBtn");
 const pdfBtn = document.getElementById("pdfBtn");
 
+// عناصر الإجمالي
 const totalQtyEl = document.getElementById("totalQty");
 const totalWeightEl = document.getElementById("totalWeight");
 const totalValueEl = document.getElementById("totalValue");
 
-// لو ما وجدنا جسم الجدول لأي سبب، نخرج بهدوء
 if (!itemsBody) {
   console.warn("لم يتم العثور على tbody للجدول، تأكد من وجوده.");
 }
 
-// إنشاء صف جديد
+// إنشاء صف جديد بالترتيب المطلوب من اليمين:
+// الصنف - العدد - وزن/كرتون - قيمة/كرتون - الوزن الكلي - القيمة الكلية - حذف
 function createRow() {
   if (!itemsBody) return;
 
   const tr = document.createElement("tr");
 
-  // 1) حذف
-  const deleteTd = document.createElement("td");
-  deleteTd.classList.add("no-print");
-  const deleteBtn = document.createElement("button");
-  deleteBtn.type = "button";
-  deleteBtn.textContent = "✕";
-  deleteBtn.className = "delete-btn";
-  deleteBtn.addEventListener("click", () => {
-    tr.remove();
-    recalcTotals();
-  });
-  deleteTd.appendChild(deleteBtn);
-  tr.appendChild(deleteTd);
+  // 1) الصنف
+  const descTd = document.createElement("td");
+  const descInput = document.createElement("input");
+  descInput.type = "text";
+  descInput.className = "desc";
+  descTd.appendChild(descInput);
+  tr.appendChild(descTd);
 
-  // 2) القيمة الكلية (قراءة فقط)
-  const totalValueTd = document.createElement("td");
-  const totalValueInput = document.createElement("input");
-  totalValueInput.type = "number";
-  totalValueInput.className = "total-value";
-  totalValueInput.readOnly = true;
-  totalValueTd.appendChild(totalValueInput);
-  tr.appendChild(totalValueTd);
+  // 2) العدد
+  const qtyTd = document.createElement("td");
+  const qtyInput = document.createElement("input");
+  qtyInput.type = "number";
+  qtyInput.className = "qty";
+  qtyTd.appendChild(qtyInput);
+  tr.appendChild(qtyTd);
 
-  // 3) الوزن الكلي (قراءة فقط)
-  const totalWeightTd = document.createElement("td");
-  const totalWeightInput = document.createElement("input");
-  totalWeightInput.type = "number";
-  totalWeightInput.className = "total-weight";
-  totalWeightInput.readOnly = true;
-  totalWeightTd.appendChild(totalWeightInput);
-  tr.appendChild(totalWeightTd);
+  // 3) وزن / كرتون
+  const unitWeightTd = document.createElement("td");
+  unitWeightTd.classList.add("per-unit-col");
+  const unitWeightInput = document.createElement("input");
+  unitWeightInput.type = "number";
+  unitWeightInput.className = "unit-weight";
+  unitWeightTd.appendChild(unitWeightInput);
+  tr.appendChild(unitWeightTd);
 
   // 4) قيمة / كرتون
   const unitPriceTd = document.createElement("td");
@@ -65,32 +58,42 @@ function createRow() {
   unitPriceTd.appendChild(unitPriceInput);
   tr.appendChild(unitPriceTd);
 
-  // 5) وزن / كرتون
-  const unitWeightTd = document.createElement("td");
-  unitWeightTd.classList.add("per-unit-col");
-  const unitWeightInput = document.createElement("input");
-  unitWeightInput.type = "number";
-  unitWeightInput.className = "unit-weight";
-  unitWeightTd.appendChild(unitWeightInput);
-  tr.appendChild(unitWeightTd);
+  // 5) الوزن الكلي (قراءة فقط)
+  const totalWeightTd = document.createElement("td");
+  const totalWeightInput = document.createElement("input");
+  totalWeightInput.type = "number";
+  totalWeightInput.className = "total-weight";
+  totalWeightInput.readOnly = true;
+  totalWeightTd.appendChild(totalWeightInput);
+  tr.appendChild(totalWeightTd);
 
-  // 6) العدد
-  const qtyTd = document.createElement("td");
-  const qtyInput = document.createElement("input");
-  qtyInput.type = "number";
-  qtyInput.className = "qty";
-  qtyTd.appendChild(qtyInput);
-  tr.appendChild(qtyTd);
+  // 6) القيمة الكلية (قراءة فقط)
+  const totalValueTd = document.createElement("td");
+  const totalValueInput = document.createElement("input");
+  totalValueInput.type = "number";
+  totalValueInput.className = "total-value";
+  totalValueInput.readOnly = true;
+  totalValueTd.appendChild(totalValueInput);
+  tr.appendChild(totalValueTd);
 
-  // 7) الصنف
-  const descTd = document.createElement("td");
-  const descInput = document.createElement("input");
-  descInput.type = "text";
-  descInput.className = "desc";
-  descTd.appendChild(descInput);
-  tr.appendChild(descTd);
+  // 7) حذف
+  const deleteTd = document.createElement("td");
+  deleteTd.classList.add("no-print");
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.textContent = "✕";
+  deleteBtn.className = "delete-btn";
+  deleteBtn.addEventListener("click", () => {
+    const ok = confirm("هل أنت متأكد من حذف هذا السطر؟");
+    if (ok) {
+      tr.remove();
+      recalcTotals();
+    }
+  });
+  deleteTd.appendChild(deleteBtn);
+  tr.appendChild(deleteTd);
 
-  // عند أي تغيير في المدخلات تُعاد الحسابات
+  // عند أي تغيير يعاد حساب السطر والإجمالي
   [qtyInput, unitWeightInput, unitPriceInput].forEach((input) => {
     input.addEventListener("input", () => {
       recalcRow(tr);
@@ -101,7 +104,7 @@ function createRow() {
   itemsBody.appendChild(tr);
 }
 
-// إعادة حساب صف واحد
+// حساب سطر واحد
 function recalcRow(tr) {
   const qty = Number(tr.querySelector(".qty")?.value) || 0;
   const unitWeight = Number(tr.querySelector(".unit-weight")?.value) || 0;
@@ -117,7 +120,7 @@ function recalcRow(tr) {
   totalValueInput.value = rowTotalValue ? rowTotalValue : "";
 }
 
-// إعادة حساب الإجماليات
+// حساب الإجماليات
 function recalcTotals() {
   if (!itemsBody) return;
 
@@ -154,12 +157,12 @@ if (printBtn) {
   });
 }
 
-// زر PDF (يستخدم نفس الطباعة، والمستخدم يختار "حفظ كـ PDF")
+// زر PDF (نفس الطباعة، والمستخدم يختار حفظ كـ PDF)
 if (pdfBtn) {
   pdfBtn.addEventListener("click", () => {
     window.print();
   });
 }
 
-// إنشاء أول سطر تلقائيًا عند فتح الصفحة
+// إنشاء أول سطر عند فتح الصفحة
 createRow();
