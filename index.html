@@ -1,64 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>فاتورة بسام الذكية</title>
-    <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <title>فاتورة بسام الذكية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="page" id="invoice-page">
 
-<h1 class="title">فاتورة بسام الذكية</h1>
+    <header class="header">
+      <h1>فاتورة بسام الذكية</h1>
+    </header>
 
-<div class="top-section">
-
-    <div class="row">
+    <!-- بيانات الفاتورة الأساسية -->
+    <section class="invoice-meta">
+      <div class="field">
         <label>اسم العميل:</label>
-        <input id="customer" placeholder="مثال: شركة الرواد للتجارة" />
-    </div>
+        <input type="text" id="clientName" placeholder="مثال: شركة الرواد للتجارة" />
+      </div>
 
-    <div class="row">
+      <div class="field">
         <label>رقم الفاتورة:</label>
-        <input id="invoiceNumber" placeholder="مثال: 001-2025" />
-    </div>
+        <input type="text" id="invoiceNumber" placeholder="مثال: 001-2025" />
+      </div>
 
-    <div class="row">
+      <div class="field">
         <label>التاريخ:</label>
-        <input id="date" type="date" />
-    </div>
+        <input type="date" id="invoiceDate" />
+      </div>
+    </section>
 
-</div>
+    <!-- أزرار التحكم (لا تُطبع) -->
+    <section class="toolbar no-print">
+      <button id="addRowBtn" class="btn primary">+ إضافة سطر</button>
+      <button id="pdfBtn" class="btn secondary">PDF</button>
+      <button id="printBtn" class="btn secondary">طباعة 🖨️</button>
+    </section>
 
-<div class="buttons">
-    <button id="printBtn" class="print">🖨️ طباعة</button>
-    <button id="pdfBtn" class="pdf">PDF 📄</button>
-    <button onclick="addRow()" class="add">+ إضافة سطر</button>
-</div>
+    <!-- جدول الأصناف -->
+    <section>
+      <h2 class="table-title">جدول الأصناف</h2>
 
-<h2>جدول الأصناف</h2>
-
-<table id="itemsTable">
-    <thead>
-        <tr>
-            <th>الصنف</th>
-            <th>العدد</th>
-            <th>وزن / كرتون (كجم)</th>
-            <th>قيمة / كرتون</th>
-            <th>الوزن الكلي (كجم)</th>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="no-print">حذف</th>
             <th>القيمة الكلية</th>
-            <th>حذف</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</table>
+            <th>الوزن الكلي (كجم)</th>
+            <th class="per-unit-col">قيمة / كرتون</th>
+            <th class="per-unit-col">وزن / كرتون (كجم)</th>
+            <th>العدد</th>
+            <th>الصنف</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <!-- الصفوف يُنشئها JavaScript -->
+        </tbody>
+      </table>
+    </section>
 
-<div class="summary">
-    <p id="totalCount">إجمالي العدد: 0</p>
-    <p id="totalWeight">إجمالي الوزن (كجم): 0</p>
-    <p id="totalValue">إجمالي القيمة: 0</p>
-</div>
+    <!-- الإجماليات -->
+    <section class="totals">
+      <p>إجمالي العدد: <span id="totalQty">0</span></p>
+      <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
+      <p>إجمالي القيمة: <span id="totalValue">0</span></p>
+    </section>
 
-<script src="html2pdf.bundle.min.js"></script>
-<script src="app.js"></script>
+    <footer class="footer">
+      <small>تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة</small>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
