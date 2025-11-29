@@ -1,0 +1,172 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial;
+}
+
+body {
+  margin: 0;
+  background: #f3f4f6;
+  direction: rtl;
+}
+
+.wrap {
+  max-width: 900px;
+  margin: 16px auto 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+}
+
+.top-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.top-bar select {
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+#currencyNote {
+  color: #6b7280;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+th, td {
+  border: 1px solid #e5e7eb;
+  padding: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+th {
+  background: #f9fafb;
+}
+
+.cell-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cell-input input {
+  flex: 1;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 1px #16a34a33;
+}
+
+.mic-btn {
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.mic-btn:active {
+  background: #d1fae5;
+}
+
+.delete-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: #fee2e2;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.delete-btn:active {
+  background: #fecaca;
+}
+
+.primary-btn {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.primary-btn:active {
+  background: #15803d;
+}
+
+.totals {
+  margin-top: 16px;
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 8px;
+  font-size: 0.95rem;
+}
+
+.totals div {
+  margin-bottom: 4px;
+}
+
+.hint {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.hint code {
+  background: #f3f4f6;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* للجوالات */
+@media (max-width: 600px) {
+  .wrap {
+    margin: 8px;
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+}
