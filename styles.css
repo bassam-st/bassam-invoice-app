@@ -139,6 +139,14 @@ body {
   max-width: 90px;
 }
 
+/* ✅ تكبير خانة الصنف فقط */
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) {
+  width: 320px;      /* عرض كبير للصنف */
+  max-width: 380px;
+  min-width: 260px;
+}
+
 .items-table th:nth-child(3),
 .items-table td:nth-child(3),
 .items-table th:nth-child(4),
@@ -147,10 +155,7 @@ body {
   max-width: 100px;
 }
 
-.items-table th:nth-child(2),
-.items-table td:nth-child(2) {
-  width: auto;       /* الصنف يأخذ المساحة المتبقية */
-}
+/* الباقي (5 و6 و7) يوزّع نفسه طبيعي حسب المساحة المتبقية */
 
 /* حقول الإدخال في الجدول */
 .cell-input {
