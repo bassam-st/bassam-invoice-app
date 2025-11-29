@@ -1,5 +1,10 @@
-// الحصول على العناصر الأساسية
-const itemsBody = document.getElementById("itemsBody");
+// نحاول نمسك جسم الجدول إما بـ id="itemsBody"
+// أو أول tbody داخل الجدول إذا الـ id غير موجود
+const itemsBody =
+  document.getElementById("itemsBody") ||
+  document.querySelector(".items-table tbody");
+
+// أزرار التحكم
 const addRowBtn = document.getElementById("addRowBtn");
 const printBtn = document.getElementById("printBtn");
 const pdfBtn = document.getElementById("pdfBtn");
@@ -8,8 +13,15 @@ const totalQtyEl = document.getElementById("totalQty");
 const totalWeightEl = document.getElementById("totalWeight");
 const totalValueEl = document.getElementById("totalValue");
 
+// لو ما وجدنا جسم الجدول لأي سبب، نخرج بهدوء
+if (!itemsBody) {
+  console.warn("لم يتم العثور على tbody للجدول، تأكد من وجوده.");
+}
+
 // إنشاء صف جديد
 function createRow() {
+  if (!itemsBody) return;
+
   const tr = document.createElement("tr");
 
   // 1) حذف
@@ -107,6 +119,8 @@ function recalcRow(tr) {
 
 // إعادة حساب الإجماليات
 function recalcTotals() {
+  if (!itemsBody) return;
+
   let totalQty = 0;
   let totalWeight = 0;
   let totalValue = 0;
@@ -127,19 +141,25 @@ function recalcTotals() {
 }
 
 // زر إضافة سطر
-addRowBtn.addEventListener("click", () => {
-  createRow();
-});
+if (addRowBtn) {
+  addRowBtn.addEventListener("click", () => {
+    createRow();
+  });
+}
 
-// زر الطباعة (وأيضًا PDF من المتصفح)
-printBtn.addEventListener("click", () => {
-  window.print();
-});
+// زر الطباعة
+if (printBtn) {
+  printBtn.addEventListener("click", () => {
+    window.print();
+  });
+}
 
-// زر PDF نفس الطباعة (المستخدم يختار "حفظ كـ PDF")
-pdfBtn.addEventListener("click", () => {
-  window.print();
-});
+// زر PDF (يستخدم نفس الطباعة، والمستخدم يختار "حفظ كـ PDF")
+if (pdfBtn) {
+  pdfBtn.addEventListener("click", () => {
+    window.print();
+  });
+}
 
 // إنشاء أول سطر تلقائيًا عند فتح الصفحة
 createRow();
