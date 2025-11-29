@@ -3,13 +3,13 @@ function addRow() {
     const row = document.createElement("tr");
 
     row.innerHTML = `
-        <td><input class="item-name" placeholder="الصنف"></td>
-        <td><input type="number" class="count" value="0" oninput="updateTotals()"></td>
-        <td><input type="number" class="weight" value="0" oninput="updateTotals()"></td>
-        <td><input type="number" class="price" value="0" oninput="updateTotals()"></td>
+        <td><input class="item-name" placeholder="الصنف" /></td>
+        <td><input type="number" class="count" value="0" oninput="updateTotals()" /></td>
+        <td><input type="number" class="weight" value="0" oninput="updateTotals()" /></td>
+        <td><input type="number" class="price" value="0" oninput="updateTotals()" /></td>
         <td class="total-weight">0</td>
         <td class="total-price">0</td>
-        <td class="no-print"><button onclick="this.parentElement.parentElement.remove(); updateTotals()">✖</button></td>
+        <td><button onclick="this.parentElement.parentElement.remove(); updateTotals()">✖</button></td>
     `;
 
     tableBody.appendChild(row);
@@ -48,15 +48,12 @@ document.getElementById("printBtn").addEventListener("click", () => {
 
 // زر PDF
 document.getElementById("pdfBtn").addEventListener("click", () => {
+    const element = document.body;
     const opt = {
         margin: 0.5,
         filename: "فاتورة.pdf",
         html2canvas: { scale: 3 },
         jsPDF: { unit: "cm", format: "a4", orientation: "portrait" }
     };
-
-    html2pdf().from(document.body).set(opt).save();
+    html2pdf().from(element).set(opt).save();
 });
-
-// إضافة صف تلقائي عند تشغيل الصفحة
-addRow();
