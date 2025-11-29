@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>فاتورة بسام الذكية</title>
+
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- مكتبة إنشاء PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -33,25 +37,29 @@
   <section class="items-section">
     <div class="items-header">
       <h2>جدول الأصناف</h2>
-      <button id="addRowBtn" type="button">+ إضافة سطر</button>
+
+      <div style="display:flex; gap:10px;">
+        <button id="addRowBtn" type="button">+ إضافة سطر</button>
+        <button id="exportPdfBtn" type="button" class="pdf-btn">📄 PDF</button>
+      </div>
     </div>
 
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>حذف</th>
+            <th class="no-print">حذف</th>
             <th>الصنف</th>
             <th>العدد</th>
-            <th>وزن / كرتون (كجم)</th>
-            <th>قيمة / كرتون</th>
+            <th class="no-print">وزن / كرتون (كجم)</th>
+            <th class="no-print">قيمة / كرتون</th>
             <th>الوزن الكلي (كجم)</th>
             <th>القيمة الكلية</th>
           </tr>
         </thead>
 
         <tbody id="itemsBody">
-          <!-- الصفوف يتم إنشاؤها من app.js -->
+          <!-- السطور يتم توليدها من app.js -->
         </tbody>
       </table>
     </div>
@@ -65,7 +73,7 @@
   </section>
 
   <footer>
-    تطبيق فاتورة بسّام — عدد × وزن/كرتون × قيمة/كرتون مع إجماليات جاهزة
+    تطبيق فاتورة بسّام — حساب الوزن والقيمة تلقائياً + PDF
   </footer>
 
   <script src="app.js"></script>
