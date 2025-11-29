@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>فاتورة بسام الذكية</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- تنسيقات CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
@@ -16,25 +14,25 @@
 
     <div class="row">
         <label>اسم العميل:</label>
-        <input id="customer" placeholder="مثال: شركة الرواد للتجارة">
+        <input id="customer" placeholder="مثال: شركة الرواد للتجارة" />
     </div>
 
     <div class="row">
         <label>رقم الفاتورة:</label>
-        <input id="invoiceNumber" placeholder="001-2025 مثال:">
+        <input id="invoiceNumber" placeholder="مثال: 001-2025" />
     </div>
 
     <div class="row">
         <label>التاريخ:</label>
-        <input id="date" type="date">
+        <input id="date" type="date" />
     </div>
 
 </div>
 
-<div class="buttons no-print">
+<div class="buttons">
     <button id="printBtn" class="print">🖨️ طباعة</button>
-    <button id="pdfBtn" class="pdf">📄 PDF</button>
-    <button class="add" onclick="addRow()">+ إضافة سطر</button>
+    <button id="pdfBtn" class="pdf">PDF 📄</button>
+    <button onclick="addRow()" class="add">+ إضافة سطر</button>
 </div>
 
 <h2>جدول الأصناف</h2>
@@ -48,10 +46,9 @@
             <th>قيمة / كرتون</th>
             <th>الوزن الكلي (كجم)</th>
             <th>القيمة الكلية</th>
-            <th class="no-print">حذف</th>
+            <th>حذف</th>
         </tr>
     </thead>
-
     <tbody id="tableBody"></tbody>
 </table>
 
@@ -61,11 +58,7 @@
     <p id="totalValue">إجمالي القيمة: 0</p>
 </div>
 
-<!-- مكتبة PDF (نسخة بدون إنترنت) -->
 <script src="html2pdf.bundle.min.js"></script>
-
-<!-- سكربت التطبيق -->
 <script src="app.js"></script>
-
 </body>
 </html>
