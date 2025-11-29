@@ -124,6 +124,35 @@ body {
   font-weight: 600;
 }
 
+/* توزيع عرض الأعمدة (حسب ترتيبها الحالي)
+   1: العدد
+   2: الصنف
+   3: وزن/كرتون (no-print)
+   4: قيمة/كرتون (no-print)
+   5: الوزن الكلي
+   6: القيمة الكلية
+   7: حذف (no-print)
+*/
+.items-table th:nth-child(1),
+.items-table td:nth-child(1) {
+  width: 80px;       /* أنحف شوي */
+  max-width: 90px;
+}
+
+.items-table th:nth-child(3),
+.items-table td:nth-child(3),
+.items-table th:nth-child(4),
+.items-table td:nth-child(4) {
+  width: 90px;       /* أنحف شوي لوزن/كرتون وقيمة/كرتون */
+  max-width: 100px;
+}
+
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) {
+  width: auto;       /* الصنف يأخذ المساحة المتبقية */
+}
+
+/* حقول الإدخال في الجدول */
 .cell-input {
   width: 100%;
   border-radius: 6px;
@@ -132,6 +161,15 @@ body {
   font-size: 0.9rem;
 }
 
+/* خانة الصنف كـ textarea مع التفاف نص */
+.desc-textarea {
+  resize: vertical;      /* ممكن يكبر عمودي لو حبيت */
+  min-height: 32px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* الحقول للقراءة فقط */
 .cell-input[readonly] {
   background: #f9fafb;
 }
@@ -169,5 +207,10 @@ body {
 
   .items-table {
     min-width: 100%;
+  }
+
+  .desc-textarea {
+    border: none;
+    padding: 0;
   }
 }
