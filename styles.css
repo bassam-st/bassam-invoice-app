@@ -43,7 +43,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* كرت عام */
+/* كروت الأقسام */
 section {
   background: var(--card);
   border-radius: 12px;
@@ -70,18 +70,14 @@ label {
   color: #374151;
 }
 
-input,
-textarea,
-select {
+input {
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
   font: inherit;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+input:focus {
   outline: 2px solid var(--green);
   outline-offset: 1px;
   border-color: var(--green);
@@ -108,7 +104,7 @@ select:focus {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 750px;
+  min-width: 650px;
 }
 
 th,
@@ -123,30 +119,24 @@ th {
   background: #f9fafb;
 }
 
-td input,
-td textarea,
-td select {
+/* الحقول داخل الجدول */
+td input {
   width: 100%;
   border-radius: 6px;
   font-size: 0.8rem;
   padding: 4px 6px;
 }
 
-/* الإجماليات */
+/* إجماليات */
 .totals {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
   font-size: 0.95rem;
 }
 
 .totals span {
   color: #374151;
-}
-
-.totals strong {
-  margin-right: 4px;
-  font-size: 1rem;
 }
 
 /* الأزرار */
@@ -190,7 +180,7 @@ button.danger:hover {
   font-size: 0.8rem;
 }
 
-/* للطباعة */
+/* إخفاء أشياء عند الطباعة */
 @media print {
   body {
     background: #fff;
@@ -198,12 +188,12 @@ button.danger:hover {
   .wrap {
     margin: 0;
     max-width: 100%;
+    padding: 8px;
   }
   section {
     box-shadow: none;
   }
-  .actions,
-  .subtitle {
-    display: none;
+  .no-print {
+    display: none !important;
   }
 }
