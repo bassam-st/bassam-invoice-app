@@ -1,97 +1,71 @@
-body {
-    font-family: "Cairo", sans-serif;
-    background: #f5f5f5;
-    margin: 0;
-    padding: 20px;
-}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>فاتورة بسام الذكية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-.title {
-    text-align: center;
-    margin-bottom: 20px;
-}
+    <!-- تنسيقات CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-.top-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-}
+<h1 class="title">فاتورة بسام الذكية</h1>
 
-.row {
-    display: flex;
-    flex-direction: column;
-    width: 32%;
-}
+<div class="top-section">
 
-input, textarea {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+    <div class="row">
+        <label>اسم العميل:</label>
+        <input id="customer" placeholder="مثال: شركة الرواد للتجارة">
+    </div>
 
-.buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
+    <div class="row">
+        <label>رقم الفاتورة:</label>
+        <input id="invoiceNumber" placeholder="001-2025 مثال:">
+    </div>
 
-.print {
-    background: #28a745;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-}
+    <div class="row">
+        <label>التاريخ:</label>
+        <input id="date" type="date">
+    </div>
 
-.pdf {
-    background: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-}
+</div>
 
-.add {
-    background: #6f42c1;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-}
+<div class="buttons no-print">
+    <button id="printBtn" class="print">🖨️ طباعة</button>
+    <button id="pdfBtn" class="pdf">📄 PDF</button>
+    <button class="add" onclick="addRow()">+ إضافة سطر</button>
+</div>
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-}
+<h2>جدول الأصناف</h2>
 
-th, td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: center;
-}
+<table id="itemsTable">
+    <thead>
+        <tr>
+            <th>الصنف</th>
+            <th>العدد</th>
+            <th>وزن / كرتون (كجم)</th>
+            <th>قيمة / كرتون</th>
+            <th>الوزن الكلي (كجم)</th>
+            <th>القيمة الكلية</th>
+            <th class="no-print">حذف</th>
+        </tr>
+    </thead>
 
-.summary {
-    margin-top: 20px;
-    font-size: 18px;
-}
+    <tbody id="tableBody"></tbody>
+</table>
 
-.no-print {
-    display: table-cell;
-}
+<div class="summary">
+    <p id="totalCount">إجمالي العدد: 0</p>
+    <p id="totalWeight">إجمالي الوزن (كجم): 0</p>
+    <p id="totalValue">إجمالي القيمة: 0</p>
+</div>
 
-/* عند الطباعة نخفي الأزرار */
-@media print {
-    .no-print {
-        display: none !important;
-    }
+<!-- مكتبة PDF (نسخة بدون إنترنت) -->
+<script src="html2pdf.bundle.min.js"></script>
 
-    body {
-        background: white;
-        margin: 0;
-        padding: 0;
-    }
-}
+<!-- سكربت التطبيق -->
+<script src="app.js"></script>
+
+</body>
+</html>
