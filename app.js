@@ -1,4 +1,4 @@
-// الحصول على جسم الجدول
+// جسم الجدول
 const itemsBody =
   document.getElementById("itemsBody") ||
   document.querySelector(".items-table tbody");
@@ -17,66 +17,15 @@ if (!itemsBody) {
   console.warn("لم يتم العثور على tbody للجدول، تأكد من وجوده.");
 }
 
-// إنشاء صف جديد بالترتيب المطلوب من اليمين:
-// الصنف - العدد - وزن/كرتون - قيمة/كرتون - الوزن الكلي - القيمة الكلية - حذف
+// إنشاء صف واحد
+// الترتيب في الكود: حذف - القيمة الكلية - الوزن الكلي - قيمة/كرتون - وزن/كرتون - العدد - الصنف
+// لكي يظهر على الشاشة من اليمين: الصنف - العدد - وزن/كرتون - قيمة/كرتون - الوزن الكلي - القيمة الكلية - حذف
 function createRow() {
   if (!itemsBody) return;
 
   const tr = document.createElement("tr");
 
-  // 1) الصنف
-  const descTd = document.createElement("td");
-  const descInput = document.createElement("input");
-  descInput.type = "text";
-  descInput.className = "desc";
-  descTd.appendChild(descInput);
-  tr.appendChild(descTd);
-
-  // 2) العدد
-  const qtyTd = document.createElement("td");
-  const qtyInput = document.createElement("input");
-  qtyInput.type = "number";
-  qtyInput.className = "qty";
-  qtyTd.appendChild(qtyInput);
-  tr.appendChild(qtyTd);
-
-  // 3) وزن / كرتون
-  const unitWeightTd = document.createElement("td");
-  unitWeightTd.classList.add("per-unit-col");
-  const unitWeightInput = document.createElement("input");
-  unitWeightInput.type = "number";
-  unitWeightInput.className = "unit-weight";
-  unitWeightTd.appendChild(unitWeightInput);
-  tr.appendChild(unitWeightTd);
-
-  // 4) قيمة / كرتون
-  const unitPriceTd = document.createElement("td");
-  unitPriceTd.classList.add("per-unit-col");
-  const unitPriceInput = document.createElement("input");
-  unitPriceInput.type = "number";
-  unitPriceInput.className = "unit-price";
-  unitPriceTd.appendChild(unitPriceInput);
-  tr.appendChild(unitPriceTd);
-
-  // 5) الوزن الكلي (قراءة فقط)
-  const totalWeightTd = document.createElement("td");
-  const totalWeightInput = document.createElement("input");
-  totalWeightInput.type = "number";
-  totalWeightInput.className = "total-weight";
-  totalWeightInput.readOnly = true;
-  totalWeightTd.appendChild(totalWeightInput);
-  tr.appendChild(totalWeightTd);
-
-  // 6) القيمة الكلية (قراءة فقط)
-  const totalValueTd = document.createElement("td");
-  const totalValueInput = document.createElement("input");
-  totalValueInput.type = "number";
-  totalValueInput.className = "total-value";
-  totalValueInput.readOnly = true;
-  totalValueTd.appendChild(totalValueInput);
-  tr.appendChild(totalValueTd);
-
-  // 7) حذف
+  // 1) حذف
   const deleteTd = document.createElement("td");
   deleteTd.classList.add("no-print");
   const deleteBtn = document.createElement("button");
@@ -93,7 +42,59 @@ function createRow() {
   deleteTd.appendChild(deleteBtn);
   tr.appendChild(deleteTd);
 
-  // عند أي تغيير يعاد حساب السطر والإجمالي
+  // 2) القيمة الكلية (قراءة فقط)
+  const totalValueTd = document.createElement("td");
+  const totalValueInput = document.createElement("input");
+  totalValueInput.type = "number";
+  totalValueInput.className = "total-value";
+  totalValueInput.readOnly = true;
+  totalValueTd.appendChild(totalValueInput);
+  tr.appendChild(totalValueTd);
+
+  // 3) الوزن الكلي (قراءة فقط)
+  const totalWeightTd = document.createElement("td");
+  const totalWeightInput = document.createElement("input");
+  totalWeightInput.type = "number";
+  totalWeightInput.className = "total-weight";
+  totalWeightInput.readOnly = true;
+  totalWeightTd.appendChild(totalWeightInput);
+  tr.appendChild(totalWeightTd);
+
+  // 4) قيمة / كرتون
+  const unitPriceTd = document.createElement("td");
+  unitPriceTd.classList.add("per-unit-col");
+  const unitPriceInput = document.createElement("input");
+  unitPriceInput.type = "number";
+  unitPriceInput.className = "unit-price";
+  unitPriceTd.appendChild(unitPriceInput);
+  tr.appendChild(unitPriceTd);
+
+  // 5) وزن / كرتون
+  const unitWeightTd = document.createElement("td");
+  unitWeightTd.classList.add("per-unit-col");
+  const unitWeightInput = document.createElement("input");
+  unitWeightInput.type = "number";
+  unitWeightInput.className = "unit-weight";
+  unitWeightTd.appendChild(unitWeightInput);
+  tr.appendChild(unitWeightTd);
+
+  // 6) العدد
+  const qtyTd = document.createElement("td");
+  const qtyInput = document.createElement("input");
+  qtyInput.type = "number";
+  qtyInput.className = "qty";
+  qtyTd.appendChild(qtyInput);
+  tr.appendChild(qtyTd);
+
+  // 7) الصنف
+  const descTd = document.createElement("td");
+  const descInput = document.createElement("input");
+  descInput.type = "text";
+  descInput.className = "desc";
+  descTd.appendChild(descInput);
+  tr.appendChild(descTd);
+
+  // أي تغيير يعيد حساب السطر والإجمالي
   [qtyInput, unitWeightInput, unitPriceInput].forEach((input) => {
     input.addEventListener("input", () => {
       recalcRow(tr);
@@ -104,7 +105,7 @@ function createRow() {
   itemsBody.appendChild(tr);
 }
 
-// حساب سطر واحد
+// حساب سطر
 function recalcRow(tr) {
   const qty = Number(tr.querySelector(".qty")?.value) || 0;
   const unitWeight = Number(tr.querySelector(".unit-weight")?.value) || 0;
@@ -157,12 +158,12 @@ if (printBtn) {
   });
 }
 
-// زر PDF (نفس الطباعة، والمستخدم يختار حفظ كـ PDF)
+// زر PDF = نفس الطباعة (اختر حفظ كـ PDF)
 if (pdfBtn) {
   pdfBtn.addEventListener("click", () => {
     window.print();
   });
 }
 
-// إنشاء أول سطر عند فتح الصفحة
+// إنشاء أول سطر عند تحميل الصفحة
 createRow();
