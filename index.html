@@ -1,87 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>فاتورة بسام الذكية</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-  <div class="wrap">
-    <header class="header">
-      <h1>فاتورة بسام الذكية</h1>
-      <p class="subtitle">نفس نموذج الإكسل مع حساب آلي للوزن</p>
-    </header>
 
-    <!-- معلومات الفاتورة -->
-    <section class="invoice-info">
-      <div class="field">
-        <label for="clientName">اسم العميل:</label>
-        <input id="clientName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
-      </div>
-      <div class="field">
-        <label for="invoiceNumber">رقم الفاتورة:</label>
-        <input id="invoiceNumber" type="text" placeholder="مثال: 2025-001" />
-      </div>
-      <div class="field">
-        <label for="invoiceDate">التاريخ:</label>
-        <input id="invoiceDate" type="date" />
-      </div>
-    </section>
+  <h1 class="title">فاتورة بسام الذكية</h1>
 
-    <!-- جدول الأصناف (نفس الإكسل) -->
-    <section class="items-section">
-      <div class="items-header">
-        <h2>جدول الأصناف</h2>
-        <button id="addRowBtn" type="button">+ إضافة سطر</button>
-      </div>
+  <!-- بيانات الفاتورة -->
+  <section class="invoice-info">
+    <div class="field">
+      <label>اسم العميل:</label>
+      <input type="text" id="customerName" placeholder="مثال: شركة الرواد للتجارة" />
+    </div>
 
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>م</th>
-              <th>العدد</th>
-              <th>الصنف</th>
-              <th>الوزن (كجم)</th>
-              <th>القيمة</th>
-              <th class="no-print">وزن / كرتون (كجم)</th>
-              <th class="no-print">حذف</th>
-            </tr>
-          </thead>
-          <tbody id="itemsBody">
-            <!-- الأسطر تتولد من جافاسكربت -->
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <div class="field">
+      <label>رقم الفاتورة:</label>
+      <input type="text" id="invoiceNumber" placeholder="001-2025 مثال:" />
+    </div>
 
-    <!-- الإجماليات مثل الإكسل -->
-    <section class="totals">
-      <div>
-        <span>إجمالي العدد:</span>
-        <strong id="totalQty">0</strong>
-      </div>
-      <div>
-        <span>إجمالي الوزن (كجم):</span>
-        <strong id="totalWeight">0</strong>
-      </div>
-      <div>
-        <span>إجمالي القيمة:</span>
-        <strong id="totalValue">0</strong>
-      </div>
-    </section>
+    <div class="field">
+      <label>التاريخ:</label>
+      <input type="date" id="invoiceDate" />
+    </div>
+  </section>
 
-    <!-- أزرار التحكم -->
-    <section class="actions no-print">
-      <button type="button" id="clearAllBtn" class="danger">مسح كل الأسطر</button>
-      <button type="button" onclick="window.print()">طباعة / حفظ PDF</button>
-    </section>
+  <!-- جدول الأصناف -->
+  <section class="items-section">
+    <div class="items-header">
+      <h2>جدول الأصناف</h2>
+      <button id="addRowBtn" type="button">+ إضافة سطر</button>
+    </div>
 
-    <footer class="footer">
-      <small>تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة</small>
-    </footer>
-  </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>العدد</th>
+            <th>الصنف</th>
+            <th>الوزن (كجم)</th>
+            <th>القيمة</th>
+            <th class="no-print">وزن / كرتون (كجم)</th>
+            <th class="no-print">حذف</th>
+          </tr>
+        </thead>
+
+        <tbody id="itemsBody">
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- الإجماليات -->
+  <section class="totals">
+    <p>إجمالي العدد: <span id="totalQty">0</span></p>
+    <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
+    <p>إجمالي القيمة: <span id="totalValue">0</span></p>
+  </section>
+
+  <footer>
+    تطبيق فاتورة بسّام — نموذج عدد / صنف / وزن / قيمة
+  </footer>
 
   <script src="app.js"></script>
 </body>
