@@ -1,129 +1,86 @@
-// عند تحميل الصفحة نضيف سطر واحد تلقائياً ونضع تاريخ اليوم
-document.addEventListener("DOMContentLoaded", () => {
-  const today = new Date().toISOString().slice(0, 10);
-  const dateInput = document.getElementById("invoiceDate");
-  if (dateInput && !dateInput.value) {
-    dateInput.value = today;
-  }
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>فاتورة بسام الذكية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="header">
+      <h1>فاتورة بسام الذكية</h1>
+      <p class="subtitle">حساب آلي للوزن والقيمة لكل صنف</p>
+    </header>
 
-  document.getElementById("addRowBtn").addEventListener("click", addRow);
-  document.getElementById("clearAllBtn").addEventListener("click", clearAllRows);
+    <!-- معلومات الفاتورة -->
+    <section class="invoice-info">
+      <div class="field">
+        <label for="clientName">اسم العميل:</label>
+        <input id="clientName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
+      </div>
+      <div class="field">
+        <label for="invoiceNumber">رقم الفاتورة:</label>
+        <input id="invoiceNumber" type="text" placeholder="مثال: 2025-001" />
+      </div>
+      <div class="field">
+        <label for="invoiceDate">التاريخ:</label>
+        <input id="invoiceDate" type="date" />
+      </div>
+    </section>
 
-  // تفويض للأحداث: أي تغيير داخل جسم الجدول
-  document.getElementById("itemsBody").addEventListener("input", handleTableInput);
-  document.getElementById("itemsBody").addEventListener("click", handleRowDelete);
+    <!-- جدول الأصناف -->
+    <section class="items-section">
+      <div class="items-header">
+        <h2>أصناف الفاتورة</h2>
+        <button id="addRowBtn" type="button">+ إضافة سطر</button>
+      </div>
 
-  // أول سطر
-  addRow();
-});
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>بيان الصنف</th>
+              <th>العدد</th>
+              <th>الوحدة</th>
+              <th>وزن الوحدة (كجم)</th>
+              <th>إجمالي وزن الصنف (كجم)</th>
+              <th>قيمة السطر</th>
+              <th>ملاحظات</th>
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <!-- يتم توليد الأسطر من جافاسكربت -->
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-// إضافة سطر جديد
-function addRow() {
-  const tbody = document.getElementById("itemsBody");
-  const index = tbody.children.length + 1;
+    <!-- الإجماليات -->
+    <section class="totals">
+      <div>
+        <span>إجمالي وزن الفاتورة (كجم):</span>
+        <strong id="totalWeight">0</strong>
+      </div>
+      <div>
+        <span>إجمالي قيمة الفاتورة:</span>
+        <strong id="totalValue">0</strong>
+      </div>
+    </section>
 
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td class="row-index">${index}</td>
-    <td><input type="text" class="item-name" placeholder="بيان الصنف"></td>
-    <td><input type="number" class="qty" min="0" step="1" value="0"></td>
-    <td>
-      <input type="text" class="unit" placeholder="كرتون / حبة / طن">
-    </td>
-    <td>
-      <input type="number" class="unit-weight" min="0" step="0.001" value="0">
-    </td>
-    <td>
-      <input type="number" class="total-weight" readonly>
-    </td>
-    <td>
-      <input type="number" class="line-value" min="0" step="0.01" value="0">
-    </td>
-    <td>
-      <input type="text" class="note" placeholder="">
-    </td>
-    <td>
-      <button type="button" class="danger delete-row">✕</button>
-    </td>
-  `;
+    <!-- أزرار التحكم -->
+    <section class="actions">
+      <button type="button" id="clearAllBtn" class="danger">مسح كل الأسطر</button>
+      <button type="button" onclick="window.print()">طباعة / حفظ PDF</button>
+    </section>
 
-  tbody.appendChild(tr);
-  recalcRow(tr);
-  recalcTotals();
-}
+    <footer class="footer">
+      <small>تطبيق فاتورة بسام — نسخة الوزن الآلي</small>
+    </footer>
+  </div>
 
-// التعامل مع تغيير أي حقل في الجدول
-function handleTableInput(event) {
-  const target = event.target;
-  if (!target.closest("tr")) return;
-
-  // لما يتغير العدد أو وزن الوحدة أو قيمة السطر
-  if (
-    target.classList.contains("qty") ||
-    target.classList.contains("unit-weight") ||
-    target.classList.contains("line-value")
-  ) {
-    const tr = target.closest("tr");
-    recalcRow(tr);
-    recalcTotals();
-  }
-}
-
-// حساب وزن الصنف داخل السطر
-function recalcRow(tr) {
-  const qtyInput = tr.querySelector(".qty");
-  const unitWeightInput = tr.querySelector(".unit-weight");
-  const totalWeightInput = tr.querySelector(".total-weight");
-
-  const qty = parseFloat(qtyInput.value) || 0;
-  const unitWeight = parseFloat(unitWeightInput.value) || 0;
-
-  const totalWeight = qty * unitWeight; // هنا الضرب الذي تريده 💪
-  totalWeightInput.value = totalWeight ? totalWeight.toFixed(3) : "";
-}
-
-// حساب الإجماليات النهائية
-function recalcTotals() {
-  const tbody = document.getElementById("itemsBody");
-  let totalWeight = 0;
-  let totalValue = 0;
-
-  [...tbody.querySelectorAll("tr")].forEach((tr) => {
-    const w = parseFloat(tr.querySelector(".total-weight").value) || 0;
-    const v = parseFloat(tr.querySelector(".line-value").value) || 0;
-
-    totalWeight += w;
-    totalValue += v;
-  });
-
-  document.getElementById("totalWeight").textContent = totalWeight.toFixed(3);
-  document.getElementById("totalValue").textContent = totalValue.toFixed(2);
-}
-
-// زر حذف سطر واحد
-function handleRowDelete(event) {
-  if (!event.target.classList.contains("delete-row")) return;
-
-  const tr = event.target.closest("tr");
-  tr.remove();
-  resetRowIndices();
-  recalcTotals();
-}
-
-// إعادة ترقيم الأسطر بعد الحذف
-function resetRowIndices() {
-  const rows = document.querySelectorAll("#itemsBody tr");
-  rows.forEach((tr, i) => {
-    const cell = tr.querySelector(".row-index");
-    if (cell) cell.textContent = i + 1;
-  });
-}
-
-// مسح كل الأسطر
-function clearAllRows() {
-  if (!confirm("هل تريد مسح كل أسطر الفاتورة؟")) return;
-  const tbody = document.getElementById("itemsBody");
-  tbody.innerHTML = "";
-  addRow();
-  recalcTotals();
-}
+  <script src="app.js"></script>
+</body>
+</html>
