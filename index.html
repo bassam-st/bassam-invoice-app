@@ -1,59 +1,86 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>فاتورة بسّام الذكية</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <title>فاتورة بسام الذكية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="wrap">
-    <h1>فاتورة بسّام الذكية</h1>
+    <header class="header">
+      <h1>فاتورة بسام الذكية</h1>
+      <p class="subtitle">نفس نموذج الإكسل مع حساب آلي للوزن</p>
+    </header>
 
-    <div class="top-bar">
-      <label>
-        العملة:
-        <select id="currencySelect">
-          <option value="usd">دولار</option>
-          <option value="sar">ريال سعودي</option>
-          <option value="yer">ريال يمني</option>
-        </select>
-      </label>
-      <small id="currencyNote"></small>
-    </div>
+    <!-- معلومات الفاتورة -->
+    <section class="invoice-info">
+      <div class="field">
+        <label for="clientName">اسم العميل:</label>
+        <input id="clientName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
+      </div>
+      <div class="field">
+        <label for="invoiceNumber">رقم الفاتورة:</label>
+        <input id="invoiceNumber" type="text" placeholder="مثال: 2025-001" />
+      </div>
+      <div class="field">
+        <label for="invoiceDate">التاريخ:</label>
+        <input id="invoiceDate" type="date" />
+      </div>
+    </section>
 
-    <div class="table-container">
-      <table id="itemsTable">
-        <thead>
-          <tr>
-            <th>العدد</th>
-            <th>الصنف</th>
-            <th>الوزن</th>
-            <th>القيمة</th>
-            <th>المنشأ</th>
-            <th>حذف</th>
-          </tr>
-        </thead>
-        <tbody id="itemsBody">
-          <!-- الصفوف تُنشأ من الجافاسكربت -->
-        </tbody>
-      </table>
-    </div>
+    <!-- جدول الأصناف (نفس الإكسل) -->
+    <section class="items-section">
+      <div class="items-header">
+        <h2>جدول الأصناف</h2>
+        <button id="addRowBtn" type="button">+ إضافة سطر</button>
+      </div>
 
-    <button id="addRowBtn" class="primary-btn">إضافة بند جديد +</button>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>العدد</th>
+              <th>الصنف</th>
+              <th>الوزن (كجم)</th>
+              <th>القيمة</th>
+              <th class="no-print">وزن / كرتون (كجم)</th>
+              <th class="no-print">حذف</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <!-- الأسطر تتولد من جافاسكربت -->
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-    <div class="totals">
-      <div><b>إجمالي العدد:</b> <span id="totalQty">0</span></div>
-      <div><b>إجمالي الوزن:</b> <span id="totalWeight">0</span></div>
-      <div><b>إجمالي القيمة:</b> <span id="totalValue">0</span></div>
-    </div>
+    <!-- الإجماليات مثل الإكسل -->
+    <section class="totals">
+      <div>
+        <span>إجمالي العدد:</span>
+        <strong id="totalQty">0</strong>
+      </div>
+      <div>
+        <span>إجمالي الوزن (كجم):</span>
+        <strong id="totalWeight">0</strong>
+      </div>
+      <div>
+        <span>إجمالي القيمة:</span>
+        <strong id="totalValue">0</strong>
+      </div>
+    </section>
 
-    <div class="hint">
-      <b>ملاحظات إدخال ذكي:</b><br>
-      في خانة <u>الوزن</u> أو <u>القيمة</u> يمكنك قول أو كتابة مثل:<br>
-      <code>2 كرتون فيها 48 علبة والعلبة 200 جرام</code><br>
-      وسيقوم التطبيق بحساب: <code>2 × 48 × 200</code> تلقائياً.
-    </div>
+    <!-- أزرار التحكم -->
+    <section class="actions no-print">
+      <button type="button" id="clearAllBtn" class="danger">مسح كل الأسطر</button>
+      <button type="button" onclick="window.print()">طباعة / حفظ PDF</button>
+    </section>
+
+    <footer class="footer">
+      <small>تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة</small>
+    </footer>
   </div>
 
   <script src="app.js"></script>
