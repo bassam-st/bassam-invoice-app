@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>فاتورة بسّام الذكية</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <h1>فاتورة بسّام الذكية</h1>
+
+    <div class="top-bar">
+      <label>
+        العملة:
+        <select id="currencySelect">
+          <option value="usd">دولار</option>
+          <option value="sar">ريال سعودي</option>
+          <option value="yer">ريال يمني</option>
+        </select>
+      </label>
+      <small id="currencyNote"></small>
+    </div>
+
+    <div class="table-container">
+      <table id="itemsTable">
+        <thead>
+          <tr>
+            <th>العدد</th>
+            <th>الصنف</th>
+            <th>الوزن</th>
+            <th>القيمة</th>
+            <th>المنشأ</th>
+            <th>حذف</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <!-- الصفوف تُنشأ من الجافاسكربت -->
+        </tbody>
+      </table>
+    </div>
+
+    <button id="addRowBtn" class="primary-btn">إضافة بند جديد +</button>
+
+    <div class="totals">
+      <div><b>إجمالي العدد:</b> <span id="totalQty">0</span></div>
+      <div><b>إجمالي الوزن:</b> <span id="totalWeight">0</span></div>
+      <div><b>إجمالي القيمة:</b> <span id="totalValue">0</span></div>
+    </div>
+
+    <div class="hint">
+      <b>ملاحظات إدخال ذكي:</b><br>
+      في خانة <u>الوزن</u> أو <u>القيمة</u> يمكنك قول أو كتابة مثل:<br>
+      <code>2 كرتون فيها 48 علبة والعلبة 200 جرام</code><br>
+      وسيقوم التطبيق بحساب: <code>2 × 48 × 200</code> تلقائياً.
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
