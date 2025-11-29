@@ -12,21 +12,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("printBtn").addEventListener("click", () => window.print());
   document.getElementById("pdfBtn").addEventListener("click", () => window.print());
 
+  // تغيير العملة يحدث تحديث للنص في الإجمالي
+  const currencySelect = document.getElementById("currencySelect");
+  if (currencySelect) {
+    currencySelect.addEventListener("change", updateTotals);
+  }
+
   // إضافة أول سطر
   addRow();
 });
 
 // دالة تضبط سلوك خانات الأرقام (تحديد الكل عند اللمس وإزالة صفر البداية)
 function setupNumberInput(input) {
-  // لا قيمة افتراضية
   if (input.value === "0") input.value = "";
 
   input.addEventListener("focus", () => {
-    // إذا كانت 0 أو 0.0 امسحها
     if (input.value === "0" || input.value === "0.0" || input.value === "0.00") {
       input.value = "";
     }
-    // حدد كل المحتوى لتسهيل استبداله
     input.select();
   });
 }
@@ -53,7 +56,6 @@ function addRow() {
   const itemTd = document.createElement("td");
   const itemInput = document.createElement("input");
   itemInput.type = "text";
-  itemInput.placeholder = "";
   itemTd.appendChild(itemInput);
   tr.appendChild(itemTd);
 
@@ -137,7 +139,7 @@ function updateRowTotals(row) {
   updateTotals();
 }
 
-// تحديث الإجماليات في أسفل الصفحة
+// تحديث الإجماليات في أسفل الصفحة + اسم العملة
 function updateTotals() {
   const tbody = document.getElementById("itemsBody");
   let totalQty = 0;
@@ -158,4 +160,12 @@ function updateTotals() {
   document.getElementById("totalQty").textContent = totalQty;
   document.getElementById("totalWeight").textContent = totalWeight;
   document.getElementById("totalValue").textContent = totalValue;
+
+  const currencySelect = document.getElementById("currencySelect");
+  const currencyLabel = document.getElementById("currencyLabel");
+
+  if (currencyLabel) {
+    const selected = currencySelect && currencySelect.value ? currencySelect.value : "";
+    currencyLabel.textContent = selected ? " " + selected : "";
+  }
 }
