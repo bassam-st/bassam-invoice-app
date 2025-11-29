@@ -16,6 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
   addRow();
 });
 
+// دالة تضبط سلوك خانات الأرقام (تحديد الكل عند اللمس وإزالة صفر البداية)
+function setupNumberInput(input) {
+  // لا قيمة افتراضية
+  if (input.value === "0") input.value = "";
+
+  input.addEventListener("focus", () => {
+    // إذا كانت 0 أو 0.0 امسحها
+    if (input.value === "0" || input.value === "0.0" || input.value === "0.00") {
+      input.value = "";
+    }
+    // حدد كل المحتوى لتسهيل استبداله
+    input.select();
+  });
+}
+
 // إضافة سطر جديد
 function addRow() {
   const tbody = document.getElementById("itemsBody");
@@ -28,6 +43,8 @@ function addRow() {
   qtyInput.min = "0";
   qtyInput.step = "1";
   qtyInput.value = "";
+  qtyInput.placeholder = "عدد";
+  setupNumberInput(qtyInput);
   qtyInput.addEventListener("input", () => updateRowTotals(tr));
   qtyTd.appendChild(qtyInput);
   tr.appendChild(qtyTd);
@@ -47,6 +64,9 @@ function addRow() {
   weightPerInput.type = "number";
   weightPerInput.min = "0";
   weightPerInput.step = "0.01";
+  weightPerInput.value = "";
+  weightPerInput.placeholder = "وزن";
+  setupNumberInput(weightPerInput);
   weightPerInput.addEventListener("input", () => updateRowTotals(tr));
   weightPerTd.appendChild(weightPerInput);
   tr.appendChild(weightPerTd);
@@ -58,6 +78,9 @@ function addRow() {
   pricePerInput.type = "number";
   pricePerInput.min = "0";
   pricePerInput.step = "0.01";
+  pricePerInput.value = "";
+  pricePerInput.placeholder = "قيمة";
+  setupNumberInput(pricePerInput);
   pricePerInput.addEventListener("input", () => updateRowTotals(tr));
   pricePerTd.appendChild(pricePerInput);
   tr.appendChild(pricePerTd);
