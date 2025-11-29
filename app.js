@@ -1,110 +1,142 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const itemsBody = document.getElementById("itemsBody");
-  const addRowBtn = document.getElementById("addRowBtn");
+// مساعد لتحويل النص لرقم
+function toNumber(value) {
+  const n = parseFloat(value);
+  return isNaN(n) ? 0 : n;
+}
 
-  const totalQtyEl = document.getElementById("totalQty");
-  const totalWeightEl = document.getElementById("totalWeight");
-  const totalValueEl = document.getElementById("totalValue");
+// إعادة حساب صف واحد
+function recalcRow(row) {
+  const qtyInput = row.querySelector(".item-qty");
+  const weightPerInput = row.querySelector(".item-weight-per");
+  const weightTotalInput = row.querySelector(".item-weight-total");
+  const pricePerInput = row.querySelector(".item-price-per");
+  const priceTotalInput = row.querySelector(".item-price-total");
 
-  // زر PDF
-  const exportBtn = document.getElementById("exportPdfBtn");
+  const qty = toNumber(qtyInput.value);
+  const wPer = toNumber(weightPerInput.value);
+  const pPer = toNumber(pricePerInput.value);
 
-  function parseNum(val) {
-    val = String(val || "").replace(/,/g, "").trim();
-    return parseFloat(val) || 0;
-  }
+  const wTotal = qty * wPer;
+  const pTotal = qty * pPer;
 
-  function formatNum(n) {
-    return n.toLocaleString("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 3,
-    });
-  }
+  weightTotalInput.value = wTotal ? wTotal : "";
+  priceTotalInput.value = pTotal ? pTotal : "";
 
-  function recalcRow(row) {
-    const qty = parseNum(row.querySelector(".item-qty")?.value);
-    const unitWeight = parseNum(row.querySelector(".item-weight")?.value);
-    const unitPrice = parseNum(row.querySelector(".item-price")?.value);
+  recalcTotals();
+}
 
-    const totalWeightInput = row.querySelector(".item-weight-total");
-    const totalValueInput = row.querySelector(".item-value-total");
+// إعادة حساب الإجماليات لكل الفاتورة
+function recalcTotals() {
+  const rows = document.querySelectorAll(".item-row");
 
-    const totalWeight = qty * unitWeight;
-    const totalValue = qty * unitPrice;
+  let totalQty = 0;
+  let totalWeight = 0;
+  let totalPrice = 0;
 
-    if (totalWeightInput) totalWeightInput.value = totalWeight ? formatNum(totalWeight) : "";
-    if (totalValueInput) totalValueInput.value = totalValue ? formatNum(totalValue) : "";
+  rows.forEach((row) => {
+    const qty = toNumber(row.querySelector(".item-qty").value);
+    const wTotal = toNumber(row.querySelector(".item-weight-total").value);
+    const pTotal = toNumber(row.querySelector(".item-price-total").value);
 
-    recalcTotals();
-  }
+    totalQty += qty;
+    totalWeight += wTotal;
+    totalPrice += pTotal;
+  });
 
-  function recalcTotals() {
-    let totalQty = 0;
-    let totalWeight = 0;
-    let totalValue = 0;
+  document.getElementById("totalQuantity").textContent = totalQty;
+  document.getElementById("totalWeight").textContent = totalWeight;
+  document.getElementById("totalPrice").textContent = totalPrice;
+}
 
-    itemsBody.querySelectorAll("tr").forEach((row) => {
-      totalQty += parseNum(row.querySelector(".item-qty")?.value);
-      totalWeight += parseNum(row.querySelector(".item-weight-total")?.value);
-      totalValue += parseNum(row.querySelector(".item-value-total")?.value);
-    });
+// إنشاء صف جديد
+function createRow() {
+  const tbody = document.getElementById("itemsBody");
+  const tr = document.createElement("tr");
+  tr.className = "item-row";
+  tr.innerHTML = `
+    <td>
+      <input type="text" class="item-name" placeholder="مثال: ملابس" />
+    </td>
+    <td>
+      <input type="number" class="item-qty" min="0" step="1" />
+    </td>
+    <td>
+      <input type="number" class="item-weight-per" min="0" step="0.01" />
+    </td>
+    <td>
+      <input type="number" class="item-weight-total" readonly />
+    </td>
+    <td>
+      <input type="number" class="item-price-per" min="0" step="0.01" />
+    </td>
+    <td>
+      <input type="number" class="item-price-total" readonly />
+    </td>
+    <td class="no-print">
+      <button type="button" class="delete-row">✕</button>
+    </td>
+  `;
+  tbody.appendChild(tr);
+  attachRowEvents(tr);
+}
 
-    totalQtyEl.textContent = formatNum(totalQty);
-    totalWeightEl.textContent = formatNum(totalWeight);
-    totalValueEl.textContent = formatNum(totalValue);
-  }
+// ربط الأحداث لصف معيّن
+function attachRowEvents(row) {
+  const qty = row.querySelector(".item-qty");
+  const wPer = row.querySelector(".item-weight-per");
+  const pPer = row.querySelector(".item-price-per");
+  const del = row.querySelector(".delete-row");
 
-  function attachRowEvents(row) {
-    ["item-qty", "item-weight", "item-price"].forEach((cls) => {
-      row.querySelector(`.${cls}`)?.addEventListener("input", () => recalcRow(row));
-    });
+  [qty, wPer, pPer].forEach((inp) => {
+    inp.addEventListener("input", () => recalcRow(row));
+  });
 
-    row.querySelector(".delete-row")?.addEventListener("click", () => {
+  if (del) {
+    del.addEventListener("click", () => {
       row.remove();
       recalcTotals();
     });
   }
+}
 
-  function addRow() {
-    const tr = document.createElement("tr");
+// تجهيز كل شيء عند تحميل الصفحة
+document.addEventListener("DOMContentLoaded", () => {
+  // ربط الصف الأول
+  document.querySelectorAll(".item-row").forEach(attachRowEvents);
 
-    tr.innerHTML = `
-      <td class="no-print"><button class="delete-row">✕</button></td>
-      <td><input type="text" class="item-name" placeholder="الصنف" /></td>
-      <td><input type="number" min="0" class="item-qty" /></td>
-      <td class="no-print"><input type="number" min="0" step="0.001" class="item-weight" placeholder="وزن/كرتون" /></td>
-      <td class="no-print"><input type="number" min="0" step="0.01" class="item-price" placeholder="قيمة/كرتون" /></td>
-      <td><input type="text" class="item-weight-total" readonly /></td>
-      <td><input type="text" class="item-value-total" readonly /></td>
-    `;
+  document.getElementById("addRowBtn").addEventListener("click", () => {
+    createRow();
+  });
 
-    itemsBody.appendChild(tr);
-    attachRowEvents(tr);
-  }
-
-  // زر PDF
-  if (exportBtn) {
-    exportBtn.addEventListener("click", () => {
-      document.body.classList.add("print-mode");
-
-      const opt = {
-        margin: 0.5,
-        filename: `فاتورة-${Date.now()}.pdf`,
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: { scale: 3 },
-        jsPDF: { unit: "cm", format: "a4", orientation: "portrait" },
-      };
-
-      html2pdf()
-        .set(opt)
-        .from(document.body)
-        .save()
-        .then(() => {
-          document.body.classList.remove("print-mode");
-        });
-    });
-  }
-
-  addRow();
-  recalcTotals();
+  document.getElementById("pdfBtn").addEventListener("click", () => {
+    generatePdf();
+  });
 });
+
+// توليد PDF متعدد الصفحات
+function generatePdf() {
+  const element = document.getElementById("invoiceContainer");
+  const invoiceNumber = document.getElementById("invoiceNumber").value.trim();
+  const filename = invoiceNumber ? `فاتورة-${invoiceNumber}.pdf` : "فاتورة-بسام.pdf";
+
+  const opt = {
+    margin: [10, 10, 10, 10], // أعلى، يمين، أسفل، يسار (بالـ mm)
+    filename: filename,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    pagebreak: { mode: ["css", "legacy"] } // يكسر الصفحة إذا طولت
+  };
+
+  // إخفاء زرار التحكم داخل الـ PDF فقط
+  const toolbar = document.querySelector(".toolbar");
+  toolbar.classList.add("html2pdf__ignore");
+
+  html2pdf()
+    .set(opt)
+    .from(element)
+    .save()
+    .finally(() => {
+      toolbar.classList.remove("html2pdf__ignore");
+    });
+}
