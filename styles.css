@@ -1,42 +1,38 @@
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
 }
 
-html, body {
+body {
   margin: 0;
-  padding: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
   background: #f3f4f6;
-  color: #111827;
-}
-
-body {
   direction: rtl;
 }
 
-.page {
-  max-width: 1000px;
-  margin: 24px auto;
+.invoice-wrapper {
+  max-width: 900px;
+  margin: 24px auto 40px;
   background: #ffffff;
   padding: 24px 20px 32px;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* العناوين */
-.header h1 {
+.title {
   text-align: center;
   margin: 0 0 20px;
 }
 
-/* بيانات الفاتورة */
-.invoice-meta {
+.subtitle {
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.invoice-header {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px 16px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .field {
@@ -51,58 +47,76 @@ body {
 }
 
 .field input {
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 /* أزرار */
-.toolbar {
+.actions {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  margin: 10px 0 4px;
+  flex-wrap: wrap;
 }
 
 .btn {
   border: none;
   border-radius: 999px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
+  padding: 8px 18px;
+  font-size: 0.95rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
 }
 
-.btn.primary {
+.btn-primary {
   background: #2563eb;
-  color: #fff;
+  color: #ffffff;
 }
 
-.btn.secondary {
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
   background: #e5e7eb;
   color: #111827;
 }
 
-/* جدول الأصناف */
-.table-title {
-  margin: 8px 0 8px;
-  font-size: 1.05rem;
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+/* الجدول */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 16px;
 }
 
 .items-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  min-width: 640px;
 }
 
 .items-table th,
 .items-table td {
   border: 1px solid #e5e7eb;
-  padding: 4px 6px;
+  padding: 6px 8px;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .items-table th {
@@ -110,83 +124,50 @@ body {
   font-weight: 600;
 }
 
-.items-table input[type="text"],
-.items-table input[type="number"] {
+.cell-input {
   width: 100%;
   border-radius: 6px;
   border: 1px solid #d1d5db;
-  padding: 3px 4px;
-  font-size: 0.85rem;
+  padding: 4px 6px;
+  font-size: 0.9rem;
 }
 
-.items-table input[readonly] {
+.cell-input[readonly] {
   background: #f9fafb;
 }
 
-/* زر حذف */
-.delete-btn {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-/* الإجماليات */
+/* المجاميع */
 .totals {
-  margin-top: 16px;
+  margin-top: 8px;
+  line-height: 1.8;
   font-size: 0.95rem;
 }
 
-.totals p {
-  margin: 2px 0;
-}
-
-/* الفوتر */
-.footer {
-  margin-top: 20px;
+.footer-note {
+  margin-top: 18px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #6b7280;
 }
 
-/* عناصر لا تُطبع */
-.no-print {
-  /* سيتم إخفاؤها في @media print */
-}
-
-/* طباعة */
+/* الطباعة */
 @media print {
   body {
     background: #ffffff;
   }
 
-  .page {
-    margin: 0;
-    max-width: 100%;
+  .invoice-wrapper {
     box-shadow: none;
     border-radius: 0;
+    margin: 0;
+    width: 100%;
   }
 
-  /* إخفاء الأزرار و أي عنصر عليه no-print */
   .no-print {
     display: none !important;
   }
 
-  /* إخفاء الأعمدة الخاصة بالحساب فقط: وزن/كرتون و قيمة/كرتون */
-  .per-unit-col {
-    display: none !important;
-  }
-
-  /* إزالة حدود الإدخال في الطباعة ليظهر كجدول مطبوع */
-  input {
-    border: none !important;
-    padding-inline: 0 !important;
-  }
-
-  input[readonly] {
-    background: transparent !important;
+  .items-table {
+    min-width: 100%;
   }
 }
