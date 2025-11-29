@@ -48,6 +48,15 @@ body {
   cursor: pointer;
 }
 
+.pdf-btn {
+  padding: 6px 12px;
+  background: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .table-wrapper {
   overflow-x: auto;
   margin-top: 10px;
@@ -104,8 +113,7 @@ footer {
   font-size: 14px;
 }
 
-/* 👇👇👇 الأهم: إخفاء الأعمدة غير المناسبة عند الطباعة 👇👇👇 */
-
+/* وضع خاص للطباعة */
 @media print {
 
   body {
@@ -114,17 +122,14 @@ footer {
   }
 
   #addRowBtn,
-  .delete-row {
+  .delete-row,
+  .pdf-btn {
     display: none !important;
   }
 
-  /* إخفاء الأعمدة: وزن/كرتون + قيمة/كرتون + حذف */
-  th:nth-child(1),
-  td:nth-child(1),
-  th:nth-child(4),
-  td:nth-child(4),
-  th:nth-child(5),
-  td:nth-child(5) {
+  /* ❌ إخفاء الأعمدة (حذف + وزن/كرتون + قيمة/كرتون) */
+  th.no-print,
+  td.no-print {
     display: none !important;
   }
 
@@ -132,13 +137,11 @@ footer {
     border: none;
     font-size: 18px;
   }
+}
 
-  table {
-    font-size: 20px;
-  }
-
-  footer {
-    margin-top: 40px;
-    font-size: 16px;
-  }
+/* عند التصدير PDF بالزر */
+.print-mode .no-print,
+.print-mode #addRowBtn,
+.print-mode .delete-row {
+  display: none !important;
 }
