@@ -8,7 +8,7 @@ function addRow() {
       <input type="number" class="cell-input qty" min="0" step="1" />
     </td>
     <td>
-      <input type="text" class="cell-input desc" />
+      <textarea class="cell-input desc desc-textarea"></textarea>
     </td>
     <td class="no-print">
       <input type="number" class="cell-input weight-per" min="0" step="0.01" />
