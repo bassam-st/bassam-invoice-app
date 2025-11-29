@@ -1,221 +1,95 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
+  font-family: "Tajawal", sans-serif;
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
-  background: #f3f4f6;
+  padding: 0;
   direction: rtl;
+  background: #f7f7f7;
 }
 
-.invoice-wrapper {
+.container {
+  width: 95%;
   max-width: 900px;
-  margin: 24px auto 40px;
-  background: #ffffff;
-  padding: 24px 20px 32px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.title {
+/* عنوان */
+h1 {
   text-align: center;
-  margin: 0 0 20px;
-}
-
-.subtitle {
-  margin-top: 24px;
-  margin-bottom: 12px;
-}
-
-.invoice-header {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px 16px;
-  margin-bottom: 16px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.field label {
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-.field input {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 0.95rem;
+  margin-bottom: 20px;
 }
 
 /* أزرار */
-.actions {
-  display: flex;
-  gap: 8px;
-  margin: 10px 0 4px;
-  flex-wrap: wrap;
-}
-
-.btn {
+button {
+  padding: 10px 16px;
   border: none;
-  border-radius: 999px;
-  padding: 8px 18px;
-  font-size: 0.95rem;
+  border-radius: 6px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  font-size: 15px;
 }
 
-.btn-primary {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
-}
-
-.btn-secondary {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.btn-secondary:hover {
-  background: #d1d5db;
-}
-
-.btn-danger {
-  background: #ef4444;
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-}
+.print-btn { background: #4caf50; color: white; }
+.pdf-btn   { background: #2196f3; color: white; }
+.add-btn   { background: #0d6efd; color: white; }
 
 /* الجدول */
-.table-container {
-  overflow-x: auto;
-  margin-bottom: 16px;
-}
-
-.items-table {
+table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 640px;
+  margin-top: 15px;
 }
 
-.items-table th,
-.items-table td {
-  border: 1px solid #e5e7eb;
-  padding: 6px 8px;
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px 4px;   /* 🔥 تقليل السماكة قليلاً */
   text-align: center;
-  font-size: 0.9rem;
 }
 
-.items-table th {
-  background: #f9fafb;
-  font-weight: 600;
+/* 🔥 خانة الصنف – العرض الجديد */
+.item-name {
+  width: 450px !important;
+  max-width: 450px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
-/* توزيع عرض الأعمدة (حسب ترتيبها الحالي)
-   1: العدد
-   2: الصنف
-   3: وزن/كرتون (no-print)
-   4: قيمة/كرتون (no-print)
-   5: الوزن الكلي
-   6: القيمة الكلية
-   7: حذف (no-print)
-*/
-.items-table th:nth-child(1),
-.items-table td:nth-child(1) {
-  width: 80px;       /* أنحف شوي */
-  max-width: 90px;
+/* 🔥 خانة العدد – تصغير بسيط */
+.qty-cell {
+  width: 80px;
 }
 
-/* ✅ تكبير خانة الصنف فقط */
-.items-table th:nth-child(2),
-.items-table td:nth-child(2) {
-  width: 320px;      /* عرض كبير للصنف */
-  max-width: 380px;
-  min-width: 260px;
+/* الوزن/كرتون & القيمة/كرتون – تصغير بسيط */
+.small-cell {
+  width: 90px;
 }
 
-.items-table th:nth-child(3),
-.items-table td:nth-child(3),
-.items-table th:nth-child(4),
-.items-table td:nth-child(4) {
-  width: 90px;       /* أنحف شوي لوزن/كرتون وقيمة/كرتون */
-  max-width: 100px;
+/* الإجمالي – تظل كما هي */
+.total-cell {
+  width: 110px;
 }
 
-/* الباقي (5 و6 و7) يوزّع نفسه طبيعي حسب المساحة المتبقية */
-
-/* حقول الإدخال في الجدول */
-.cell-input {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  padding: 4px 6px;
-  font-size: 0.9rem;
+/* زر الحذف */
+.delete-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  cursor: pointer;
 }
 
-/* خانة الصنف كـ textarea مع التفاف نص */
-.desc-textarea {
-  resize: vertical;      /* ممكن يكبر عمودي لو حبيت */
-  min-height: 32px;
-  line-height: 1.4;
-  white-space: pre-wrap;
-}
-
-/* الحقول للقراءة فقط */
-.cell-input[readonly] {
-  background: #f9fafb;
-}
-
-/* المجاميع */
-.totals {
-  margin-top: 8px;
-  line-height: 1.8;
-  font-size: 0.95rem;
-}
-
-.footer-note {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-
-/* الطباعة */
+/* عند الطباعة – إخفاء كل شيء غير مهم */
 @media print {
-  body {
-    background: #ffffff;
-  }
-
-  .invoice-wrapper {
-    box-shadow: none;
-    border-radius: 0;
-    margin: 0;
-    width: 100%;
-  }
-
-  .no-print {
+  .add-btn, .pdf-btn, .print-btn, .delete-btn {
     display: none !important;
   }
 
-  .items-table {
-    min-width: 100%;
-  }
-
-  .desc-textarea {
-    border: none;
-    padding: 0;
+  input {
+    border: none !important;
   }
 }
