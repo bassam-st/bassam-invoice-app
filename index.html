@@ -7,60 +7,60 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="page" id="invoice-page">
+  <div class="page">
+    <h1 class="app-title">فاتورة بسام الذكية</h1>
 
-    <header class="header">
-      <h1>فاتورة بسام الذكية</h1>
-    </header>
-
-    <!-- بيانات الفاتورة الأساسية -->
-    <section class="invoice-meta">
-      <div class="field">
+    <section class="invoice-header">
+      <div class="field-group">
         <label>اسم العميل:</label>
         <input type="text" id="clientName" placeholder="مثال: شركة الرواد للتجارة" />
       </div>
 
-      <div class="field">
+      <div class="field-group">
         <label>رقم الفاتورة:</label>
-        <input type="text" id="invoiceNumber" placeholder="مثال: 001-2025" />
+        <input type="text" id="invoiceNumber" placeholder="مثال: 2025-001" />
       </div>
 
-      <div class="field">
+      <div class="field-group">
         <label>التاريخ:</label>
         <input type="date" id="invoiceDate" />
       </div>
     </section>
 
-    <!-- أزرار التحكم (لا تُطبع) -->
-    <section class="toolbar no-print">
-      <button id="addRowBtn" class="btn primary">+ إضافة سطر</button>
-      <button id="pdfBtn" class="btn secondary">PDF</button>
-      <button id="printBtn" class="btn secondary">طباعة 🖨️</button>
+    <section class="controls">
+      <button id="printBtn" type="button" class="btn secondary no-print">
+        🖨️ طباعة
+      </button>
+      <button id="pdfBtn" type="button" class="btn secondary no-print">
+        PDF
+      </button>
+      <button id="addRowBtn" type="button" class="btn primary no-print">
+        + إضافة سطر
+      </button>
     </section>
 
-    <!-- جدول الأصناف -->
-    <section>
-      <h2 class="table-title">جدول الأصناف</h2>
+    <section class="items-section">
+      <h2>جدول الأصناف</h2>
 
       <table class="items-table">
         <thead>
           <tr>
-            <th class="no-print">حذف</th>
-            <th>القيمة الكلية</th>
-            <th>الوزن الكلي (كجم)</th>
-            <th class="per-unit-col">قيمة / كرتون</th>
-            <th class="per-unit-col">وزن / كرتون (كجم)</th>
-            <th>العدد</th>
+            <!-- من اليمين لليسار -->
             <th>الصنف</th>
+            <th>العدد</th>
+            <th>وزن / كرتون (كجم)</th>
+            <th>قيمة / كرتون</th>
+            <th>الوزن الكلي (كجم)</th>
+            <th>القيمة الكلية</th>
+            <th class="no-print">حذف</th>
           </tr>
         </thead>
         <tbody id="itemsBody">
-          <!-- الصفوف يُنشئها JavaScript -->
+          <!-- الصفوف تُضاف من JavaScript -->
         </tbody>
       </table>
     </section>
 
-    <!-- الإجماليات -->
     <section class="totals">
       <p>إجمالي العدد: <span id="totalQty">0</span></p>
       <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
@@ -68,7 +68,7 @@
     </section>
 
     <footer class="footer">
-      <small>تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة</small>
+      تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة
     </footer>
   </div>
 
