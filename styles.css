@@ -1,147 +1,181 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
 body {
-  font-family: "Cairo", sans-serif;
-  background: #f2f3f7;
   margin: 0;
-  padding: 20px;
-  color: #222;
+  padding: 16px;
+  background: #f3f4f6;
+  direction: rtl;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.invoice {
+  background: #ffffff;
+  padding: 24px 20px 32px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
 }
 
 .title {
   text-align: center;
+  margin-top: 0;
   margin-bottom: 20px;
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 22px;
 }
 
-.invoice-info {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+.top-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+.field label {
+  display: block;
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 4px;
 }
 
 .field input {
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.items-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#addRowBtn {
-  padding: 6px 12px;
-  background: #198754;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.pdf-btn {
-  padding: 6px 12px;
-  background: #0d6efd;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  margin-top: 10px;
-}
-
-table {
   width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-thead {
-  background: #eee;
-}
-
-th,
-td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-  font-size: 17px;
-}
-
-input {
-  width: 100%;
-  font-size: 16px;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.delete-row {
-  background: #dc3545;
-  color: white;
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.totals {
-  margin-top: 25px;
-  background: white;
-  padding: 15px;
+  padding: 8px 10px;
   border-radius: 8px;
-  font-size: 20px;
-}
-
-footer {
-  text-align: center;
-  margin-top: 25px;
-  color: #777;
+  border: 1px solid #d1d5db;
   font-size: 14px;
 }
 
-/* وضع خاص للطباعة */
+/* الأدوات */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.toolbar button {
+  border-radius: 999px;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#addRowBtn {
+  background: #16a34a;
+  color: #fff;
+}
+
+.pdf-btn {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* الجدول */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.items-table th,
+.items-table td {
+  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.items-table thead {
+  background: #f9fafb;
+}
+
+.items-table input {
+  width: 100%;
+  border: none;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+
+.items-table input[readonly] {
+  background: #f3f4f6;
+}
+
+/* زر الحذف */
+.delete-row {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* الملاحظات */
+.notes {
+  margin-top: 14px;
+}
+
+.notes label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.notes textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+/* الإجماليات */
+.totals {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.footer-text {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* العناصر التي لا نريدها داخل PDF */
+.no-print {
+  /* html2pdf تحترم هذا الـ CSS */
+  display: block;
+}
+
+/* صفحة الـ PDF (A4) – لضبط التفاف الصفحات */
 @media print {
-
   body {
-    background: white;
-    padding: 0;
+    background: #ffffff;
   }
-
-  #addRowBtn,
-  .delete-row,
-  .pdf-btn {
+  .no-print {
     display: none !important;
-  }
-
-  /* ❌ إخفاء الأعمدة (حذف + وزن/كرتون + قيمة/كرتون) */
-  th.no-print,
-  td.no-print {
-    display: none !important;
-  }
-
-  input {
-    border: none;
-    font-size: 18px;
   }
 }
 
-/* عند التصدير PDF بالزر */
-.print-mode .no-print,
-.print-mode #addRowBtn,
-.print-mode .delete-row {
+/* html2pdf يستخدم CSS العادي، فنجبر إخفاء الـ no-print عند التصدير */
+.no-print.html2pdf__ignore,
+html2pdf__ignore {
   display: none !important;
 }
