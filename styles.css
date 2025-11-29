@@ -1,181 +1,97 @@
-* {
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
-}
-
 body {
-  margin: 0;
-  padding: 16px;
-  background: #f3f4f6;
-  direction: rtl;
-}
-
-#app {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.invoice {
-  background: #ffffff;
-  padding: 24px 20px 32px;
-  border-radius: 14px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    font-family: "Cairo", sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px;
 }
 
 .title {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 22px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.top-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
+.top-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
-.field label {
-  display: block;
-  font-size: 13px;
-  color: #4b5563;
-  margin-bottom: 4px;
+.row {
+    display: flex;
+    flex-direction: column;
+    width: 32%;
 }
 
-.field input {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
+input, textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-/* الأدوات */
-.toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.toolbar button {
-  border-radius: 999px;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
+.print {
+    background: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
 }
 
-#addRowBtn {
-  background: #16a34a;
-  color: #fff;
+.pdf {
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
 }
 
-.pdf-btn {
-  background: #2563eb;
-  color: #fff;
+.add {
+    background: #6f42c1;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
 }
 
-/* الجدول */
-.table-wrapper {
-  overflow-x: auto;
-  margin-bottom: 12px;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
 }
 
-.items-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 700px;
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
 }
 
-.items-table th,
-.items-table td {
-  border: 1px solid #e5e7eb;
-  padding: 6px 8px;
-  text-align: center;
-  font-size: 13px;
+.summary {
+    margin-top: 20px;
+    font-size: 18px;
 }
 
-.items-table thead {
-  background: #f9fafb;
-}
-
-.items-table input {
-  width: 100%;
-  border: none;
-  padding: 4px 6px;
-  font-size: 13px;
-}
-
-.items-table input[readonly] {
-  background: #f3f4f6;
-}
-
-/* زر الحذف */
-.delete-row {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-/* الملاحظات */
-.notes {
-  margin-top: 14px;
-}
-
-.notes label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
-.notes textarea {
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  padding: 8px 10px;
-  font-size: 14px;
-  resize: vertical;
-}
-
-/* الإجماليات */
-.totals {
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.footer-text {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 11px;
-  color: #6b7280;
-}
-
-/* العناصر التي لا نريدها داخل PDF */
 .no-print {
-  /* html2pdf تحترم هذا الـ CSS */
-  display: block;
+    display: table-cell;
 }
 
-/* صفحة الـ PDF (A4) – لضبط التفاف الصفحات */
+/* عند الطباعة نخفي الأزرار */
 @media print {
-  body {
-    background: #ffffff;
-  }
-  .no-print {
-    display: none !important;
-  }
-}
+    .no-print {
+        display: none !important;
+    }
 
-/* html2pdf يستخدم CSS العادي، فنجبر إخفاء الـ no-print عند التصدير */
-.no-print.html2pdf__ignore,
-html2pdf__ignore {
-  display: none !important;
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
 }
