@@ -1,220 +1,249 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial;
-  background: #f5f5f5;
   margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial;
+  background: #f3f4f6;
+  color: #111827;
+  direction: rtl;
 }
 
 .invoice-container {
-  max-width: 900px;
-  margin: 20px auto;
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 24px 16px 32px;
   background: #ffffff;
-  padding: 16px 16px 40px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
-h1 {
+.invoice-title {
   text-align: center;
-  margin: 0 0 16px;
-  font-size: 28px;
+  margin: 0 0 24px;
+  font-size: 32px;
+  font-weight: 800;
 }
 
-h2 {
-  margin-top: 12px;
-}
-
-/* صفوف البيانات العلوية */
-.meta-row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.field {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.header-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px 16px;
+  margin-bottom: 16px;
 }
 
 .field label {
+  display: block;
   font-size: 14px;
+  margin-bottom: 4px;
+  color: #4b5563;
 }
 
 .field input,
 .field select {
+  width: 100%;
   padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
   font-size: 14px;
 }
 
-/* الأزرار */
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb33;
+}
+
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  margin: 12px 0;
+  margin: 12px 0 18px;
 }
 
-.actions button {
-  padding: 8px 16px;
-  border-radius: 6px;
+.btn {
   border: none;
-  font-size: 14px;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 15px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-.actions .primary {
-  background: #2563eb;
-  color: #fff;
+.btn-primary {
+  background: #1d4ed8;
+  color: #ffffff;
 }
 
-#pdfBtn {
-  background: #059669;
-  color: #fff;
+.btn-green {
+  background: #16a34a;
+  color: #ffffff;
 }
 
-#printBtn {
-  background: #e5e7eb;
+.btn-gray {
+  background: #6b7280;
+  color: #ffffff;
 }
 
-/* الجدول */
+.btn-yellow {
+  background: #fbbf24;
+  color: #000000;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.items-title {
+  margin: 8px 0 8px;
+  font-size: 22px;
+  text-align: right;
+}
+
 .table-wrapper {
   overflow-x: auto;
-  margin-top: 12px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  table-layout: fixed;
 }
 
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 4px 6px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-th {
-  background: #f9fafb;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* عرض الأعمدة بالترتيب الجديد:
-   1 العدد
-   2 الصنف
-   3 وزن/كرتون
-   4 قيمة/كرتون
-   5 الوزن الكلي
-   6 القيمة الكلية
-   7 حذف
-*/
-
-#itemsTable th:nth-child(1),
-#itemsTable td:nth-child(1) {
-  width: 8%;
-}
-
-#itemsTable th:nth-child(2),
-#itemsTable td:nth-child(2) {
-  width: 32%;
-}
-
-#itemsTable th:nth-child(3),
-#itemsTable td:nth-child(3) {
-  width: 10%;
-}
-
-#itemsTable th:nth-child(4),
-#itemsTable td:nth-child(4) {
-  width: 10%;
-}
-
-#itemsTable th:nth-child(5),
-#itemsTable td:nth-child(5) {
-  width: 12%;
-}
-
-#itemsTable th:nth-child(6),
-#itemsTable td:nth-child(6) {
-  width: 12%;
-}
-
-#itemsTable th:nth-child(7),
-#itemsTable td:nth-child(7) {
-  width: 6%;
-}
-
-td input {
-  width: 100%;
+th, td {
+  border: 1px solid #e5e7eb;
   padding: 6px 4px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
   text-align: center;
+  font-size: 14px;
 }
 
-/* خانة الصنف */
-td:nth-child(2) input {
+thead th {
+  background: #f9fafb;
+  font-weight: 700;
+}
+
+/* عرض الأعمدة (RTL) */
+
+.col-qty {
+  width: 70px;
+}
+
+.col-item {
+  width: 260px;           /* خانة الصنف عريضة */
+}
+
+.col-weight-per,
+.col-price-per,
+.col-total-weight,
+.col-total-price {
+  width: 90px;
+}
+
+.col-delete {
+  width: 70px;
+}
+
+/* خانة الصنف – التفاف النص */
+td.col-item input {
   text-align: right;
   white-space: normal;
-  word-break: break-word;
+}
+
+/* الحقول داخل الجدول */
+td input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 6px 4px;
+  font-size: 14px;
+}
+
+td input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb33;
 }
 
 /* زر الحذف */
 .delete-btn {
-  background: #ef4444;
-  color: #fff;
-  border: none;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  border: none;
+  background: #ef4444;
+  color: #ffffff;
   font-size: 18px;
   cursor: pointer;
 }
 
+.delete-btn:active {
+  transform: translateY(1px);
+}
+
 .totals {
-  margin-top: 12px;
-  text-align: left;
-}
-
-.totals p {
-  margin: 2px 0;
-  font-size: 14px;
-}
-
-.footer-text {
-  text-align: center;
   margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+#currencyLabel {
+  font-weight: 600;
+}
+
+.footer-note {
+  margin-top: 18px;
   font-size: 12px;
+  text-align: center;
   color: #6b7280;
 }
 
-/* الطباعة */
+/* طباعة */
 @media print {
   body {
-    background: #fff;
+    background: #ffffff;
   }
 
   .invoice-container {
     box-shadow: none;
-    margin: 0;
     border-radius: 0;
-    max-width: none;
-    padding: 0;
+    margin: 0;
+    width: 100%;
+    padding: 0 12mm 12mm;
   }
 
   .no-print {
     display: none !important;
+  }
+
+  /* إخفاء وزن/كرتون وقيمة/كرتون وعمود الحذف في الطباعة */
+  th.col-weight-per,
+  td.col-weight-per,
+  th.col-price-per,
+  td.col-price-per,
+  th.col-delete,
+  td.col-delete {
+    display: none !important;
+  }
+
+  /* تركيز أكثر على الجدول */
+  th, td {
+    font-size: 13px;
+    padding: 5px 3px;
+  }
+}
+
+/* شاشات صغيرة */
+@media (max-width: 600px) {
+  .invoice-container {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .invoice-title {
+    font-size: 26px;
   }
 }
