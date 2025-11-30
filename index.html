@@ -2,86 +2,84 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>فاتورة بسام</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="invoice-container">
-    <h1>فاتورة بسام</h1>
+  <div class="invoice-container" id="invoice">
+    <h1 class="invoice-title">فاتورة بسام</h1>
 
-    <!-- صف البيانات الأول: اسم العميل + رقم الفاتورة -->
-    <div class="meta-row">
+    <div class="header-grid">
       <div class="field">
-        <label for="clientName">اسم العميل:</label>
-        <input id="clientName" placeholder="مثال: شركة الرواد للتجارة" />
+        <label for="customerName">اسم العميل:</label>
+        <input id="customerName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
       </div>
+
       <div class="field">
         <label for="invoiceNumber">رقم الفاتورة:</label>
-        <input id="invoiceNumber" placeholder="مثال: 2025-001" />
+        <input id="invoiceNumber" type="text" placeholder="مثال: 001-2025" />
       </div>
-    </div>
 
-    <!-- صف البيانات الثاني: العملة + التاريخ -->
-    <div class="meta-row">
       <div class="field">
-        <label for="currencySelect">العملة:</label>
-        <select id="currencySelect">
-          <option value="">— اختر العملة —</option>
-          <option value="درهم">درهم إماراتي</option>
+        <label for="currency">العملة:</label>
+        <select id="currency">
           <option value="ريال سعودي">ريال سعودي</option>
-          <option value="دولار">دولار أمريكي</option>
+          <option value="درهم">درهم</option>
+          <option value="دولار">دولار</option>
           <option value="ريال عماني">ريال عماني</option>
         </select>
       </div>
+
       <div class="field">
         <label for="invoiceDate">التاريخ:</label>
-        <input type="date" id="invoiceDate" />
+        <input id="invoiceDate" type="date" />
       </div>
     </div>
 
-    <!-- الأزرار -->
     <div class="actions no-print">
-      <button id="printBtn" type="button">🖨️ طباعة</button>
-      <button id="pdfBtn" type="button">PDF</button>
-      <button id="addRowBtn" type="button" class="primary">+ إضافة سطر</button>
+      <button id="printBtn" type="button" class="btn btn-gray">🖨️ طباعة</button>
+      <button id="pdfBtn" type="button" class="btn btn-green">PDF</button>
+      <button id="installBtn" type="button" class="btn btn-yellow" style="display:none;">
+        📥 تثبيت
+      </button>
+      <button id="addRowBtn" type="button" class="btn btn-primary">+ إضافة سطر</button>
     </div>
 
-    <h2>جدول الأصناف</h2>
+    <h2 class="items-title">جدول الأصناف</h2>
 
-    <!-- الجدول -->
     <div class="table-wrapper">
       <table id="itemsTable">
         <thead>
           <tr>
-            <!-- نفس ترتيب دوال JavaScript: العدد، الصنف، وزن/كرتون، قيمة/كرتون، الوزن الكلي، القيمة الكلية، حذف -->
-            <th>العدد</th>
-            <th>الصنف</th>
-            <th class="no-print">وزن / كرتون (كجم)</th>
-            <th class="no-print">قيمة / كرتون</th>
-            <th>الوزن الكلي (كجم)</th>
-            <th>القيمة الكلية</th>
-            <th class="no-print">حذف</th>
+            <!-- تذكّر: الاتجاه RTL، أول عمود هنا يظهر على اليسار -->
+            <th class="no-print col-delete">حذف</th>
+            <th class="col-total-price">القيمة الكلية</th>
+            <th class="col-total-weight">الوزن الكلي (كجم)</th>
+            <th class="no-print col-price-per">قيمة / كرتون</th>
+            <th class="no-print col-weight-per">وزن / كرتون (كجم)</th>
+            <th class="col-item">الصنف</th>
+            <th class="col-qty">العدد</th>
           </tr>
         </thead>
-        <tbody id="itemsBody"></tbody>
+        <tbody id="itemsBody">
+          <!-- السطور تُنشأ من JavaScript -->
+        </tbody>
       </table>
     </div>
 
-    <!-- الإجماليات -->
     <div class="totals">
-      <p>إجمالي العدد: <span id="totalQty">0</span></p>
-      <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
-      <p>
-        إجمالي القيمة:
-        <span id="totalValue">0</span>
-        <span id="currencyLabel"></span>
-      </p>
+      <div>إجمالي العدد: <span id="totalQty">0</span></div>
+      <div>إجمالي الوزن (كجم): <span id="totalWeight">0</span></div>
+      <div>إجمالي القيمة <span id="currencyLabel">(ريال سعودي)</span>: <span id="totalPrice">0</span></div>
     </div>
 
-    <p class="footer-text">تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة</p>
+    <div class="footer-note">
+      تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة
+    </div>
   </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
