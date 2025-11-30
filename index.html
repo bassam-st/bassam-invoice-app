@@ -4,82 +4,91 @@
   <meta charset="utf-8" />
   <title>فاتورة بسام</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#1d4ed8" />
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="invoice-container" id="invoice">
-    <h1 class="invoice-title">فاتورة بسام</h1>
+  <div class="page">
+    <header class="page-header">
+      <h1 class="app-title">فاتورة بسام</h1>
+    </header>
 
-    <div class="header-grid">
-      <div class="field">
-        <label for="customerName">اسم العميل:</label>
-        <input id="customerName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
-      </div>
+    <main class="invoice-container">
+      <section class="invoice-meta">
+        <div class="field-group">
+          <label for="clientName">اسم العميل:</label>
+          <input id="clientName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
+        </div>
 
-      <div class="field">
-        <label for="invoiceNumber">رقم الفاتورة:</label>
-        <input id="invoiceNumber" type="text" placeholder="مثال: 001-2025" />
-      </div>
+        <div class="field-group">
+          <label for="invoiceNumber">رقم الفاتورة:</label>
+          <input id="invoiceNumber" type="text" placeholder="مثال: 001-2025" />
+        </div>
 
-      <div class="field">
-        <label for="currency">العملة:</label>
-        <select id="currency">
-          <option value="ريال سعودي">ريال سعودي</option>
-          <option value="درهم">درهم</option>
-          <option value="دولار">دولار</option>
-          <option value="ريال عماني">ريال عماني</option>
-        </select>
-      </div>
+        <div class="field-group">
+          <label for="currency">العملة:</label>
+          <select id="currency">
+            <option value="ريال سعودي">ريال سعودي</option>
+            <option value="درهم إماراتي">درهم إماراتي</option>
+            <option value="دولار أمريكي">دولار أمريكي</option>
+            <option value="ريال عماني">ريال عماني</option>
+            <option value="ريال يمني">ريال يمني</option>
+          </select>
+        </div>
 
-      <div class="field">
-        <label for="invoiceDate">التاريخ:</label>
-        <input id="invoiceDate" type="date" />
-      </div>
-    </div>
+        <div class="field-group">
+          <label for="invoiceDate">التاريخ:</label>
+          <input id="invoiceDate" type="date" />
+        </div>
+      </section>
 
-    <div class="actions no-print">
-      <button id="printBtn" type="button" class="btn btn-gray">🖨️ طباعة</button>
-      <button id="pdfBtn" type="button" class="btn btn-green">PDF</button>
-      <button id="installBtn" type="button" class="btn btn-yellow" style="display:none;">
-        📥 تثبيت
-      </button>
-      <button id="addRowBtn" type="button" class="btn btn-primary">+ إضافة سطر</button>
-    </div>
+      <section class="invoice-actions no-print">
+        <button id="addRowBtn" class="btn btn-primary">+ إضافة سطر</button>
+        <button id="pdfBtn" class="btn btn-success">PDF</button>
+        <button id="printBtn" class="btn btn-neutral">طباعة 🖨️</button>
+        <button id="installBtn" class="btn btn-outline" style="display:none;">تثبيت التطبيق</button>
+      </section>
 
-    <h2 class="items-title">جدول الأصناف</h2>
+      <section class="items-section">
+        <h2 class="section-title">جدول الأصناف</h2>
 
-    <div class="table-wrapper">
-      <table id="itemsTable">
-        <thead>
-          <tr>
-            <!-- تذكّر: الاتجاه RTL، أول عمود هنا يظهر على اليسار -->
-            <th class="no-print col-delete">حذف</th>
-            <th class="col-total-price">القيمة الكلية</th>
-            <th class="col-total-weight">الوزن الكلي (كجم)</th>
-            <th class="no-print col-price-per">قيمة / كرتون</th>
-            <th class="no-print col-weight-per">وزن / كرتون (كجم)</th>
-            <th class="col-item">الصنف</th>
-            <th class="col-qty">العدد</th>
-          </tr>
-        </thead>
-        <tbody id="itemsBody">
-          <!-- السطور تُنشأ من JavaScript -->
-        </tbody>
-      </table>
-    </div>
+        <div class="table-wrapper">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <!-- من اليسار لليمين: حذف .. العدد  -->
+                <th class="col-delete no-print">حذف</th>
+                <th class="col-total-price">القيمة الكلية</th>
+                <th class="col-total-weight">الوزن الكلي (كجم)</th>
+                <th class="col-price-per no-print">قيمة / كرتون</th>
+                <th class="col-weight-per no-print">وزن / كرتون (كجم)</th>
+                <th class="col-item">الصنف</th>
+                <th class="col-qty">العدد</th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody">
+              <!-- الصفوف تضاف هنا من app.js -->
+            </tbody>
+          </table>
+        </div>
 
-    <div class="totals">
-      <div>إجمالي العدد: <span id="totalQty">0</span></div>
-      <div>إجمالي الوزن (كجم): <span id="totalWeight">0</span></div>
-      <div>إجمالي القيمة <span id="currencyLabel">(ريال سعودي)</span>: <span id="totalPrice">0</span></div>
-    </div>
+        <div class="totals">
+          <p>إجمالي العدد: <span id="totalQty">0</span></p>
+          <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
+          <p>
+            إجمالي القيمة
+            <span id="currencyLabel">(ريال سعودي)</span>:
+            <span id="totalPrice">0</span>
+          </p>
+        </div>
+      </section>
 
-    <div class="footer-note">
-      تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة
-    </div>
+      <footer class="page-footer">
+        <small>تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة</small>
+      </footer>
+    </main>
   </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
