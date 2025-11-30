@@ -32,10 +32,78 @@ updateCurrencyLabel();
 function createRow() {
   const tr = document.createElement('tr');
 
-  // ترتيب الأعمدة في HTML من اليسار لليمين (مع RTL):
-  // [حذف] [القيمة الكلية] [الوزن الكلي] [قيمة/كرتون] [وزن/كرتون] [الصنف] [العدد]
+  // الترتيب من اليمين (مع RTL):
+  // العدد | الصنف | وزن/كرتون | قيمة/كرتون | الوزن الكلي | القيمة الكلية | حذف
 
-  // 1) حذف
+  // 1) العدد
+  const tdQty = document.createElement('td');
+  tdQty.classList.add('col-qty');
+  const inputQty = document.createElement('input');
+  inputQty.type = 'number';
+  inputQty.min = '0';
+  inputQty.step = '1';
+  inputQty.placeholder = '0';
+  inputQty.dataset.role = 'qty';
+  tdQty.appendChild(inputQty);
+  tr.appendChild(tdQty);
+
+  // 2) الصنف
+  const tdItem = document.createElement('td');
+  tdItem.classList.add('col-item');
+  const inputItem = document.createElement('input');
+  inputItem.type = 'text';
+  inputItem.placeholder = 'الصنف';
+  inputItem.dataset.role = 'item';
+  tdItem.appendChild(inputItem);
+  tr.appendChild(tdItem);
+
+  // 3) وزن / كرتون (كجم)
+  const tdWeightPer = document.createElement('td');
+  tdWeightPer.classList.add('col-weight-per', 'no-print');
+  const inputWeightPer = document.createElement('input');
+  inputWeightPer.type = 'number';
+  inputWeightPer.min = '0';
+  inputWeightPer.step = 'any';
+  inputWeightPer.placeholder = '0';
+  inputWeightPer.dataset.role = 'weightPer';
+  tdWeightPer.appendChild(inputWeightPer);
+  tr.appendChild(tdWeightPer);
+
+  // 4) قيمة / كرتون
+  const tdPricePer = document.createElement('td');
+  tdPricePer.classList.add('col-price-per', 'no-print');
+  const inputPricePer = document.createElement('input');
+  inputPricePer.type = 'number';
+  inputPricePer.min = '0';
+  inputPricePer.step = 'any';
+  inputPricePer.placeholder = '0';
+  inputPricePer.dataset.role = 'pricePer';
+  tdPricePer.appendChild(inputPricePer);
+  tr.appendChild(tdPricePer);
+
+  // 5) الوزن الكلي (ناتج)
+  const tdTotalWeight = document.createElement('td');
+  tdTotalWeight.classList.add('col-total-weight');
+  const inputTotalWeight = document.createElement('input');
+  inputTotalWeight.type = 'number';
+  inputTotalWeight.readOnly = true;
+  inputTotalWeight.placeholder = '';
+  inputTotalWeight.dataset.role = 'totalWeight';
+  tdTotalWeight.appendChild(inputTotalWeight);
+  tr.appendChild(tdTotalWeight);
+
+  // 6) القيمة الكلية (ناتج)
+  const tdTotalPrice = document.createElement('td');
+  tdTotalPrice.classList.add('col-total-price');
+  const inputTotalPrice = document.createElement('input');
+  inputTotalPrice.type = 'number';
+  inputTotalPrice.readOnly = true;
+  inputTotalPrice.placeholder = '';
+  inputTotalPrice.dataset.role = 'totalPrice';
+  tdTotalPrice.appendChild(inputTotalPrice);
+  tr.appendChild(tdTotalPrice);
+
+  // 7) حذف
   const tdDelete = document.createElement('td');
   tdDelete.classList.add('col-delete', 'no-print');
   const delBtn = document.createElement('button');
@@ -50,74 +118,6 @@ function createRow() {
   });
   tdDelete.appendChild(delBtn);
   tr.appendChild(tdDelete);
-
-  // 2) القيمة الكلية (ناتجة)
-  const tdTotalPrice = document.createElement('td');
-  tdTotalPrice.classList.add('col-total-price');
-  const inputTotalPrice = document.createElement('input');
-  inputTotalPrice.type = 'number';
-  inputTotalPrice.readOnly = true;
-  inputTotalPrice.placeholder = '';
-  inputTotalPrice.dataset.role = 'totalPrice';
-  tdTotalPrice.appendChild(inputTotalPrice);
-  tr.appendChild(tdTotalPrice);
-
-  // 3) الوزن الكلي (ناتج)
-  const tdTotalWeight = document.createElement('td');
-  tdTotalWeight.classList.add('col-total-weight');
-  const inputTotalWeight = document.createElement('input');
-  inputTotalWeight.type = 'number';
-  inputTotalWeight.readOnly = true;
-  inputTotalWeight.placeholder = '';
-  inputTotalWeight.dataset.role = 'totalWeight';
-  tdTotalWeight.appendChild(inputTotalWeight);
-  tr.appendChild(tdTotalWeight);
-
-  // 4) قيمة / كرتون
-  const tdPricePer = document.createElement('td');
-  tdPricePer.classList.add('col-price-per', 'no-print');
-  const inputPricePer = document.createElement('input');
-  inputPricePer.type = 'number';
-  inputPricePer.min = '0';
-  inputPricePer.step = 'any';
-  inputPricePer.placeholder = '0';
-  inputPricePer.dataset.role = 'pricePer';
-  tdPricePer.appendChild(inputPricePer);
-  tr.appendChild(tdPricePer);
-
-  // 5) وزن / كرتون (كجم)
-  const tdWeightPer = document.createElement('td');
-  tdWeightPer.classList.add('col-weight-per', 'no-print');
-  const inputWeightPer = document.createElement('input');
-  inputWeightPer.type = 'number';
-  inputWeightPer.min = '0';
-  inputWeightPer.step = 'any';
-  inputWeightPer.placeholder = '0';
-  inputWeightPer.dataset.role = 'weightPer';
-  tdWeightPer.appendChild(inputWeightPer);
-  tr.appendChild(tdWeightPer);
-
-  // 6) الصنف
-  const tdItem = document.createElement('td');
-  tdItem.classList.add('col-item');
-  const inputItem = document.createElement('input');
-  inputItem.type = 'text';
-  inputItem.placeholder = 'الصنف';
-  inputItem.dataset.role = 'item';
-  tdItem.appendChild(inputItem);
-  tr.appendChild(tdItem);
-
-  // 7) العدد
-  const tdQty = document.createElement('td');
-  tdQty.classList.add('col-qty');
-  const inputQty = document.createElement('input');
-  inputQty.type = 'number';
-  inputQty.min = '0';
-  inputQty.step = '1';
-  inputQty.placeholder = '0';
-  inputQty.dataset.role = 'qty';
-  tdQty.appendChild(inputQty);
-  tr.appendChild(tdQty);
 
   // دالة حساب السطر
   function recalcRow() {
@@ -169,7 +169,7 @@ function updateTotals() {
   totalPriceEl.textContent  = totalPrice || 0;
 }
 
-// أزرار الطباعة و PDF
+// أزرار الطباعة و PDF (نفس الشيء)
 function triggerPrint() {
   window.print();
 }
