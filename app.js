@@ -1,217 +1,218 @@
-// مراجع عناصر الصفحة
-const itemsBody      = document.getElementById('itemsBody');
-const addRowBtn      = document.getElementById('addRowBtn');
-const printBtn       = document.getElementById('printBtn');
-const pdfBtn         = document.getElementById('pdfBtn');
-const currencySelect = document.getElementById('currency');
-const currencyLabel  = document.getElementById('currencyLabel');
-const totalQtyEl     = document.getElementById('totalQty');
-const totalWeightEl  = document.getElementById('totalWeight');
-const totalPriceEl   = document.getElementById('totalPrice');
-const invoiceDate    = document.getElementById('invoiceDate');
-const installBtn     = document.getElementById('installBtn');
+// عناصر أساسية
+const itemsBody = document.getElementById("itemsBody");
+const totalQtyEl = document.getElementById("totalQty");
+const totalWeightEl = document.getElementById("totalWeight");
+const totalValueEl = document.getElementById("totalValue");
+const currencySelect = document.getElementById("currencySelect");
+const currencyLabel = document.getElementById("currencyLabel");
 
-// تعيين تاريخ اليوم افتراضياً
-if (invoiceDate && !invoiceDate.value) {
+const addRowBtn = document.getElementById("addRowBtn");
+const printBtn = document.getElementById("printBtn");
+const pdfBtn = document.getElementById("pdfBtn");
+const installBtn = document.getElementById("installBtn");
+const invoiceElement = document.getElementById("invoice");
+
+// تهيئة التاريخ اليوم
+(function initDate() {
+  const dateInput = document.getElementById("invoiceDate");
   const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  invoiceDate.value = `${yyyy}-${mm}-${dd}`;
-}
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
+  dateInput.value = `${y}-${m}-${d}`;
+})();
 
-// تحديث تسمية العملة في إجمالي القيمة
-function updateCurrencyLabel() {
-  const val = currencySelect.value || 'ريال سعودي';
-  currencyLabel.textContent = `(${val})`;
-}
-currencySelect.addEventListener('change', updateCurrencyLabel);
-updateCurrencyLabel();
+// ماب للعملة لعرضها في النص
+const currencyNames = {
+  SAR: "ريال سعودي",
+  AED: "درهم إماراتي",
+  USD: "دولار أمريكي",
+  OMR: "ريال عُماني",
+};
 
-// إنشاء سطر جديد
+// تغيير نص العملة في الإجمالي
+currencySelect.addEventListener("change", () => {
+  const code = currencySelect.value;
+  currencyLabel.textContent = currencyNames[code] || "ريال";
+});
+
+// إنشاء صف جديد
 function createRow() {
-  const tr = document.createElement('tr');
+  const tr = document.createElement("tr");
 
-  // نجهز كل المدخلات أولاً
-  const inputQty = document.createElement('input');
-  inputQty.type = 'number';
-  inputQty.min = '0';
-  inputQty.step = '1';
-  inputQty.placeholder = '0';
-  inputQty.dataset.role = 'qty';
+  // العدد
+  const qtyTd = document.createElement("td");
+  const qtyInput = document.createElement("input");
+  qtyInput.type = "number";
+  qtyInput.min = "0";
+  qtyInput.step = "1";
+  qtyInput.placeholder = "0";
+  qtyTd.appendChild(qtyInput);
+  tr.appendChild(qtyTd);
 
-  const inputItem = document.createElement('input');
-  inputItem.type = 'text';
-  inputItem.placeholder = 'الصنف';
-  inputItem.dataset.role = 'item';
+  // الصنف
+  const descTd = document.createElement("td");
+  const descInput = document.createElement("input");
+  descInput.type = "text";
+  descInput.placeholder = "وصف الصنف";
+  descTd.appendChild(descInput);
+  tr.appendChild(descTd);
 
-  const inputWeightPer = document.createElement('input');
-  inputWeightPer.type = 'number';
-  inputWeightPer.min = '0';
-  inputWeightPer.step = 'any';
-  inputWeightPer.placeholder = '0';
-  inputWeightPer.dataset.role = 'weightPer';
+  // وزن / كرتون
+  const perWeightTd = document.createElement("td");
+  perWeightTd.classList.add("per-carton");
+  const perWeightInput = document.createElement("input");
+  perWeightInput.type = "number";
+  perWeightInput.min = "0";
+  perWeightInput.step = "any";
+  perWeightInput.placeholder = "0";
+  perWeightTd.appendChild(perWeightInput);
+  tr.appendChild(perWeightTd);
 
-  const inputPricePer = document.createElement('input');
-  inputPricePer.type = 'number';
-  inputPricePer.min = '0';
-  inputPricePer.step = 'any';
-  inputPricePer.placeholder = '0';
-  inputPricePer.dataset.role = 'pricePer';
+  // قيمة / كرتون
+  const perValueTd = document.createElement("td");
+  perValueTd.classList.add("per-carton");
+  const perValueInput = document.createElement("input");
+  perValueInput.type = "number";
+  perValueInput.min = "0";
+  perValueInput.step = "any";
+  perValueInput.placeholder = "0";
+  perValueTd.appendChild(perValueInput);
+  tr.appendChild(perValueTd);
 
-  const inputTotalWeight = document.createElement('input');
-  inputTotalWeight.type = 'number';
-  inputTotalWeight.readOnly = true;
-  inputTotalWeight.placeholder = '';
-  inputTotalWeight.dataset.role = 'totalWeight';
+  // الوزن الكلي
+  const totalWeightTd = document.createElement("td");
+  const totalWeightInput = document.createElement("input");
+  totalWeightInput.type = "number";
+  totalWeightInput.readOnly = true;
+  totalWeightTd.appendChild(totalWeightInput);
+  tr.appendChild(totalWeightTd);
 
-  const inputTotalPrice = document.createElement('input');
-  inputTotalPrice.type = 'number';
-  inputTotalPrice.readOnly = true;
-  inputTotalPrice.placeholder = '';
-  inputTotalPrice.dataset.role = 'totalPrice';
+  // القيمة الكلية
+  const totalValueTd = document.createElement("td");
+  const totalValueInput = document.createElement("input");
+  totalValueInput.type = "number";
+  totalValueInput.readOnly = true;
+  totalValueTd.appendChild(totalValueInput);
+  tr.appendChild(totalValueTd);
 
-  // دالة حساب السطر
-  function recalcRow() {
-    const qty   = parseFloat(inputQty.value)        || 0;
-    const wEach = parseFloat(inputWeightPer.value) || 0;
-    const pEach = parseFloat(inputPricePer.value)  || 0;
+  // حذف
+  const delTd = document.createElement("td");
+  delTd.classList.add("col-del");
+  const delBtn = document.createElement("button");
+  delBtn.type = "button";
+  delBtn.className = "row-delete-btn";
+  delBtn.textContent = "✕";
+  delTd.appendChild(delBtn);
+  tr.appendChild(delTd);
 
-    const totalW = qty * wEach;
-    const totalP = qty * pEach;
+  // إضافة الصف للجدول
+  itemsBody.appendChild(tr);
 
-    inputTotalWeight.value = totalW ? totalW : '';
-    inputTotalPrice.value  = totalP ? totalP : '';
+  // تحديث سطر عند إدخال قيم
+  function updateRow() {
+    const qty = parseFloat(qtyInput.value) || 0;
+    const perW = parseFloat(perWeightInput.value) || 0;
+    const perV = parseFloat(perValueInput.value) || 0;
+
+    const totalW = qty * perW;
+    const totalV = qty * perV;
+
+    totalWeightInput.value = totalW ? totalW.toFixed(2).replace(/\.00$/, "") : "";
+    totalValueInput.value = totalV ? totalV.toFixed(2).replace(/\.00$/, "") : "";
 
     updateTotals();
   }
 
-  [inputQty, inputWeightPer, inputPricePer].forEach(inp => {
-    inp.addEventListener('input', recalcRow);
-    inp.addEventListener('change', recalcRow);
-  });
+  qtyInput.addEventListener("input", updateRow);
+  perWeightInput.addEventListener("input", updateRow);
+  perValueInput.addEventListener("input", updateRow);
 
-  // الآن نركّب الأعمدة داخل الصف بالترتيب من اليسار إلى اليمين:
-  // حذف – القيمة الكلية – الوزن الكلي – قيمة/كرتون – وزن/كرتون – الصنف – العدد
-
-  // حذف
-  const tdDelete = document.createElement('td');
-  tdDelete.classList.add('col-delete', 'no-print');
-  const delBtn = document.createElement('button');
-  delBtn.type = 'button';
-  delBtn.textContent = '✕';
-  delBtn.className = 'delete-btn';
-  delBtn.addEventListener('click', () => {
-    const ok = confirm('هل أنت متأكد من حذف هذا السطر؟');
+  // حذف الصف مع تأكيد
+  delBtn.addEventListener("click", () => {
+    const ok = confirm("هل تريد حذف هذا السطر؟");
     if (!ok) return;
     tr.remove();
     updateTotals();
   });
-  tdDelete.appendChild(delBtn);
-  tr.appendChild(tdDelete);
 
-  // القيمة الكلية
-  const tdTotalPrice = document.createElement('td');
-  tdTotalPrice.classList.add('col-total-price');
-  tdTotalPrice.appendChild(inputTotalPrice);
-  tr.appendChild(tdTotalPrice);
-
-  // الوزن الكلي
-  const tdTotalWeight = document.createElement('td');
-  tdTotalWeight.classList.add('col-total-weight');
-  tdTotalWeight.appendChild(inputTotalWeight);
-  tr.appendChild(tdTotalWeight);
-
-  // قيمة / كرتون (مخفية عند الطباعة)
-  const tdPricePer = document.createElement('td');
-  tdPricePer.classList.add('col-price-per', 'no-print');
-  tdPricePer.appendChild(inputPricePer);
-  tr.appendChild(tdPricePer);
-
-  // وزن / كرتون (مخفية عند الطباعة)
-  const tdWeightPer = document.createElement('td');
-  tdWeightPer.classList.add('col-weight-per', 'no-print');
-  tdWeightPer.appendChild(inputWeightPer);
-  tr.appendChild(tdWeightPer);
-
-  // الصنف
-  const tdItem = document.createElement('td');
-  tdItem.classList.add('col-item');
-  tdItem.appendChild(inputItem);
-  tr.appendChild(tdItem);
-
-  // العدد (أقصى اليمين)
-  const tdQty = document.createElement('td');
-  tdQty.classList.add('col-qty');
-  tdQty.appendChild(inputQty);
-  tr.appendChild(tdQty);
-
-  itemsBody.appendChild(tr);
+  return tr;
 }
 
-// تحديث الإجماليات
+// حساب المجاميع
 function updateTotals() {
-  let totalQty   = 0;
-  let totalWgt   = 0;
-  let totalPrice = 0;
+  let totalQty = 0;
+  let totalWeight = 0;
+  let totalValue = 0;
 
-  Array.from(itemsBody.querySelectorAll('tr')).forEach(row => {
-    const qtyInput         = row.querySelector('input[data-role="qty"]');
-    const totalWeightInput = row.querySelector('input[data-role="totalWeight"]');
-    const totalPriceInput  = row.querySelector('input[data-role="totalPrice"]');
-    if (!qtyInput || !totalWeightInput || !totalPriceInput) return;
+  itemsBody.querySelectorAll("tr").forEach((row) => {
+    const inputs = row.querySelectorAll("input");
+    if (inputs.length < 6) return;
 
-    const q  = parseFloat(qtyInput.value)         || 0;
-    const tw = parseFloat(totalWeightInput.value) || 0;
-    const tp = parseFloat(totalPriceInput.value)  || 0;
+    const qty = parseFloat(inputs[0].value) || 0;
+    const rowTotalWeight = parseFloat(inputs[4].value) || 0;
+    const rowTotalValue = parseFloat(inputs[5].value) || 0;
 
-    totalQty   += q;
-    totalWgt   += tw;
-    totalPrice += tp;
+    totalQty += qty;
+    totalWeight += rowTotalWeight;
+    totalValue += rowTotalValue;
   });
 
-  totalQtyEl.textContent    = totalQty || 0;
-  totalWeightEl.textContent = totalWgt || 0;
-  totalPriceEl.textContent  = totalPrice || 0;
+  totalQtyEl.textContent = totalQty;
+  totalWeightEl.textContent = totalWeight.toFixed(2).replace(/\.00$/, "");
+  totalValueEl.textContent = totalValue.toFixed(2).replace(/\.00$/, "");
 }
-
-// طباعة / حفظ PDF (من متصفح الجوال)
-function triggerPrint() {
-  window.print();
-}
-
-printBtn.addEventListener('click', triggerPrint);
-pdfBtn.addEventListener('click', triggerPrint);
 
 // زر إضافة سطر
-addRowBtn.addEventListener('click', () => {
+addRowBtn.addEventListener("click", () => {
   createRow();
 });
 
-// إنشاء سطر افتراضي
+// زر الطباعة
+printBtn.addEventListener("click", () => {
+  window.print();
+});
+
+// زر إنشاء PDF
+pdfBtn.addEventListener("click", () => {
+  const opt = {
+    margin: [5, 5, 5, 5],
+    filename: "bassam-invoice.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  };
+  html2pdf().set(opt).from(invoiceElement).save();
+});
+
+// إنشاء أول صف تلقائياً
 createRow();
 
-/* زر التثبيت كتطبيق (PWA) */
+/* ====== زر التثبيت (PWA) ====== */
 let deferredPrompt = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  if (installBtn) {
-    installBtn.style.display = 'inline-block';
-  }
+  installBtn.disabled = false;
+
+  installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === "accepted") {
+      console.log("تم قبول تثبيت التطبيق");
+    }
+    deferredPrompt = null;
+    installBtn.disabled = true;
+  });
 });
 
-if (installBtn) {
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    installBtn.style.display = 'none';
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
+// تسجيل Service Worker (ضروري لـ PWA)
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .catch((err) => console.error("SW registration failed:", err));
   });
 }
-
-window.addEventListener('appinstalled', () => {
-  console.log('تم تثبيت التطبيق 👍');
-});
