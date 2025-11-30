@@ -1,4 +1,3 @@
-// عند تحميل الصفحة
 document.addEventListener("DOMContentLoaded", () => {
   // ضبط تاريخ اليوم افتراضياً
   const dateInput = document.getElementById("invoiceDate");
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addRow();
 });
 
-// دالة تضبط سلوك خانات الأرقام (تحديد الكل عند اللمس وإزالة صفر البداية)
+// إعداد خانات الأرقام (إزالة صفر البداية وتحديد الكل عند التركيز)
 function setupNumberInput(input) {
   if (input.value === "0") input.value = "";
 
