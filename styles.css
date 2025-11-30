@@ -110,21 +110,28 @@ th {
   white-space: nowrap;
 }
 
-/* عرض الأعمدة (من اليمين لليسار):
-   1 حذف - 2 القيمة الكلية - 3 الوزن الكلي - 4 قيمة/كرتون - 5 وزن/كرتون - 6 الصنف - 7 العدد */
+/* عرض الأعمدة بالترتيب الجديد:
+   1 العدد
+   2 الصنف
+   3 وزن/كرتون
+   4 قيمة/كرتون
+   5 الوزن الكلي
+   6 القيمة الكلية
+   7 حذف
+*/
 
-#itemsTable th:nth-child(7),
-#itemsTable td:nth-child(7) {
+#itemsTable th:nth-child(1),
+#itemsTable td:nth-child(1) {
   width: 8%;
 }
 
-#itemsTable th:nth-child(6),
-#itemsTable td:nth-child(6) {
+#itemsTable th:nth-child(2),
+#itemsTable td:nth-child(2) {
   width: 32%;
 }
 
-#itemsTable th:nth-child(5),
-#itemsTable td:nth-child(5) {
+#itemsTable th:nth-child(3),
+#itemsTable td:nth-child(3) {
   width: 10%;
 }
 
@@ -133,18 +140,18 @@ th {
   width: 10%;
 }
 
-#itemsTable th:nth-child(3),
-#itemsTable td:nth-child(3) {
+#itemsTable th:nth-child(5),
+#itemsTable td:nth-child(5) {
   width: 12%;
 }
 
-#itemsTable th:nth-child(2),
-#itemsTable td:nth-child(2) {
+#itemsTable th:nth-child(6),
+#itemsTable td:nth-child(6) {
   width: 12%;
 }
 
-#itemsTable th:nth-child(1),
-#itemsTable td:nth-child(1) {
+#itemsTable th:nth-child(7),
+#itemsTable td:nth-child(7) {
   width: 6%;
 }
 
@@ -158,7 +165,7 @@ td input {
 }
 
 /* خانة الصنف */
-td:nth-child(6) input {
+td:nth-child(2) input {
   text-align: right;
   white-space: normal;
   word-break: break-word;
