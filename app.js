@@ -32,7 +32,7 @@ updateCurrencyLabel();
 function createRow() {
   const tr = document.createElement('tr');
 
-  // ترتيب الأعمدة في HTML من اليسار لليمين (لأن RTL يعكسها):
+  // ترتيب الأعمدة في HTML من اليسار لليمين (مع RTL):
   // [حذف] [القيمة الكلية] [الوزن الكلي] [قيمة/كرتون] [وزن/كرتون] [الصنف] [العدد]
 
   // 1) حذف
@@ -58,6 +58,7 @@ function createRow() {
   inputTotalPrice.type = 'number';
   inputTotalPrice.readOnly = true;
   inputTotalPrice.placeholder = '';
+  inputTotalPrice.dataset.role = 'totalPrice';
   tdTotalPrice.appendChild(inputTotalPrice);
   tr.appendChild(tdTotalPrice);
 
@@ -68,6 +69,7 @@ function createRow() {
   inputTotalWeight.type = 'number';
   inputTotalWeight.readOnly = true;
   inputTotalWeight.placeholder = '';
+  inputTotalWeight.dataset.role = 'totalWeight';
   tdTotalWeight.appendChild(inputTotalWeight);
   tr.appendChild(tdTotalWeight);
 
@@ -79,6 +81,7 @@ function createRow() {
   inputPricePer.min = '0';
   inputPricePer.step = 'any';
   inputPricePer.placeholder = '0';
+  inputPricePer.dataset.role = 'pricePer';
   tdPricePer.appendChild(inputPricePer);
   tr.appendChild(tdPricePer);
 
@@ -90,6 +93,7 @@ function createRow() {
   inputWeightPer.min = '0';
   inputWeightPer.step = 'any';
   inputWeightPer.placeholder = '0';
+  inputWeightPer.dataset.role = 'weightPer';
   tdWeightPer.appendChild(inputWeightPer);
   tr.appendChild(tdWeightPer);
 
@@ -99,6 +103,7 @@ function createRow() {
   const inputItem = document.createElement('input');
   inputItem.type = 'text';
   inputItem.placeholder = 'الصنف';
+  inputItem.dataset.role = 'item';
   tdItem.appendChild(inputItem);
   tr.appendChild(tdItem);
 
@@ -110,10 +115,11 @@ function createRow() {
   inputQty.min = '0';
   inputQty.step = '1';
   inputQty.placeholder = '0';
+  inputQty.dataset.role = 'qty';
   tdQty.appendChild(inputQty);
   tr.appendChild(tdQty);
 
-  // دوال الحساب
+  // دالة حساب السطر
   function recalcRow() {
     const qty   = parseFloat(inputQty.value)        || 0;
     const wEach = parseFloat(inputWeightPer.value) || 0;
@@ -128,7 +134,7 @@ function createRow() {
     updateTotals();
   }
 
-  // مستمعي الأحداث (أي تغيير يعيد الحساب)
+  // مستمعي الأحداث
   [inputQty, inputWeightPer, inputPricePer].forEach(inp => {
     inp.addEventListener('input', recalcRow);
     inp.addEventListener('change', recalcRow);
@@ -144,16 +150,14 @@ function updateTotals() {
   let totalPrice = 0;
 
   Array.from(itemsBody.querySelectorAll('tr')).forEach(row => {
-    const inputs = row.querySelectorAll('input');
-    if (inputs.length < 6) return;
+    const qtyInput         = row.querySelector('input[data-role="qty"]');
+    const totalWeightInput = row.querySelector('input[data-role="totalWeight"]');
+    const totalPriceInput  = row.querySelector('input[data-role="totalPrice"]');
+    if (!qtyInput || !totalWeightInput || !totalPriceInput) return;
 
-    const inputQty         = inputs[inputs.length - 1];     // العدد
-    const inputTotalWeight = inputs[2];                     // الوزن الكلي
-    const inputTotalPrice  = inputs[1];                     // القيمة الكلية
-
-    const q  = parseFloat(inputQty.value)         || 0;
-    const tw = parseFloat(inputTotalWeight.value) || 0;
-    const tp = parseFloat(inputTotalPrice.value)  || 0;
+    const q  = parseFloat(qtyInput.value)         || 0;
+    const tw = parseFloat(totalWeightInput.value) || 0;
+    const tp = parseFloat(totalPriceInput.value)  || 0;
 
     totalQty   += q;
     totalWgt   += tw;
@@ -165,11 +169,10 @@ function updateTotals() {
   totalPriceEl.textContent  = totalPrice || 0;
 }
 
-// أزرار الطباعة و PDF (كلاهما يستخدم نافذة الطباعة في النظام)
+// أزرار الطباعة و PDF
 function triggerPrint() {
   window.print();
 }
-
 printBtn.addEventListener('click', triggerPrint);
 pdfBtn.addEventListener('click', triggerPrint);
 
@@ -178,12 +181,10 @@ addRowBtn.addEventListener('click', () => {
   createRow();
 });
 
-// سطر افتراضي واحد عند فتح الصفحة
+// سطر افتراضي
 createRow();
 
-/* ===========================
-   زر التثبيت كتطبيق (PWA)
-   =========================== */
+/* زر التثبيت كتطبيق (PWA) */
 let deferredPrompt = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -199,8 +200,7 @@ if (installBtn) {
     if (!deferredPrompt) return;
     installBtn.style.display = 'none';
     deferredPrompt.prompt();
-    const result = await deferredPrompt.userChoice;
-    console.log('install result:', result.outcome);
+    await deferredPrompt.userChoice;
     deferredPrompt = null;
   });
 }
