@@ -1,249 +1,119 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
+/* ========== تنسيقات عامة ========== */
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial;
-  background: #f3f4f6;
-  color: #111827;
-  direction: rtl;
+    font-family: "Tahoma", sans-serif;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    background: #f8f8f8;
 }
 
-.invoice-container {
-  max-width: 960px;
-  margin: 24px auto;
-  padding: 24px 16px 32px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+/* العنوان */
+h1 {
+    text-align: center;
+    margin: 25px 0;
+    font-size: 34px;
+    font-weight: bold;
 }
 
-.invoice-title {
-  text-align: center;
-  margin: 0 0 24px;
-  font-size: 32px;
-  font-weight: 800;
+/* الحاوية */
+.container {
+    width: 95%;
+    margin: auto;
 }
 
-.header-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 12px 16px;
-  margin-bottom: 16px;
+/* تنسيق المدخلات */
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    text-align: center;
 }
 
-.field label {
-  display: block;
-  font-size: 14px;
-  margin-bottom: 4px;
-  color: #4b5563;
+/* أزرار */
+button {
+    padding: 10px 20px;
+    border: none;
+    margin: 10px 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.field input,
-.field select {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
+.btn-add {
+    background-color: #007bff;
+    color: #fff;
 }
 
-.field input:focus,
-.field select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb33;
+.btn-pdf {
+    background-color: #28a745;
+    color: #fff;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0 18px;
-}
-
-.btn {
-  border: none;
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-size: 15px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.btn-primary {
-  background: #1d4ed8;
-  color: #ffffff;
-}
-
-.btn-green {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.btn-gray {
-  background: #6b7280;
-  color: #ffffff;
-}
-
-.btn-yellow {
-  background: #fbbf24;
-  color: #000000;
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.items-title {
-  margin: 8px 0 8px;
-  font-size: 22px;
-  text-align: right;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-th, td {
-  border: 1px solid #e5e7eb;
-  padding: 6px 4px;
-  text-align: center;
-  font-size: 14px;
-}
-
-thead th {
-  background: #f9fafb;
-  font-weight: 700;
-}
-
-/* عرض الأعمدة (RTL) */
-
-.col-qty {
-  width: 70px;
-}
-
-.col-item {
-  width: 260px;           /* خانة الصنف عريضة */
-}
-
-.col-weight-per,
-.col-price-per,
-.col-total-weight,
-.col-total-price {
-  width: 90px;
-}
-
-.col-delete {
-  width: 70px;
-}
-
-/* خانة الصنف – التفاف النص */
-td.col-item input {
-  text-align: right;
-  white-space: normal;
-}
-
-/* الحقول داخل الجدول */
-td input {
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  padding: 6px 4px;
-  font-size: 14px;
-}
-
-td input:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb33;
+.btn-print {
+    background-color: #6c757d;
+    color: #fff;
 }
 
 /* زر الحذف */
 .delete-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: none;
-  background: #ef4444;
-  color: #ffffff;
-  font-size: 18px;
-  cursor: pointer;
+    width: 38px;
+    height: 38px;
+    background-color: #e63946;
+    color: #fff;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
 }
 
-.delete-btn:active {
-  transform: translateY(1px);
-}
-
-.totals {
-  margin-top: 16px;
-  font-size: 15px;
-  line-height: 1.9;
-}
-
-#currencyLabel {
-  font-weight: 600;
-}
-
-.footer-note {
-  margin-top: 18px;
-  font-size: 12px;
-  text-align: center;
-  color: #6b7280;
-}
-
-/* طباعة */
-@media print {
-  body {
-    background: #ffffff;
-  }
-
-  .invoice-container {
-    box-shadow: none;
-    border-radius: 0;
-    margin: 0;
+/* ========== جدول الأصناف ========== */
+.items-table {
     width: 100%;
-    padding: 0 12mm 12mm;
-  }
+    border-collapse: collapse;
 
-  .no-print {
-    display: none !important;
-  }
-
-  /* إخفاء وزن/كرتون وقيمة/كرتون وعمود الحذف في الطباعة */
-  th.col-weight-per,
-  td.col-weight-per,
-  th.col-price-per,
-  td.col-price-per,
-  th.col-delete,
-  td.col-delete {
-    display: none !important;
-  }
-
-  /* تركيز أكثر على الجدول */
-  th, td {
-    font-size: 13px;
-    padding: 5px 3px;
-  }
+    /* ❤️ إصلاح الاتجاه ليكون من اليمين لليسار كما طلبت */
+    direction: rtl;
 }
 
-/* شاشات صغيرة */
-@media (max-width: 600px) {
-  .invoice-container {
-    margin: 0;
-    border-radius: 0;
-  }
+.items-table th,
+.items-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center; /* تصحيح المحاذاة */
+    font-size: 16px;
+}
 
-  .invoice-title {
-    font-size: 26px;
-  }
+/* جعل خانة الصنف أعرض + التفاف النص */
+.items-table td.item-name input {
+    width: 100%;
+    white-space: normal;
+    word-wrap: break-word;
+    text-align: right;
+}
+
+/* عرض الأعمدة (مقاساتك الدقيقة 👌) */
+.col-count { width: 70px; }
+.col-item  { width: 280px; } /* الصنف — كبير حسب طلبك */
+.col-wpc   { width: 100px; }
+.col-vpc   { width: 100px; }
+.col-wt    { width: 120px; }
+.col-val   { width: 120px; }
+.col-del   { width: 60px; }
+
+/* ========== تجميعة الإجمالي ========== */
+.totals {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.9;
+}
+
+/* خط التطبيق */
+.footer {
+    margin: 25px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #777;
 }
