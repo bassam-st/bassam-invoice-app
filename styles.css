@@ -1,119 +1,274 @@
-/* ========== تنسيقات عامة ========== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --secondary: #16a34a;
+  --secondary-dark: #15803d;
+  --danger: #dc2626;
+  --danger-dark: #b91c1c;
+}
+
 body {
-    font-family: "Tahoma", sans-serif;
-    margin: 0;
-    padding: 0;
-    direction: rtl;
-    background: #f8f8f8;
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Tahoma, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
 }
 
-/* العنوان */
-h1 {
-    text-align: center;
-    margin: 25px 0;
-    font-size: 34px;
-    font-weight: bold;
+.page {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 16px;
 }
 
-/* الحاوية */
-.container {
-    width: 95%;
-    margin: auto;
+.invoice {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px 18px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* تنسيق المدخلات */
-input, select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    text-align: center;
+.title {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: 26px;
 }
 
-/* أزرار */
-button {
-    padding: 10px 20px;
-    border: none;
-    margin: 10px 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
+.subtitle {
+  margin: 18px 0 10px;
+  font-size: 20px;
+  text-align: right;
 }
 
-.btn-add {
-    background-color: #007bff;
-    color: #fff;
+.header-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px 16px;
+  margin-bottom: 16px;
 }
 
-.btn-pdf {
-    background-color: #28a745;
-    color: #fff;
+.field label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
 }
 
-.btn-print {
-    background-color: #6c757d;
-    color: #fff;
+.field input,
+.field select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
 }
 
-/* زر الحذف */
-.delete-btn {
-    width: 38px;
-    height: 38px;
-    background-color: #e63946;
-    color: #fff;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    font-size: 22px;
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
 }
 
-/* ========== جدول الأصناف ========== */
+/* الأزرار */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+  margin: 8px 0 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn.secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.btn.secondary:hover {
+  background: var(--secondary-dark);
+}
+
+.btn.ghost {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn.ghost[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* الجدول */
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+}
+
 .items-table {
-    width: 100%;
-    border-collapse: collapse;
-
-    /* ❤️ إصلاح الاتجاه ليكون من اليمين لليسار كما طلبت */
-    direction: rtl;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
 }
 
 .items-table th,
 .items-table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center; /* تصحيح المحاذاة */
-    font-size: 16px;
+  border-bottom: 1px solid var(--border);
+  padding: 6px 6px;
+  text-align: center;
+  font-size: 14px;
 }
 
-/* جعل خانة الصنف أعرض + التفاف النص */
-.items-table td.item-name input {
-    width: 100%;
-    white-space: normal;
-    word-wrap: break-word;
-    text-align: right;
+.items-table thead {
+  background: #f3f4f6;
 }
 
-/* عرض الأعمدة (مقاساتك الدقيقة 👌) */
-.col-count { width: 70px; }
-.col-item  { width: 280px; } /* الصنف — كبير حسب طلبك */
-.col-wpc   { width: 100px; }
-.col-vpc   { width: 100px; }
-.col-wt    { width: 120px; }
-.col-val   { width: 120px; }
-.col-del   { width: 60px; }
+.items-table th {
+  font-weight: 600;
+}
 
-/* ========== تجميعة الإجمالي ========== */
+/* عرض الأعمدة (من اليمين لليسار) */
+.col-qty {
+  width: 60px;
+}
+
+.col-desc {
+  width: 250px;
+}
+
+.col-per {
+  width: 90px;
+}
+
+.col-total {
+  width: 110px;
+}
+
+.col-del {
+  width: 70px;
+}
+
+/* الحقول داخل الجدول */
+
+.items-table input[type="number"],
+.items-table input[type="text"] {
+  width: 100%;
+  padding: 6px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.items-table input[type="text"] {
+  text-align: right;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.items-table input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+/* زر الحذف في الصف */
+
+.row-delete-btn {
+  background: var(--danger);
+  border-radius: 999px;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.row-delete-btn:hover {
+  background: var(--danger-dark);
+}
+
+/* المجاميع */
+
 .totals {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 1.9;
+  margin-top: 12px;
+  font-size: 15px;
 }
 
-/* خط التطبيق */
+.totals p {
+  margin: 4px 0;
+}
+
+/* الفوتر */
+
 .footer {
-    margin: 25px 0;
-    text-align: center;
-    font-size: 14px;
-    color: #777;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+/* نمط الطباعة */
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .invoice {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 10mm 8mm 12mm;
+  }
+
+  .actions,
+  #installBtn {
+    display: none !important;
+  }
+
+  /* إخفاء أعمدة وزن/كرتون وقيمة/كرتون وزر الحذف في الطباعة/PDF */
+  .per-carton,
+  .col-del {
+    display: none !important;
+  }
+
+  .items-table {
+    min-width: 0;
+  }
 }
