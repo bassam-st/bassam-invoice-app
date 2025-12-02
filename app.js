@@ -113,7 +113,7 @@ function attachRowEvents(block) {
     }
   });
 
-  // الصوت: ضغط مطوّل/لمس لبدء التسجيل، وعند الرفع يتوقف
+  // الصوت: ضغط/لمس لبدء التسجيل، وعند الرفع يتوقف
   voiceBtn.addEventListener("mousedown", () => startRowVoice(block));
   voiceBtn.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -470,7 +470,7 @@ function loadInvoice(id) {
 function deleteInvoice(id) {
   if (!confirm("هل تريد حذف هذه الفاتورة المحفوظة؟")) return;
 
-  let stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  let stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]" );
   stored = stored.filter((x) => x.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
   renderSavedInvoices();
