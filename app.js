@@ -45,27 +45,59 @@ function createRow(initial = {}) {
   block.innerHTML = `
     <tr>
       <td>
-        <input type="number" class="qty-input" value="${initial.qty ?? ""}" placeholder="0" />
+        <input
+          type="number"
+          class="qty-input"
+          value="${initial.qty ?? ""}"
+          placeholder="0"
+        />
       </td>
 
       <td>
-        <input type="text" class="desc-input" value="${initial.desc ?? ""}" placeholder="وصف الصنف" />
+        <input
+          type="text"
+          class="desc-input"
+          value="${initial.desc ?? ""}"
+          placeholder="وصف الصنف"
+        />
       </td>
 
       <td>
-        <input type="number" class="weight-per-carton-input" value="${initial.weightPerCarton ?? ""}" placeholder="0" />
+        <input
+          type="number"
+          class="weight-per-carton-input"
+          value="${initial.weightPerCarton ?? ""}"
+          placeholder="0"
+        />
       </td>
 
       <td>
-        <input type="number" class="price-per-carton-input" value="${initial.pricePerCarton ?? ""}" placeholder="0" />
+        <input
+          type="number"
+          class="price-per-carton-input"
+          value="${initial.pricePerCarton ?? ""}"
+          placeholder="0"
+        />
       </td>
 
       <td>
-        <input type="number" class="total-weight-input" value="${initial.totalWeight ?? ""}" placeholder="0" readonly />
+        <input
+          type="number"
+          class="total-weight-input"
+          value="${initial.totalWeight ?? ""}"
+          placeholder="0"
+          readonly
+        />
       </td>
 
       <td>
-        <input type="number" class="total-value-input" value="${initial.totalValue ?? ""}" placeholder="0" readonly />
+        <input
+          type="number"
+          class="total-value-input"
+          value="${initial.totalValue ?? ""}"
+          placeholder="0"
+          readonly
+        />
       </td>
 
       <td>
@@ -129,9 +161,12 @@ function attachRowEvents(block) {
 // حساب وزن وقيمة السطر
 // ================================
 function updateRowTotals(block) {
-  const qty = parseFloat(block.querySelector(".qty-input").value) || 0;
-  const weightPer = parseFloat(block.querySelector(".weight-per-carton-input").value) || 0;
-  const pricePer = parseFloat(block.querySelector(".price-per-carton-input").value) || 0;
+  const qty =
+    parseFloat(block.querySelector(".qty-input").value) || 0;
+  const weightPer =
+    parseFloat(block.querySelector(".weight-per-carton-input").value) || 0;
+  const pricePer =
+    parseFloat(block.querySelector(".price-per-carton-input").value) || 0;
 
   const totalWeight = qty * weightPer;
   const totalValue = qty * pricePer;
@@ -151,9 +186,12 @@ function updateTotals() {
   let totalValue = 0;
 
   itemsBody.querySelectorAll(".item-block").forEach((block) => {
-    const qty = parseFloat(block.querySelector(".qty-input").value) || 0;
-    const w = parseFloat(block.querySelector(".total-weight-input").value) || 0;
-    const v = parseFloat(block.querySelector(".total-value-input").value) || 0;
+    const qty =
+      parseFloat(block.querySelector(".qty-input").value) || 0;
+    const w =
+      parseFloat(block.querySelector(".total-weight-input").value) || 0;
+    const v =
+      parseFloat(block.querySelector(".total-value-input").value) || 0;
 
     totalQty += qty;
     totalWeight += w;
@@ -172,9 +210,12 @@ let recognition = null;
 let voiceTargetRow = null;
 
 function initRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SR =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    alert("المتصفح لا يدعم التسجيل الصوتي. جرّب متصفح كروم على أندرويد.");
+    alert(
+      "المتصفح لا يدعم التسجيل الصوتي. جرّب متصفح كروم على أندرويد."
+    );
     return null;
   }
 
@@ -214,9 +255,13 @@ function startRowVoice(block) {
   try {
     recognition.start();
   } catch (e) {
-    try { recognition.stop(); } catch (_) {}
+    try {
+      recognition.stop();
+    } catch (_) {}
     setTimeout(() => {
-      try { recognition.start(); } catch (_) {}
+      try {
+        recognition.start();
+      } catch (_) {}
     }, 250);
   }
 }
@@ -233,33 +278,43 @@ function stopRowVoice() {
 // ================================
 function parseArabicNumberWords(text) {
   const map = {
-    "صفر": 0, "واحد": 1, "واحدة": 1, "اثنين": 2, "ثنين": 2, "اثنان": 2,
-    "ثلاثة": 3, "ثلاث": 3,
-    "اربعة": 4, "أربعة": 4,
-    "خمسة": 5,
-    "ستة": 6,
-    "سبعة": 7,
-    "ثمانية": 8, "ثمانيه": 8,
-    "تسعة": 9,
-    "عشرة": 10,
-    "عشرين": 20,
-    "ثلاثين": 30,
-    "اربعين": 40,
-    "خمسين": 50,
-    "ستين": 60,
-    "سبعين": 70,
-    "ثمانين": 80,
-    "تسعين": 90,
-    "مئة": 100, "مية": 100,
-    "مائتين": 200,
-    "ثلاثمائة": 300,
-    "اربعمائة": 400,
-    "خمسمائة": 500,
-    "ستمائة": 600,
-    "سبعمائة": 700,
-    "ثمانمائة": 800,
-    "تسعمائة": 900,
-    "ألف": 1000, "الف": 1000
+    صفر: 0,
+    واحد: 1,
+    واحدة: 1,
+    اثنين: 2,
+    ثنين: 2,
+    اثنان: 2,
+    ثلاثة: 3,
+    ثلاث: 3,
+    اربعة: 4,
+    أربعة: 4,
+    خمسة: 5,
+    ستة: 6,
+    سبعة: 7,
+    ثمانية: 8,
+    ثمانيه: 8,
+    تسعة: 9,
+    عشرة: 10,
+    عشرين: 20,
+    ثلاثين: 30,
+    اربعين: 40,
+    خمسين: 50,
+    ستين: 60,
+    سبعين: 70,
+    ثمانين: 80,
+    تسعين: 90,
+    مئة: 100,
+    مية: 100,
+    مائتين: 200,
+    ثلاثمائة: 300,
+    اربعمائة: 400,
+    خمسمائة: 500,
+    ستمائة: 600,
+    سبعمائة: 700,
+    ثمانمائة: 800,
+    تسعمائة: 900,
+    ألف: 1000,
+    الف: 1000,
   };
 
   let sum = 0;
@@ -278,8 +333,12 @@ function parseArabicNumberWords(text) {
 }
 
 function extractWeight(text) {
-  let grams = text.match(/(\d+(\.\d+)?)\s*(جرام|غرام|g)\b/);
-  let kilo = text.match(/(\d+(\.\d+)?)\s*(كيلو|كجم|kg)\b/);
+  let grams = text.match(
+    /(\d+(\.\d+)?)\s*(جرام|غرام|g)\b/
+  );
+  let kilo = text.match(
+    /(\d+(\.\d+)?)\s*(كيلو|كجم|kg)\b/
+  );
 
   if (grams) return parseFloat(grams[1]) / 1000;
   if (kilo) return parseFloat(kilo[1]);
@@ -301,7 +360,9 @@ function fillRowFromVoice(block, text) {
   descInput.value = text;
 
   // العدد: رقم بعد "عدد / كراتين / كرتون / حبة / حبات"
-  let qtyMatch = text.match(/(?:عدد|كراتين|كرتون|كرتونه|حبة|حبات)\s+(\S+)/);
+  let qtyMatch = text.match(
+    /(?:عدد|كراتين|كرتون|كرتونه|حبة|حبات)\s+(\S+)/
+  );
   if (qtyMatch) {
     const q = parseArabicNumberWords(qtyMatch[1]);
     if (q) qtyInput.value = q;
@@ -339,7 +400,8 @@ function getCurrentInvoiceData() {
       block.querySelector(".price-per-carton-input").value || "";
     const totalWeight =
       block.querySelector(".total-weight-input").value || "";
-    const totalValue = block.querySelector(".total-value-input").value || "";
+    const totalValue =
+      block.querySelector(".total-value-input").value || "";
 
     if (
       qty !== "" ||
@@ -381,11 +443,15 @@ function saveCurrentInvoice() {
 
   const titleBase =
     data.invoiceNumber ||
-    (data.clientName ? data.clientName.slice(0, 20) : "فاتورة بدون رقم");
+    (data.clientName
+      ? data.clientName.slice(0, 20)
+      : "فاتورة بدون رقم");
   const customTitle =
     prompt("اسم الفاتورة للحفظ:", titleBase) || titleBase;
 
-  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  const stored = JSON.parse(
+    localStorage.getItem(STORAGE_KEY) || "[]"
+  );
 
   const invoice = {
     id: Date.now(),
@@ -402,9 +468,12 @@ function saveCurrentInvoice() {
 function renderSavedInvoices() {
   savedInvoicesList.innerHTML = "";
 
-  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  const stored = JSON.parse(
+    localStorage.getItem(STORAGE_KEY) || "[]"
+  );
   if (!stored.length) {
-    savedInvoicesList.textContent = "لا توجد فواتير محفوظة حتى الآن.";
+    savedInvoicesList.textContent =
+      "لا توجد فواتير محفوظة حتى الآن.";
     return;
   }
 
@@ -418,7 +487,9 @@ function renderSavedInvoices() {
     div.style.borderBottom = "1px solid #e5e7eb";
 
     const info = document.createElement("div");
-    info.innerHTML = `<strong>${inv.title}</strong><br><small>${inv.date || ""}</small>`;
+    info.innerHTML = `<strong>${inv.title}</strong><br><small>${
+      inv.date || ""
+    }</small>`;
 
     const actions = document.createElement("div");
     const loadBtn = document.createElement("button");
@@ -450,7 +521,9 @@ function renderSavedInvoices() {
 }
 
 function loadInvoice(id) {
-  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  const stored = JSON.parse(
+    localStorage.getItem(STORAGE_KEY) || "[]"
+  );
   const inv = stored.find((x) => x.id === id);
   if (!inv) return;
 
@@ -470,7 +543,9 @@ function loadInvoice(id) {
 function deleteInvoice(id) {
   if (!confirm("هل تريد حذف هذه الفاتورة المحفوظة؟")) return;
 
-  let stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]" );
+  let stored = JSON.parse(
+    localStorage.getItem(STORAGE_KEY) || "[]"
+  );
   stored = stored.filter((x) => x.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
   renderSavedInvoices();
