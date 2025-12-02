@@ -1,157 +1,144 @@
-// عناصر أساسية
-const itemsBody = document.getElementById("itemsBody");
-const totalQtyEl = document.getElementById("totalQty");
-const totalWeightEl = document.getElementById("totalWeight");
-const totalValueEl = document.getElementById("totalValue");
-const currencySelect = document.getElementById("currencySelect");
-const currencyLabel = document.getElementById("currencyLabel");
+// عناصر رئيسية
+const itemsBody = document.getElementById('itemsBody');
+const totalQtyEl = document.getElementById('totalQty');
+const totalWeightEl = document.getElementById('totalWeight');
+const totalValueEl = document.getElementById('totalValue');
+const totalCurrencyLabel = document.getElementById('totalCurrencyLabel');
 
-const addRowBtn = document.getElementById("addRowBtn");
-const printBtn = document.getElementById("printBtn");
-const pdfBtn = document.getElementById("pdfBtn");
-const installBtn = document.getElementById("installBtn");
-const invoiceElement = document.getElementById("invoice");
+const clientNameInput = document.getElementById('clientName');
+const invoiceNumberInput = document.getElementById('invoiceNumber');
+const currencySelect = document.getElementById('currencySelect');
+const invoiceDateInput = document.getElementById('invoiceDate');
 
-// تهيئة التاريخ اليوم
-(function initDate() {
-  const dateInput = document.getElementById("invoiceDate");
-  const today = new Date();
-  const y = today.getFullYear();
-  const m = String(today.getMonth() + 1).padStart(2, "0");
-  const d = String(today.getDate()).padStart(2, "0");
-  dateInput.value = `${y}-${m}-${d}`;
+const addRowBtn = document.getElementById('addRowBtn');
+const printBtn = document.getElementById('printBtn');
+const pdfBtn = document.getElementById('pdfBtn');
+const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
+const installBtn = document.getElementById('installBtn');
+
+const savedInvoicesList = document.getElementById('savedInvoicesList');
+
+// إعداد التاريخ الحالي
+(function setToday() {
+  const today = new Date().toISOString().slice(0, 10);
+  invoiceDateInput.value = today;
 })();
 
-// ماب للعملة لعرضها في النص
-const currencyNames = {
-  SAR: "ريال سعودي",
-  AED: "درهم إماراتي",
-  USD: "دولار أمريكي",
-  OMR: "ريال عُماني",
-};
-
-// تغيير نص العملة في الإجمالي
-currencySelect.addEventListener("change", () => {
-  const code = currencySelect.value;
-  currencyLabel.textContent = currencyNames[code] || "ريال";
+// تحديث النص حسب العملة
+currencySelect.addEventListener('change', () => {
+  totalCurrencyLabel.textContent = currencySelect.value;
 });
 
 // إنشاء صف جديد
-function createRow() {
-  const tr = document.createElement("tr");
+function createRow(initial = {}) {
+  const row = document.createElement('tr');
 
-  // العدد
-  const qtyTd = document.createElement("td");
-  const qtyInput = document.createElement("input");
-  qtyInput.type = "number";
-  qtyInput.min = "0";
-  qtyInput.step = "1";
-  qtyInput.placeholder = "0";
-  qtyTd.appendChild(qtyInput);
-  tr.appendChild(qtyTd);
+  row.innerHTML = `
+    <td>
+      <div class="field-with-mic">
+        <input type="number" min="0" step="1" class="qty-input" value="${initial.qty ?? ''}" placeholder="0" />
+        <button type="button" class="mic-btn" title="إدخال عدد بالصوت">🎤</button>
+      </div>
+    </td>
+    <td>
+      <div class="field-with-mic">
+        <input type="text" class="desc-input" value="${initial.desc ?? ''}" placeholder="وصف الصنف" />
+        <button type="button" class="mic-btn" title="إدخال وصف بالصوت">🎤</button>
+      </div>
+    </td>
+    <td>
+      <div class="field-with-mic">
+        <input type="number" min="0" step="0.01" class="weight-per-carton-input" value="${initial.weightPerCarton ?? ''}" placeholder="0" />
+        <button type="button" class="mic-btn" title="إدخال وزن بالكلام">🎤</button>
+      </div>
+    </td>
+    <td>
+      <div class="field-with-mic">
+        <input type="number" min="0" step="0.01" class="price-per-carton-input" value="${initial.pricePerCarton ?? ''}" placeholder="0" />
+        <button type="button" class="mic-btn" title="إدخال قيمة بالكلام">🎤</button>
+      </div>
+    </td>
+    <td>
+      <input type="number" min="0" step="0.01" class="total-weight-input" value="${initial.totalWeight ?? ''}" placeholder="0" readonly />
+    </td>
+    <td>
+      <input type="number" min="0" step="0.01" class="total-value-input" value="${initial.totalValue ?? ''}" placeholder="0" readonly />
+    </td>
+    <td>
+      <button type="button" class="delete-btn">✕</button>
+    </td>
+  `;
 
-  // الصنف
-  const descTd = document.createElement("td");
-  const descInput = document.createElement("input");
-  descInput.type = "text";
-  descInput.placeholder = "وصف الصنف";
-  descTd.appendChild(descInput);
-  tr.appendChild(descTd);
+  itemsBody.appendChild(row);
 
-  // وزن / كرتون
-  const perWeightTd = document.createElement("td");
-  perWeightTd.classList.add("per-carton");
-  const perWeightInput = document.createElement("input");
-  perWeightInput.type = "number";
-  perWeightInput.min = "0";
-  perWeightInput.step = "any";
-  perWeightInput.placeholder = "0";
-  perWeightTd.appendChild(perWeightInput);
-  tr.appendChild(perWeightTd);
+  attachRowEvents(row);
+  updateRowTotals(row);
+  updateTotals();
+}
 
-  // قيمة / كرتون
-  const perValueTd = document.createElement("td");
-  perValueTd.classList.add("per-carton");
-  const perValueInput = document.createElement("input");
-  perValueInput.type = "number";
-  perValueInput.min = "0";
-  perValueInput.step = "any";
-  perValueInput.placeholder = "0";
-  perValueTd.appendChild(perValueInput);
-  tr.appendChild(perValueTd);
+// ربط الأحداث لكل صف
+function attachRowEvents(row) {
+  const qtyInput = row.querySelector('.qty-input');
+  const weightPerCartonInput = row.querySelector('.weight-per-carton-input');
+  const pricePerCartonInput = row.querySelector('.price-per-carton-input');
+  const descInput = row.querySelector('.desc-input');
 
-  // الوزن الكلي
-  const totalWeightTd = document.createElement("td");
-  const totalWeightInput = document.createElement("input");
-  totalWeightInput.type = "number";
-  totalWeightInput.readOnly = true;
-  totalWeightTd.appendChild(totalWeightInput);
-  tr.appendChild(totalWeightTd);
+  const totalWeightInput = row.querySelector('.total-weight-input');
+  const totalValueInput = row.querySelector('.total-value-input');
 
-  // القيمة الكلية
-  const totalValueTd = document.createElement("td");
-  const totalValueInput = document.createElement("input");
-  totalValueInput.type = "number";
-  totalValueInput.readOnly = true;
-  totalValueTd.appendChild(totalValueInput);
-  tr.appendChild(totalValueTd);
+  // تحديث المجاميع عند التغيير
+  [qtyInput, weightPerCartonInput, pricePerCartonInput, descInput].forEach(input => {
+    input.addEventListener('input', () => {
+      updateRowTotals(row);
+      updateTotals();
+    });
+  });
 
-  // حذف
-  const delTd = document.createElement("td");
-  delTd.classList.add("col-del");
-  const delBtn = document.createElement("button");
-  delBtn.type = "button";
-  delBtn.className = "row-delete-btn";
-  delBtn.textContent = "✕";
-  delTd.appendChild(delBtn);
-  tr.appendChild(delTd);
-
-  // إضافة الصف للجدول
-  itemsBody.appendChild(tr);
-
-  // تحديث سطر عند إدخال قيم
-  function updateRow() {
-    const qty = parseFloat(qtyInput.value) || 0;
-    const perW = parseFloat(perWeightInput.value) || 0;
-    const perV = parseFloat(perValueInput.value) || 0;
-
-    const totalW = qty * perW;
-    const totalV = qty * perV;
-
-    totalWeightInput.value = totalW ? totalW.toFixed(2).replace(/\.00$/, "") : "";
-    totalValueInput.value = totalV ? totalV.toFixed(2).replace(/\.00$/, "") : "";
-
-    updateTotals();
-  }
-
-  qtyInput.addEventListener("input", updateRow);
-  perWeightInput.addEventListener("input", updateRow);
-  perValueInput.addEventListener("input", updateRow);
-
-  // حذف الصف مع تأكيد
-  delBtn.addEventListener("click", () => {
-    const ok = confirm("هل تريد حذف هذا السطر؟");
+  // حذف الصف
+  const deleteBtn = row.querySelector('.delete-btn');
+  deleteBtn.addEventListener('click', () => {
+    const ok = confirm('هل أنت متأكد من حذف هذا السطر؟');
     if (!ok) return;
-    tr.remove();
+    row.remove();
     updateTotals();
   });
 
-  return tr;
+  // أزرار الصوت
+  const micButtons = row.querySelectorAll('.mic-btn');
+  micButtons.forEach(btn => {
+    const input = btn.previousElementSibling; // الحقل الذي يسبقه
+    btn.addEventListener('click', () => {
+      startVoiceForInput(input);
+    });
+  });
 }
 
-// حساب المجاميع
+// حساب وزن وقيمة الصف
+function updateRowTotals(row) {
+  const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+  const weightPerCarton = parseFloat(row.querySelector('.weight-per-carton-input').value) || 0;
+  const pricePerCarton = parseFloat(row.querySelector('.price-per-carton-input').value) || 0;
+
+  const totalWeightInput = row.querySelector('.total-weight-input');
+  const totalValueInput = row.querySelector('.total-value-input');
+
+  const totalWeight = qty * weightPerCarton;
+  const totalValue = qty * pricePerCarton;
+
+  totalWeightInput.value = totalWeight ? totalWeight.toFixed(2) : '';
+  totalValueInput.value = totalValue ? totalValue.toFixed(2) : '';
+}
+
+// حساب مجاميع الفاتورة
 function updateTotals() {
   let totalQty = 0;
   let totalWeight = 0;
   let totalValue = 0;
 
-  itemsBody.querySelectorAll("tr").forEach((row) => {
-    const inputs = row.querySelectorAll("input");
-    if (inputs.length < 6) return;
-
-    const qty = parseFloat(inputs[0].value) || 0;
-    const rowTotalWeight = parseFloat(inputs[4].value) || 0;
-    const rowTotalValue = parseFloat(inputs[5].value) || 0;
+  itemsBody.querySelectorAll('tr').forEach(row => {
+    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+    const rowTotalWeight = parseFloat(row.querySelector('.total-weight-input').value) || 0;
+    const rowTotalValue = parseFloat(row.querySelector('.total-value-input').value) || 0;
 
     totalQty += qty;
     totalWeight += rowTotalWeight;
@@ -159,60 +146,273 @@ function updateTotals() {
   });
 
   totalQtyEl.textContent = totalQty;
-  totalWeightEl.textContent = totalWeight.toFixed(2).replace(/\.00$/, "");
-  totalValueEl.textContent = totalValue.toFixed(2).replace(/\.00$/, "");
+  totalWeightEl.textContent = totalWeight.toFixed(2);
+  totalValueEl.textContent = totalValue.toFixed(2);
 }
 
 // زر إضافة سطر
-addRowBtn.addEventListener("click", () => {
+addRowBtn.addEventListener('click', () => {
   createRow();
 });
 
 // زر الطباعة
-printBtn.addEventListener("click", () => {
+printBtn.addEventListener('click', () => {
   window.print();
 });
 
-// زر إنشاء PDF
-pdfBtn.addEventListener("click", () => {
-  const opt = {
-    margin: [5, 5, 5, 5],
-    filename: "bassam-invoice.pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-  };
-  html2pdf().set(opt).from(invoiceElement).save();
+// زر PDF (يستخدم الطباعة أيضاً، والاختيار من الجهاز "حفظ كـ PDF")
+pdfBtn.addEventListener('click', () => {
+  window.print();
 });
 
-// إنشاء أول صف تلقائياً
-createRow();
+// ======================
+//  الصوت (Speech-to-Text)
+// ======================
 
-/* ====== زر التثبيت (PWA) ====== */
+let recognition = null;
+let recognitionActive = false;
+
+function getRecognition() {
+  if (recognition) return recognition;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('خاصية الإملاء بالصوت غير مدعومة في هذا المتصفح. جرب Google Chrome على أندرويد.');
+    return null;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'ar-SA';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  return recognition;
+}
+
+function startVoiceForInput(targetInput) {
+  const rec = getRecognition();
+  if (!rec || recognitionActive) return;
+
+  recognitionActive = true;
+
+  rec.onresult = (event) => {
+    const transcript = event.results[0][0].transcript || '';
+
+    if (targetInput.type === 'number') {
+      // نحاول أخذ الأرقام فقط
+      const digits = transcript.replace(/[^\d]/g, '');
+      if (digits) {
+        targetInput.value = digits;
+      }
+    } else {
+      targetInput.value = transcript;
+    }
+
+    // بعد الكتابة نحدث المجاميع
+    const row = targetInput.closest('tr');
+    if (row) {
+      updateRowTotals(row);
+      updateTotals();
+    }
+  };
+
+  rec.onerror = () => {
+    recognitionActive = false;
+  };
+
+  rec.onend = () => {
+    recognitionActive = false;
+  };
+
+  try {
+    rec.start();
+  } catch (e) {
+    recognitionActive = false;
+  }
+}
+
+// ======================
+//  حفظ الفواتير (localStorage)
+// ======================
+
+const STORAGE_KEY = 'bassamInvoiceApp:savedInvoices';
+
+function loadSavedInvoicesFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveInvoicesToStorage(list) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function captureCurrentInvoice() {
+  const items = [];
+
+  itemsBody.querySelectorAll('tr').forEach(row => {
+    const qty = row.querySelector('.qty-input').value.trim();
+    const desc = row.querySelector('.desc-input').value.trim();
+    const weightPerCarton = row.querySelector('.weight-per-carton-input').value.trim();
+    const pricePerCarton = row.querySelector('.price-per-carton-input').value.trim();
+    const totalWeight = row.querySelector('.total-weight-input').value.trim();
+    const totalValue = row.querySelector('.total-value-input').value.trim();
+
+    // لا نسجل صف فاضي بالكامل
+    if (!qty && !desc && !weightPerCarton && !pricePerCarton && !totalWeight && !totalValue) {
+      return;
+    }
+
+    items.push({
+      qty,
+      desc,
+      weightPerCarton,
+      pricePerCarton,
+      totalWeight,
+      totalValue
+    });
+  });
+
+  return {
+    id: Date.now(),
+    clientName: clientNameInput.value.trim(),
+    invoiceNumber: invoiceNumberInput.value.trim(),
+    currency: currencySelect.value,
+    date: invoiceDateInput.value,
+    items,
+    totals: {
+      qty: totalQtyEl.textContent,
+      weight: totalWeightEl.textContent,
+      value: totalValueEl.textContent
+    }
+  };
+}
+
+function renderSavedInvoices() {
+  const invoices = loadSavedInvoicesFromStorage();
+  savedInvoicesList.innerHTML = '';
+
+  if (!invoices.length) {
+    savedInvoicesList.textContent = 'لا توجد فواتير محفوظة حتى الآن.';
+    return;
+  }
+
+  invoices
+    .sort((a, b) => b.id - a.id)
+    .forEach(invoice => {
+      const card = document.createElement('div');
+      card.className = 'saved-card';
+
+      const main = document.createElement('div');
+      main.className = 'saved-card-main';
+      main.innerHTML = `
+        <strong>${invoice.invoiceNumber || 'بدون رقم'}</strong>
+        <span>العميل: ${invoice.clientName || 'غير محدد'}</span>
+        <span>التاريخ: ${invoice.date || 'غير محدد'} – العملة: ${invoice.currency}</span>
+      `;
+
+      const buttons = document.createElement('div');
+      buttons.className = 'saved-card-buttons';
+
+      const loadBtn = document.createElement('button');
+      loadBtn.className = 'saved-load-btn';
+      loadBtn.textContent = 'تحميل';
+      loadBtn.addEventListener('click', () => {
+        loadInvoice(invoice.id);
+      });
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'saved-delete-btn';
+      deleteBtn.textContent = 'حذف';
+      deleteBtn.addEventListener('click', () => {
+        const ok = confirm('هل تريد حذف هذه الفاتورة من الجهاز؟');
+        if (!ok) return;
+        const list = loadSavedInvoicesFromStorage().filter(i => i.id !== invoice.id);
+        saveInvoicesToStorage(list);
+        renderSavedInvoices();
+      });
+
+      buttons.appendChild(loadBtn);
+      buttons.appendChild(deleteBtn);
+
+      card.appendChild(main);
+      card.appendChild(buttons);
+
+      savedInvoicesList.appendChild(card);
+    });
+}
+
+// زر حفظ الفاتورة
+saveInvoiceBtn.addEventListener('click', () => {
+  const invoice = captureCurrentInvoice();
+
+  if (!invoice.items.length) {
+    alert('لا يوجد أصناف في الفاتورة للحفظ.');
+    return;
+  }
+
+  const list = loadSavedInvoicesFromStorage();
+  list.push(invoice);
+  saveInvoicesToStorage(list);
+  renderSavedInvoices();
+
+  alert('تم حفظ الفاتورة في هذا الجهاز ✅');
+});
+
+// تحميل فاتورة محفوظة
+function loadInvoice(id) {
+  const invoices = loadSavedInvoicesFromStorage();
+  const inv = invoices.find(i => i.id === id);
+  if (!inv) return;
+
+  clientNameInput.value = inv.clientName || '';
+  invoiceNumberInput.value = inv.invoiceNumber || '';
+  currencySelect.value = inv.currency || 'ريال سعودي';
+  invoiceDateInput.value = inv.date || '';
+
+  totalCurrencyLabel.textContent = currencySelect.value;
+
+  // مسح الصفوف الحالية
+  itemsBody.innerHTML = '';
+
+  (inv.items || []).forEach(item => {
+    createRow(item);
+  });
+
+  updateTotals();
+}
+
+// ======================
+//  زر التثبيت PWA
+// ======================
+
 let deferredPrompt = null;
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.disabled = false;
-
-  installBtn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    if (choice.outcome === "accepted") {
-      console.log("تم قبول تثبيت التطبيق");
-    }
-    deferredPrompt = null;
-    installBtn.disabled = true;
-  });
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredPrompt = event;
+  installBtn.hidden = false;
 });
 
-// تسجيل Service Worker (ضروري لـ PWA)
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("sw.js")
-      .catch((err) => console.error("SW registration failed:", err));
-  });
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  installBtn.hidden = true;
+});
+
+// تسجيل Service Worker إن وجد
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// إنشاء صف أولي واحد عند فتح الصفحة
+createRow();
+
+// تحميل الفواتير المحفوظة في البداية
+renderSavedInvoices();
