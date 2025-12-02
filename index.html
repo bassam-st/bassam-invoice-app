@@ -4,89 +4,101 @@
   <meta charset="utf-8" />
   <title>فاتورة بسام</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#111827" />
+  <meta name="theme-color" content="#16a34a" />
 
-  <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.webmanifest" />
-
-  <!-- مكتبة إنشاء PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="page">
-    <section class="invoice" id="invoice">
-      <h1 class="title">فاتورة بسام</h1>
+  <div class="container">
+    <h1>فاتورة بسام</h1>
 
-      <div class="header-grid">
-        <div class="field">
-          <label for="clientName">اسم العميل:</label>
-          <input id="clientName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
-        </div>
-
-        <div class="field">
-          <label for="invoiceNumber">رقم الفاتورة:</label>
-          <input id="invoiceNumber" type="text" placeholder="مثال: 001-2025" />
-        </div>
-
-        <div class="field">
-          <label for="currencySelect">العملة:</label>
-          <select id="currencySelect">
-            <option value="SAR" selected>ريال سعودي</option>
-            <option value="AED">درهم إماراتي</option>
-            <option value="USD">دولار أمريكي</option>
-            <option value="OMR">ريال عُماني</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="invoiceDate">التاريخ:</label>
-          <input id="invoiceDate" type="date" />
-        </div>
+    <section class="invoice-header">
+      <div class="field-row">
+        <label for="clientName">اسم العميل:</label>
+        <input id="clientName" type="text" placeholder="مثال: شركة الرواد للتجارة" />
       </div>
 
-      <div class="actions">
-        <button id="addRowBtn" class="btn primary">+ إضافة سطر</button>
-        <button id="pdfBtn" class="btn secondary">PDF</button>
-        <button id="printBtn" class="btn secondary">طباعة 🖨️</button>
-        <button id="installBtn" class="btn ghost" disabled>تثبيت 📲</button>
+      <div class="field-row">
+        <label for="invoiceNumber">رقم الفاتورة:</label>
+        <input id="invoiceNumber" type="text" placeholder="مثال: 001-2025" />
       </div>
 
-      <h2 class="subtitle">جدول الأصناف</h2>
-
-      <div class="table-wrapper">
-        <table class="items-table">
-          <thead>
-            <tr>
-              <!-- الترتيب من اليمين لليسار -->
-              <th class="col-qty">العدد</th>
-              <th class="col-desc">الصنف</th>
-              <th class="col-per per-carton">وزن / كرتون (كجم)</th>
-              <th class="col-per per-carton">قيمة / كرتون</th>
-              <th class="col-total">الوزن الكلي (كجم)</th>
-              <th class="col-total">القيمة الكلية</th>
-              <th class="col-del">حذف</th>
-            </tr>
-          </thead>
-          <tbody id="itemsBody">
-            <!-- الصفوف تضاف من جافاسكربت -->
-          </tbody>
-        </table>
+      <div class="field-row">
+        <label for="currencySelect">العملة:</label>
+        <select id="currencySelect">
+          <option value="ريال سعودي">ريال سعودي</option>
+          <option value="درهم إماراتي">درهم إماراتي</option>
+          <option value="دولار أمريكي">دولار أمريكي</option>
+          <option value="ريال عماني">ريال عماني</option>
+          <option value="ريال يمني">ريال يمني</option>
+        </select>
       </div>
 
-      <div class="totals">
-        <p>إجمالي العدد: <span id="totalQty">0</span></p>
-        <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
-        <p>
-          إجمالي القيمة (<span id="currencyLabel">ريال سعودي</span>):
-          <span id="totalValue">0</span>
-        </p>
+      <div class="field-row">
+        <label for="invoiceDate">التاريخ:</label>
+        <input id="invoiceDate" type="date" />
       </div>
     </section>
 
-    <footer class="footer">
-      تطبيق فاتورة بسام — نموذج عدد / صنف / وزن / قيمة
-    </footer>
-  </main>
+    <section class="actions">
+      <button id="printBtn" class="btn secondary">
+        🖨️ طباعة
+      </button>
+      <button id="pdfBtn" class="btn pdf">
+        PDF
+      </button>
+      <button id="addRowBtn" class="btn primary">
+        + إضافة سطر
+      </button>
+      <button id="saveInvoiceBtn" class="btn save">
+        💾 حفظ الفاتورة
+      </button>
+      <button id="installBtn" class="btn install" hidden>
+        📲 تثبيت
+      </button>
+    </section>
+
+    <h2 class="section-title">جدول الأصناف</h2>
+
+    <div class="table-wrapper">
+      <table id="itemsTable">
+        <thead>
+          <tr>
+            <th>العدد</th>
+            <th>الصنف</th>
+            <th>وزن / كرتون (كجم)</th>
+            <th>قيمة / كرتون</th>
+            <th>الوزن الكلي (كجم)</th>
+            <th>القيمة الكلية</th>
+            <th>حذف</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <!-- الصفوف تتولد من جافاسكربت -->
+        </tbody>
+      </table>
+    </div>
+
+    <section class="totals">
+      <p>إجمالي العدد: <span id="totalQty">0</span></p>
+      <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
+      <p>إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>): <span id="totalValue">0</span></p>
+    </section>
+
+    <section id="savedInvoicesSection" class="saved-section">
+      <h2>الفواتير المحفوظة</h2>
+      <p class="saved-hint">هذه الفواتير محفوظة في هذا الجهاز فقط.</p>
+      <div id="savedInvoicesList" class="saved-list">
+        <!-- تمتلئ تلقائيًا -->
+      </div>
+    </section>
+
+    <p class="footer-note">
+      تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة
+    </p>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
