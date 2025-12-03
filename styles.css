@@ -1,3 +1,6 @@
+/* ============================
+   RESET + GENERAL
+============================ */
 * {
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -32,6 +35,9 @@ h1 {
   font-size: 1.3rem;
 }
 
+/* ============================
+   HEADER FIELDS
+============================ */
 .invoice-header {
   background: #ffffff;
   padding: 1rem;
@@ -61,6 +67,9 @@ h1 {
   font-size: 0.95rem;
 }
 
+/* ============================
+   BUTTONS
+============================ */
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -87,6 +96,14 @@ h1 {
 .btn.save { background: #f97316; color: white; }
 .btn.install { background: #10b981; color: white; }
 
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* ============================
+   TABLE – وضع الديسكتوب (الأساسي)
+============================ */
 .table-wrapper {
   overflow-x: auto;
   background: white;
@@ -97,7 +114,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px;
+  min-width: 800px; /* عشان العناوين واضحة في الديسكتوب والطباعة */
 }
 
 thead {
@@ -109,6 +126,7 @@ th, td {
   padding: 0.35rem 0.4rem;
   font-size: 0.85rem;
   text-align: center;
+  vertical-align: middle;
 }
 
 td input {
@@ -119,6 +137,11 @@ td input {
   background: #f9fafb;
 }
 
+td input[type="number"] {
+  text-align: center;
+}
+
+/* زر حذف */
 .delete-btn {
   border: none;
   background: #ef4444;
@@ -129,7 +152,13 @@ td input {
   font-size: 0.85rem;
 }
 
-/* زر الصوت تحت الصف */
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+/* ============================
+   VOICE BUTTON (تحت كل صف)
+============================ */
 .row-voice-section {
   background: #e6ffe9;
   padding: 0.6rem;
@@ -145,15 +174,27 @@ td input {
   border-radius: 999px;
   padding: 0.55rem 1rem;
   font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-/* المجاميع */
+.voice-btn:active {
+  background: #15803d;
+  transform: scale(0.98);
+}
+
+/* ============================
+   TOTALS & SAVED
+============================ */
 .totals {
   margin-top: 1rem;
   background: white;
   padding: 0.8rem 1rem;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  font-size: 0.95rem;
 }
 
 .saved-section {
@@ -163,7 +204,106 @@ td input {
   border-radius: 0.75rem;
 }
 
-/* إصلاح الطباعة */
+.footer-note {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ============================
+   وضع الجوال (الخيار 2)
+   كل خانة يظهر فوقها اسمها
+============================ */
+@media (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: visible;   /* ما نحتاج سحب يمين/يسار */
+  }
+
+  table {
+    min-width: 0;          /* نخلي الجدول بعرض الجوال */
+    width: 100%;
+  }
+
+  thead {
+    display: none;         /* نخفي صف العناوين */
+  }
+
+  tbody {
+    display: block;
+  }
+
+  .item-block {
+    display: block;
+    margin-bottom: 0.85rem;
+  }
+
+  .item-block > tr:first-child {
+    display: block;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .item-block > tr:first-child td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .item-block > tr:first-child td:last-child {
+    border-bottom: none;
+    justify-content: center;
+  }
+
+  .item-block > tr:first-child td::before {
+    font-weight: 600;
+    color: #374151;
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  /* أسماء الحقول */
+  .item-block > tr:first-child td:nth-child(1)::before { content: "العدد"; }
+  .item-block > tr:first-child td:nth-child(2)::before { content: "الصنف"; }
+  .item-block > tr:first-child td:nth-child(3)::before { content: "وزن / كرتون (كجم)"; }
+  .item-block > tr:first-child td:nth-child(4)::before { content: "قيمة / كرتون"; }
+  .item-block > tr:first-child td:nth-child(5)::before { content: "الوزن الكلي (كجم)"; }
+  .item-block > tr:first-child td:nth-child(6)::before { content: "القيمة الكلية"; }
+  .item-block > tr:first-child td:nth-child(7)::before { content: "حذف"; }
+
+  /* حقول الإدخال في الجوال */
+  .item-block > tr:first-child td input {
+    width: 55%;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.35rem;
+  }
+
+  .item-block > tr:first-child td .delete-btn {
+    width: auto;
+    padding: 0.25rem 0.65rem;
+  }
+
+  /* صف زر الصوت يبقى كما هو */
+  .item-block > tr:last-child {
+    display: block;
+    margin-top: 0.25rem;
+  }
+
+  .row-voice-section {
+    margin-top: 0.4rem;
+  }
+}
+
+/* ============================
+   الطباعة PDF / A4
+   جدول منظم كلاسيكي
+============================ */
 @media print {
   .actions,
   .saved-section,
@@ -181,11 +321,32 @@ td input {
   table {
     width: 100% !important;
     min-width: 100% !important;
-    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  .item-block > tr,
+  .item-block > tr:first-child,
+  .item-block > tr:last-child {
+    display: table-row !important;
   }
 
   th, td {
+    display: table-cell !important;
+    border: 1px solid #e5e7eb;
     font-size: 0.75rem;
     padding: 0.2rem 0.25rem;
+  }
+
+  /* ما نحتاج نص العنوان في قبل التدي في الطباعة */
+  .item-block > tr:first-child td::before {
+    content: "" !important;
   }
 }
