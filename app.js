@@ -26,7 +26,7 @@ const savedInvoicesList = document.getElementById("savedInvoicesList");
   invoiceDateInput.value = today;
 })();
 
-// تغيير العملة في النص أسفل
+// تغيير العملة
 currencySelect.addEventListener("change", () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
@@ -75,7 +75,7 @@ function createRow(initial = {}) {
     </td>
   `;
 
-  // صف زر التسجيل الصوتي
+  // صف زر التسجيل
   const voiceRow = document.createElement("tr");
   voiceRow.classList.add("voice-row");
   voiceRow.innerHTML = `
@@ -96,7 +96,9 @@ function createRow(initial = {}) {
   updateTotals();
 }
 
+// ================================
 // ربط أحداث كل سطر
+// ================================
 function attachRowEvents(dataRow, voiceRow) {
   const qtyInput = dataRow.querySelector(".qty-input");
   const descInput = dataRow.querySelector(".desc-input");
@@ -136,17 +138,23 @@ function attachRowEvents(dataRow, voiceRow) {
   });
 }
 
+// ================================
 // حساب وزن وقيمة السطر
+// ================================
 function updateRowTotals(dataRow) {
   const qty =
-    parseFloat((dataRow.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
+    parseFloat(dataRow.querySelector(".qty-input").value.replace(",", ".")) || 0;
   const weightPer =
     parseFloat(
-      (dataRow.querySelector(".weight-per-carton-input").value || "").replace(",", ".")
+      dataRow
+        .querySelector(".weight-per-carton-input")
+        .value.replace(",", ".")
     ) || 0;
   const pricePer =
     parseFloat(
-      (dataRow.querySelector(".price-per-carton-input").value || "").replace(",", ".")
+      dataRow
+        .querySelector(".price-per-carton-input")
+        .value.replace(",", ".")
     ) || 0;
 
   const totalWeight = qty * weightPer;
@@ -160,7 +168,9 @@ function updateRowTotals(dataRow) {
     : "";
 }
 
+// ================================
 // تحديث مجاميع الفاتورة
+// ================================
 function updateTotals() {
   let totalQty = 0;
   let totalWeight = 0;
@@ -168,14 +178,14 @@ function updateTotals() {
 
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty =
-      parseFloat((row.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
+      parseFloat(row.querySelector(".qty-input").value.replace(",", ".")) || 0;
     const w =
       parseFloat(
-        (row.querySelector(".total-weight-input").value || "").replace(",", ".")
+        row.querySelector(".total-weight-input").value.replace(",", ".")
       ) || 0;
     const v =
       parseFloat(
-        (row.querySelector(".total-value-input").value || "").replace(",", ".")
+        row.querySelector(".total-value-input").value.replace(",", ".")
       ) || 0;
 
     totalQty += qty;
@@ -189,7 +199,7 @@ function updateTotals() {
 }
 
 // ================================
-// الصوت – Web Speech API
+// الصوت – Web Speech API (ضغط مستمر)
 // ================================
 let recognition = null;
 let currentVoiceRow = null;
@@ -234,7 +244,7 @@ function startRowVoice(row) {
   try {
     rec.start();
   } catch (e) {
-    // أحياناً يكون شغال
+    // أحياناً لو كان شغال مسبقاً
   }
 }
 
@@ -245,7 +255,9 @@ function stopRowVoice() {
   } catch (e) {}
 }
 
-// تحليل أرقام بالعربي/أرقام عادية
+// ================================
+// دوال مساعدة لتحليل الأرقام من الكلام
+// ================================
 function parseArabicNumberWords(text) {
   const map = {
     "صفر": 0,
@@ -319,7 +331,9 @@ function extractNumbersSmart(text) {
   return fromWords ? [fromWords] : [];
 }
 
-// تعبئة السطر من الكلام
+// ================================
+// تعبئة السطر من الصوت
+// ================================
 function fillRowFromVoice(row, text) {
   const descInput = row.querySelector(".desc-input");
   const qtyInput = row.querySelector(".qty-input");
@@ -496,21 +510,18 @@ function loadInvoice(id) {
 }
 
 // ================================
-// الأزرار العامة
+// أزرار إضافة سطر + طباعة + PDF
 // ================================
 addRowBtn.addEventListener("click", () => {
   createRow();
 });
 
-// هنا نضيف تنبيه للتأكد أن الزر يشتغل
 printBtn.addEventListener("click", () => {
-  alert("الآن اختر (طباعة) أو (حفظ كـ PDF) من شاشة النظام.");
   window.print();
 });
 
 pdfBtn.addEventListener("click", () => {
-  alert("الآن سيُفتح نفس شاشة الطباعة، اختر (حفظ كـ PDF).");
-  window.print(); // المستخدم يختار "حفظ كـ PDF"
+  window.print();
 });
 
 // ================================
@@ -532,9 +543,9 @@ installBtn.addEventListener("click", async () => {
   installBtn.hidden = true;
 });
 
-// تسجيل Service Worker (إن وجد ملف service-worker.js)
+// تسجيل Service Worker
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 
 // إنشاء أول صف وتحميل الفواتير
