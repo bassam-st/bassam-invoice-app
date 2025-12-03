@@ -26,7 +26,7 @@ const savedInvoicesList = document.getElementById("savedInvoicesList");
   invoiceDateInput.value = today;
 })();
 
-// تغيير العملة
+// تغيير العملة في النص أسفل
 currencySelect.addEventListener("change", () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
@@ -75,7 +75,7 @@ function createRow(initial = {}) {
     </td>
   `;
 
-  // صف زر التسجيل
+  // صف زر التسجيل الصوتي
   const voiceRow = document.createElement("tr");
   voiceRow.classList.add("voice-row");
   voiceRow.innerHTML = `
@@ -96,16 +96,12 @@ function createRow(initial = {}) {
   updateTotals();
 }
 
-// ================================
 // ربط أحداث كل سطر
-// ================================
 function attachRowEvents(dataRow, voiceRow) {
   const qtyInput = dataRow.querySelector(".qty-input");
   const descInput = dataRow.querySelector(".desc-input");
   const weightInput = dataRow.querySelector(".weight-per-carton-input");
   const priceInput = dataRow.querySelector(".price-per-carton-input");
-  const totalWeightInput = dataRow.querySelector(".total-weight-input");
-  const totalValueInput = dataRow.querySelector(".total-value-input");
 
   [qtyInput, descInput, weightInput, priceInput].forEach((input) => {
     input.addEventListener("input", () => {
@@ -117,7 +113,6 @@ function attachRowEvents(dataRow, voiceRow) {
   const deleteBtn = dataRow.querySelector(".delete-btn");
   deleteBtn.addEventListener("click", () => {
     if (!confirm("هل أنت متأكد من حذف هذا السطر؟")) return;
-    // حذف صف البيانات وصف التسجيل
     if (voiceRow && voiceRow.parentNode === itemsBody) {
       voiceRow.remove();
     }
@@ -141,23 +136,17 @@ function attachRowEvents(dataRow, voiceRow) {
   });
 }
 
-// ================================
 // حساب وزن وقيمة السطر
-// ================================
 function updateRowTotals(dataRow) {
   const qty =
-    parseFloat(dataRow.querySelector(".qty-input").value.replace(",", ".")) || 0;
+    parseFloat((dataRow.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
   const weightPer =
     parseFloat(
-      dataRow
-        .querySelector(".weight-per-carton-input")
-        .value.replace(",", ".")
+      (dataRow.querySelector(".weight-per-carton-input").value || "").replace(",", ".")
     ) || 0;
   const pricePer =
     parseFloat(
-      dataRow
-        .querySelector(".price-per-carton-input")
-        .value.replace(",", ".")
+      (dataRow.querySelector(".price-per-carton-input").value || "").replace(",", ".")
     ) || 0;
 
   const totalWeight = qty * weightPer;
@@ -171,9 +160,7 @@ function updateRowTotals(dataRow) {
     : "";
 }
 
-// ================================
 // تحديث مجاميع الفاتورة
-// ================================
 function updateTotals() {
   let totalQty = 0;
   let totalWeight = 0;
@@ -181,14 +168,14 @@ function updateTotals() {
 
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty =
-      parseFloat(row.querySelector(".qty-input").value.replace(",", ".")) || 0;
+      parseFloat((row.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
     const w =
       parseFloat(
-        row.querySelector(".total-weight-input").value.replace(",", ".")
+        (row.querySelector(".total-weight-input").value || "").replace(",", ".")
       ) || 0;
     const v =
       parseFloat(
-        row.querySelector(".total-value-input").value.replace(",", ".")
+        (row.querySelector(".total-value-input").value || "").replace(",", ".")
       ) || 0;
 
     totalQty += qty;
@@ -202,7 +189,7 @@ function updateTotals() {
 }
 
 // ================================
-// الصوت – Web Speech API (ضغط مستمر)
+// الصوت – Web Speech API
 // ================================
 let recognition = null;
 let currentVoiceRow = null;
@@ -247,7 +234,7 @@ function startRowVoice(row) {
   try {
     rec.start();
   } catch (e) {
-    // أحياناً لو كان شغال مسبقاً
+    // أحياناً يكون شغال
   }
 }
 
@@ -258,9 +245,7 @@ function stopRowVoice() {
   } catch (e) {}
 }
 
-// ================================
-// دوال مساعدة لتحليل الأرقام من الكلام
-// ================================
+// تحليل أرقام بالعربي/أرقام عادية
 function parseArabicNumberWords(text) {
   const map = {
     "صفر": 0,
@@ -268,7 +253,6 @@ function parseArabicNumberWords(text) {
     "واحدة": 1,
     "اثنين": 2,
     "ثنين": 2,
-    "اثنين": 2,
     "ثلاثة": 3,
     "ثلاث": 3,
     "اربعة": 4,
@@ -308,7 +292,7 @@ function parseArabicNumberWords(text) {
   const parts = text.split(/\s+/);
 
   parts.forEach((word) => {
-    const w = word.replace(/[^\u0600-\u06FF]/g, ""); // ابقي الأحرف العربية فقط
+    const w = word.replace(/[^\u0600-\u06FF]/g, "");
     if (map[w] !== undefined) {
       sum += map[w];
     }
@@ -335,25 +319,18 @@ function extractNumbersSmart(text) {
   return fromWords ? [fromWords] : [];
 }
 
-// ================================
-// تعبئة السطر من الصوت
-// ================================
+// تعبئة السطر من الكلام
 function fillRowFromVoice(row, text) {
   const descInput = row.querySelector(".desc-input");
   const qtyInput = row.querySelector(".qty-input");
   const weightInput = row.querySelector(".weight-per-carton-input");
   const priceInput = row.querySelector(".price-per-carton-input");
 
-  // نخلي الوصف من الكلام كامل
   descInput.value = text;
 
   const lower = text.toLowerCase();
   const nums = extractNumbersSmart(lower);
 
-  // من باب البساطة:
-  // الرقم الأول = العدد
-  // الرقم الثاني = وزن / كرتون (كيلو)
-  // الرقم الثالث = قيمة / كرتون
   if (nums[0] !== undefined) qtyInput.value = nums[0];
   if (nums[1] !== undefined) weightInput.value = nums[1];
   if (nums[2] !== undefined) priceInput.value = nums[2];
@@ -509,7 +486,6 @@ function loadInvoice(id) {
 
   totalCurrencyLabel.textContent = currencySelect.value;
 
-  // مسح الصفوف الحالية
   itemsBody.innerHTML = "";
 
   (inv.items || []).forEach((item) => {
@@ -518,6 +494,21 @@ function loadInvoice(id) {
 
   updateTotals();
 }
+
+// ================================
+// الأزرار العامة
+// ================================
+addRowBtn.addEventListener("click", () => {
+  createRow();
+});
+
+printBtn.addEventListener("click", () => {
+  window.print();
+});
+
+pdfBtn.addEventListener("click", () => {
+  window.print(); // المستخدم يختار "حفظ كـ PDF"
+});
 
 // ================================
 // زر التثبيت PWA
@@ -538,9 +529,9 @@ installBtn.addEventListener("click", async () => {
   installBtn.hidden = true;
 });
 
-// تسجيل Service Worker
+// تسجيل Service Worker (إن وجد ملف service-worker.js)
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
 }
 
 // إنشاء أول صف وتحميل الفواتير
