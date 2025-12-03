@@ -9,11 +9,11 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <div class="container">
     <h1>فاتورة بسام</h1>
 
-    <!-- بيانات الفاتورة -->
     <section class="invoice-header">
       <div class="field-row">
         <label for="clientName">اسم العميل:</label>
@@ -42,7 +42,6 @@
       </div>
     </section>
 
-    <!-- أزرار التحكم -->
     <section class="actions">
       <button id="printBtn" class="btn secondary">🖨️ طباعة</button>
       <button id="pdfBtn" class="btn pdf">PDF</button>
@@ -53,7 +52,6 @@
 
     <h2 class="section-title">جدول الأصناف</h2>
 
-    <!-- جدول الأصناف -->
     <div class="table-wrapper">
       <table id="itemsTable">
         <thead>
@@ -68,30 +66,23 @@
           </tr>
         </thead>
         <tbody id="itemsBody">
-          <!-- يتم إنشاء الصفوف من app.js (item-row + voice-row) -->
         </tbody>
       </table>
     </div>
 
-    <!-- المجاميع -->
     <section class="totals">
       <p>إجمالي العدد: <span id="totalQty">0</span></p>
-      <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
+      <p>إجمالي الوزن: <span id="totalWeight">0</span> كجم</p>
       <p>إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>): <span id="totalValue">0</span></p>
     </section>
 
-    <!-- الفواتير المحفوظة -->
     <section id="savedInvoicesSection" class="saved-section">
       <h2>الفواتير المحفوظة</h2>
       <p class="saved-hint">هذه الفواتير محفوظة في هذا الجهاز فقط.</p>
-      <div id="savedInvoicesList" class="saved-list">
-        <!-- يتم تعبئته من app.js -->
-      </div>
+      <div id="savedInvoicesList" class="saved-list"></div>
     </section>
 
-    <p class="footer-note">
-      تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة مع دعم الصوت
-    </p>
+    <p class="footer-note">تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة</p>
   </div>
 
   <script src="app.js"></script>
