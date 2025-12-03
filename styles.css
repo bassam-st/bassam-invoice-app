@@ -116,8 +116,6 @@ h1 {
   box-shadow: none;
 }
 
-/* الجدول */
-
 .table-wrapper {
   overflow-x: auto;
   background: #ffffff;
@@ -128,7 +126,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 750px;
+  min-width: 650px;
 }
 
 thead {
@@ -161,7 +159,25 @@ td input[type="number"] {
   text-align: center;
 }
 
-/* زر الحذف */
+/* صف الصوت */
+.voice-row .row-voice-section {
+  padding: 0.3rem 0.5rem;
+  background: #f9fafb;
+}
+
+.voice-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.voice-btn:hover {
+  background: #fecaca;
+}
 
 .delete-btn {
   border: none;
@@ -176,29 +192,6 @@ td input[type="number"] {
 .delete-btn:hover {
   background: #dc2626;
 }
-
-/* سطر التسجيل الصوتي */
-
-.voice-row {
-  background: #fff7ed;
-}
-
-.row-voice-section {
-  padding: 0.3rem 0.4rem;
-}
-
-.voice-btn {
-  width: 100%;
-  background: #fee2e2;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 0.7rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #b91c1c;
-}
-
-/* المجاميع */
 
 .totals {
   margin-top: 1rem;
@@ -221,7 +214,6 @@ td input[type="number"] {
 }
 
 /* الفواتير المحفوظة */
-
 .saved-section {
   margin-top: 1.5rem;
   background: #ffffff;
@@ -283,61 +275,48 @@ td input[type="number"] {
   color: #b91c1c;
 }
 
-/* ============================
-   وضع الطباعة / PDF
-   ============================ */
-
+/* حجم الصفحة للطباعة */
 @page {
   size: A4 portrait;
-  margin: 10mm;
+  margin: 1cm;
 }
 
+/* طباعة – إخفاء الأزرار وبعض الأجزاء */
 @media print {
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  body {
+    background: #ffffff;
   }
 
-  body {
-    background: #ffffff !important;
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0.5cm;
+    box-shadow: none;
   }
 
   .actions,
   .saved-section,
-  .footer-note,
-  .voice-row,
-  .voice-btn,
-  .row-voice-section,
-  .delete-btn {
+  .footer-note {
     display: none !important;
   }
 
-  .container {
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0.4cm !important;
-    box-shadow: none !important;
+  /* إخفاء زر الحذف وأزرار الصوت في الطباعة فقط */
+  .delete-btn,
+  .voice-row,
+  .voice-btn {
+    display: none !important;
   }
 
   .table-wrapper {
-    overflow: visible !important;
-    box-shadow: none !important;
+    box-shadow: none;
   }
 
   table {
-    width: 100% !important;
-    font-size: 0.8rem !important;
-    page-break-inside: auto;
+    width: 100%;
   }
 
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
-  }
-
-  td input,
-  th input {
-    border: none !important;
-    background: transparent !important;
+  th, td {
+    padding: 0.2cm 0.15cm;
+    font-size: 11px;
   }
 }
