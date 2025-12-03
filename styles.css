@@ -32,7 +32,6 @@ h1 {
   font-size: 1.3rem;
 }
 
-/* رأس الفاتورة */
 .invoice-header {
   background: #ffffff;
   padding: 1rem;
@@ -62,7 +61,6 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* الأزرار العلوية */
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -83,11 +81,30 @@ h1 {
   transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
 }
 
-.btn.primary { background: #2563eb; color: #ffffff; }
-.btn.secondary { background: #e5e7eb; color: #111827; }
-.btn.pdf { background: #16a34a; color: #ffffff; }
-.btn.save { background: #f97316; color: #ffffff; }
-.btn.install { background: #10b981; color: #ffffff; }
+.btn.primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn.pdf {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.btn.save {
+  background: #f97316;
+  color: #ffffff;
+}
+
+.btn.install {
+  background: #10b981;
+  color: #ffffff;
+}
 
 .btn:hover {
   transform: translateY(-1px);
@@ -99,7 +116,6 @@ h1 {
   box-shadow: none;
 }
 
-/* الجدول */
 .table-wrapper {
   overflow-x: auto;
   background: #ffffff;
@@ -110,7 +126,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 750px;
+  min-width: 650px;
 }
 
 thead {
@@ -129,7 +145,8 @@ th {
   white-space: nowrap;
 }
 
-td input {
+td input[type="number"],
+td input[type="text"] {
   width: 100%;
   padding: 0.4rem 0.45rem;
   border-radius: 0.55rem;
@@ -142,58 +159,6 @@ td input[type="number"] {
   text-align: center;
 }
 
-/* صف البيانات */
-tr.item-row {
-  background: #ffffff;
-}
-
-/* صف زر التسجيل */
-tr.voice-row td {
-  border-top: none;
-}
-
-/* صندوق زر التسجيل تحت السطر */
-.row-voice-section {
-  background: #e6ffe9;
-  padding: 0.6rem;
-  text-align: center;
-}
-
-/* زر التسجيل الكبير */
-.voice-btn {
-  background: #16a34a;
-  color: #ffffff;
-  border: none;
-  border-radius: 999px;
-  padding: 0.55rem 1.4rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.voice-btn:active {
-  background: #15803d;
-  transform: scale(0.98);
-}
-
-/* زر الحذف */
-.delete-btn {
-  border: none;
-  background: #ef4444;
-  color: #ffffff;
-  border-radius: 999px;
-  padding: 0.35rem 0.6rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-}
-
-/* المجاميع */
 .totals {
   margin-top: 1rem;
   background: #ffffff;
@@ -207,7 +172,6 @@ tr.voice-row td {
   margin: 0.15rem 0;
 }
 
-/* الفوتر */
 .footer-note {
   margin-top: 1.5rem;
   text-align: center;
@@ -277,27 +241,57 @@ tr.voice-row td {
   color: #b91c1c;
 }
 
-/* الطباعة */
+/* ========================================= */
+/*           🔥 وضع الطباعة / PDF            */
+/* ========================================= */
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
 @media print {
-  .actions,
-  .saved-section,
-  .footer-note,
-  .row-voice-section,
-  .voice-btn {
-    display: none !important;
-  }
 
   body {
-    background: #ffffff;
+    background: #ffffff !important;
   }
 
   .container {
-    padding: 0;
-    max-width: 100%;
-    box-shadow: none;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.4cm !important;
+    box-shadow: none !important;
   }
 
+  /* إخفاء كل الأزرار وقت الطباعة */
+  .actions,
+  .saved-section,
+  .footer-note {
+    display: none !important;
+  }
+
+  /* إخفاء زر الحذف وزر التسجيل الصوتي فقط وقت الطباعة */
+  .delete-btn,
+  .voice-row,
+  .voice-btn,
+  .row-voice-section {
+    display: none !important;
+  }
+
+  /* منع القص */
   .table-wrapper {
-    box-shadow: none;
+    overflow: visible !important;
+    box-shadow: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    font-size: 0.8rem !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
 }
