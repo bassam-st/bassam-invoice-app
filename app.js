@@ -26,7 +26,7 @@ const savedInvoicesList = document.getElementById("savedInvoicesList");
   invoiceDateInput.value = today;
 })();
 
-// تغيير العملة في الإجمالي
+// تغيير العملة
 currencySelect.addEventListener("change", () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
@@ -75,7 +75,7 @@ function createRow(initial = {}) {
     </td>
   `;
 
-  // صف زر التسجيل الصوتي لهذا السطر
+  // صف زر التسجيل
   const voiceRow = document.createElement("tr");
   voiceRow.classList.add("voice-row");
   voiceRow.innerHTML = `
@@ -88,11 +88,9 @@ function createRow(initial = {}) {
     </td>
   `;
 
-  // إضافة الصفين إلى الجدول
   itemsBody.appendChild(dataRow);
   itemsBody.appendChild(voiceRow);
 
-  // ربط الأحداث
   attachRowEvents(dataRow, voiceRow);
   updateRowTotals(dataRow);
   updateTotals();
@@ -106,6 +104,8 @@ function attachRowEvents(dataRow, voiceRow) {
   const descInput = dataRow.querySelector(".desc-input");
   const weightInput = dataRow.querySelector(".weight-per-carton-input");
   const priceInput = dataRow.querySelector(".price-per-carton-input");
+  const totalWeightInput = dataRow.querySelector(".total-weight-input");
+  const totalValueInput = dataRow.querySelector(".total-value-input");
 
   [qtyInput, descInput, weightInput, priceInput].forEach((input) => {
     input.addEventListener("input", () => {
@@ -114,10 +114,10 @@ function attachRowEvents(dataRow, voiceRow) {
     });
   });
 
-  // زر الحذف
   const deleteBtn = dataRow.querySelector(".delete-btn");
   deleteBtn.addEventListener("click", () => {
     if (!confirm("هل أنت متأكد من حذف هذا السطر؟")) return;
+    // حذف صف البيانات وصف التسجيل
     if (voiceRow && voiceRow.parentNode === itemsBody) {
       voiceRow.remove();
     }
@@ -125,7 +125,7 @@ function attachRowEvents(dataRow, voiceRow) {
     updateTotals();
   });
 
-  // زر التسجيل الصوتي لهذا السطر
+  // زر المايك لهذا السطر
   const voiceBtn = voiceRow.querySelector(".voice-btn");
   voiceBtn.addEventListener("mousedown", () => startRowVoice(dataRow));
   voiceBtn.addEventListener("touchstart", (e) => {
@@ -146,18 +146,18 @@ function attachRowEvents(dataRow, voiceRow) {
 // ================================
 function updateRowTotals(dataRow) {
   const qty =
-    parseFloat((dataRow.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
+    parseFloat(dataRow.querySelector(".qty-input").value.replace(",", ".")) || 0;
   const weightPer =
     parseFloat(
-      (dataRow
+      dataRow
         .querySelector(".weight-per-carton-input")
-        .value || "").replace(",", ".")
+        .value.replace(",", ".")
     ) || 0;
   const pricePer =
     parseFloat(
-      (dataRow
+      dataRow
         .querySelector(".price-per-carton-input")
-        .value || "").replace(",", ".")
+        .value.replace(",", ".")
     ) || 0;
 
   const totalWeight = qty * weightPer;
@@ -181,14 +181,14 @@ function updateTotals() {
 
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty =
-      parseFloat((row.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
+      parseFloat(row.querySelector(".qty-input").value.replace(",", ".")) || 0;
     const w =
       parseFloat(
-        (row.querySelector(".total-weight-input").value || "").replace(",", ".")
+        row.querySelector(".total-weight-input").value.replace(",", ".")
       ) || 0;
     const v =
       parseFloat(
-        (row.querySelector(".total-value-input").value || "").replace(",", ".")
+        row.querySelector(".total-value-input").value.replace(",", ".")
       ) || 0;
 
     totalQty += qty;
@@ -202,7 +202,7 @@ function updateTotals() {
 }
 
 // ================================
-// الصوت – Web Speech API
+// الصوت – Web Speech API (ضغط مستمر)
 // ================================
 let recognition = null;
 let currentVoiceRow = null;
@@ -247,7 +247,7 @@ function startRowVoice(row) {
   try {
     rec.start();
   } catch (e) {
-    // لو كان شغال مسبقاً
+    // أحياناً لو كان شغال مسبقاً
   }
 }
 
@@ -343,13 +343,16 @@ function fillRowFromVoice(row, text) {
   const weightInput = row.querySelector(".weight-per-carton-input");
   const priceInput = row.querySelector(".price-per-carton-input");
 
-  // الوصف = الكلام كامل
+  // نخلي الوصف من الكلام كامل
   descInput.value = text;
 
   const lower = text.toLowerCase();
   const nums = extractNumbersSmart(lower);
 
-  // رقم 1 = العدد، رقم 2 = وزن/كرتون، رقم 3 = قيمة/كرتون
+  // من باب البساطة:
+  // الرقم الأول = العدد
+  // الرقم الثاني = وزن / كرتون (كيلو)
+  // الرقم الثالث = قيمة / كرتون
   if (nums[0] !== undefined) qtyInput.value = nums[0];
   if (nums[1] !== undefined) weightInput.value = nums[1];
   if (nums[2] !== undefined) priceInput.value = nums[2];
@@ -393,14 +396,7 @@ function captureCurrentInvoice() {
       row.querySelector(".total-value-input")?.value || ""
     ).trim();
 
-    if (
-      !qty &&
-      !desc &&
-      !weightPerCarton &&
-      !pricePerCarton &&
-      !totalWeight &&
-      !totalValue
-    ) {
+    if (!qty && !desc && !weightPerCarton && !pricePerCarton && !totalWeight && !totalValue) {
       return;
     }
 
@@ -410,7 +406,7 @@ function captureCurrentInvoice() {
       weightPerCarton,
       pricePerCarton,
       totalWeight,
-      totalValue
+      totalValue,
     });
   });
 
@@ -424,8 +420,8 @@ function captureCurrentInvoice() {
     totals: {
       qty: totalQtyEl.textContent,
       weight: totalWeightEl.textContent,
-      value: totalValueEl.textContent
-    }
+      value: totalValueEl.textContent,
+    },
   };
 }
 
@@ -484,7 +480,6 @@ function renderSavedInvoices() {
     });
 }
 
-// زر حفظ الفاتورة
 saveInvoiceBtn.addEventListener("click", () => {
   const invoice = captureCurrentInvoice();
 
@@ -501,7 +496,6 @@ saveInvoiceBtn.addEventListener("click", () => {
   alert("تم حفظ الفاتورة في هذا الجهاز ✅");
 });
 
-// تحميل فاتورة محفوظة
 function loadInvoice(id) {
   const invoices = loadSavedInvoicesFromStorage();
   const inv = invoices.find((i) => i.id === id);
@@ -525,16 +519,20 @@ function loadInvoice(id) {
 }
 
 // ================================
-// أزرار (إضافة سطر / طباعة / PDF)
+// ربط أزرار الصفحة الرئيسية
 // ================================
+
+// إضافة سطر جديد
 addRowBtn.addEventListener("click", () => {
   createRow();
 });
 
+// طباعة (وتستخدم أيضاً كـ PDF من خيار "حفظ كـ PDF")
 printBtn.addEventListener("click", () => {
   window.print();
 });
 
+// زر PDF يستدعي نفس نافذة الطباعة
 pdfBtn.addEventListener("click", () => {
   window.print();
 });
@@ -563,6 +561,6 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 
-// إنشاء أول صف وتحميل الفواتير عند فتح الصفحة
+// إنشاء أول صف وتحميل الفواتير
 createRow();
 renderSavedInvoices();
