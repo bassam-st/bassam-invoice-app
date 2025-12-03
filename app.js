@@ -1,11 +1,11 @@
 // ================================
 // إلغاء أي Service Worker قديم (مرة واحدة فقط)
 // ================================
-if ('serviceWorker' in navigator) {
+if ("serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) => {
-    if (regs.length > 0 && !localStorage.getItem('sw_cleared_v3')) {
+    if (regs.length > 0 && !localStorage.getItem("sw_cleared_v4")) {
       regs.forEach((reg) => reg.unregister());
-      localStorage.setItem('sw_cleared_v3', '1');
+      localStorage.setItem("sw_cleared_v4", "1");
       location.reload();
     }
   });
@@ -44,12 +44,14 @@ const savedInvoicesList = document.getElementById("savedInvoicesList");
 // ================================
 // تغيير العملة في إجمالي القيمة
 // ================================
-currencySelect.addEventListener("change", () => {
-  totalCurrencyLabel.textContent = currencySelect.value;
-});
+if (currencySelect) {
+  currencySelect.addEventListener("change", () => {
+    totalCurrencyLabel.textContent = currencySelect.value;
+  });
+}
 
 // ================================
-// إنشاء صف جديد (سطر + سطر زر الصوت تحت)
+// إنشاء صف جديد (سطر جدول + سطر زر الصوت تحته)
 // ================================
 function createRow(initial = {}) {
   const block = document.createElement("tbody");
@@ -135,19 +137,30 @@ function attachRowEvents(block) {
 // حساب وزن وقيمة السطر
 // ================================
 function updateRowTotals(block) {
-  const qty = parseFloat(block.querySelector(".qty-input").value) || 0;
+  const qty =
+    parseFloat(block.querySelector(".qty-input").value.replace(",", ".")) || 0;
   const weightPer =
-    parseFloat(block.querySelector(".weight-per-carton-input").value) || 0;
+    parseFloat(
+      block
+        .querySelector(".weight-per-carton-input")
+        .value.replace(",", ".")
+    ) || 0;
   const pricePer =
-    parseFloat(block.querySelector(".price-per-carton-input").value) || 0;
+    parseFloat(
+      block.querySelector(".price-per-carton-input").value.replace(",", ".")
+    ) || 0;
 
   const totalWeight = qty * weightPer;
   const totalValue = qty * pricePer;
 
   block.querySelector(".total-weight-input").value =
-    totalWeight ? totalWeight.toFixed(2) : "";
+    totalWeight || totalWeight === 0
+      ? totalWeight.toFixed(2)
+      : "";
   block.querySelector(".total-value-input").value =
-    totalValue ? totalValue.toFixed(2) : "";
+    totalValue || totalValue === 0
+      ? totalValue.toFixed(2)
+      : "";
 }
 
 // ================================
@@ -159,9 +172,17 @@ function updateTotals() {
   let totalValue = 0;
 
   itemsBody.querySelectorAll(".item-block").forEach((block) => {
-    const qty = parseFloat(block.querySelector(".qty-input").value) || 0;
-    const w = parseFloat(block.querySelector(".total-weight-input").value) || 0;
-    const v = parseFloat(block.querySelector(".total-value-input").value) || 0;
+    const qty =
+      parseFloat(block.querySelector(".qty-input").value.replace(",", ".")) ||
+      0;
+    const w =
+      parseFloat(
+        block.querySelector(".total-weight-input").value.replace(",", ".")
+      ) || 0;
+    const v =
+      parseFloat(
+        block.querySelector(".total-value-input").value.replace(",", ".")
+      ) || 0;
 
     totalQty += qty;
     totalWeight += w;
@@ -239,13 +260,17 @@ function stopRowVoice() {
 }
 
 // ================================
-// استخراج أرقام من النص
+// استخراج أرقام من النص (عربي أو أرقام عادية)
 // ================================
 function extractNumbers(text) {
   const nums = [];
-  const matches = text.match(/\d+(\.\d+)?/g);
+  // استبدال الفاصلة العربية
+  const clean = text.replace(/،/g, " ").replace(/٬/g, " ");
+  const matches = clean.match(/\d+([.,]\d+)?/g);
   if (matches) {
-    matches.forEach((m) => nums.push(parseFloat(m)));
+    matches.forEach((m) =>
+      nums.push(parseFloat(m.replace(",", ".").trim()))
+    );
   }
   return nums;
 }
@@ -254,19 +279,18 @@ function extractNumbers(text) {
 // تعبئة السطر من النص الصوتي
 // ================================
 function fillRowFromVoice(block, text) {
-  text = text.replace(/[،٬]/g, " ").trim();
+  text = text.trim();
 
   const descInput = block.querySelector(".desc-input");
   const qtyInput = block.querySelector(".qty-input");
   const weightInput = block.querySelector(".weight-per-carton-input");
   const priceInput = block.querySelector(".price-per-carton-input");
 
-  // الوصف = النص كامل
+  // الوصف = النص كامل كما هو
   descInput.value = text;
 
   const nums = extractNumbers(text);
 
-  // مثال مبسط:
   // أول رقم = العدد
   // ثاني رقم = وزن/كرتون
   // ثالث رقم = قيمة/كرتون
@@ -424,15 +448,24 @@ function deleteInvoice(id) {
 }
 
 // ================================
-// أزرار التطبيق
+// أزرار التطبيق الرئيسية
 // ================================
-addRowBtn.addEventListener("click", () => createRow());
-printBtn.addEventListener("click", () => window.print());
-pdfBtn.addEventListener("click", () => window.print());
-saveInvoiceBtn.addEventListener("click", saveCurrentInvoice);
+if (addRowBtn) {
+  addRowBtn.addEventListener("click", () => createRow());
+}
+
+if (printBtn) {
+  printBtn.addEventListener("click", () => window.print());
+}
+if (pdfBtn) {
+  pdfBtn.addEventListener("click", () => window.print());
+}
+if (saveInvoiceBtn) {
+  saveInvoiceBtn.addEventListener("click", saveCurrentInvoice);
+}
 
 // ================================
-// PWA: زر التثبيت (بدون Service Worker)
+// PWA: زر التثبيت (يعتمد على beforeinstallprompt)
 // ================================
 let deferredPrompt = null;
 
