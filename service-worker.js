@@ -1,27 +1,29 @@
-// service-worker.js – إصدار جديد يجبر المتصفح على كاش جديد
+// service-worker.js – كاش جديد لإجبار المتصفح على تحديث الملفات
 
-const CACHE_NAME = 'bassam-invoice-v3'; // غيرنا اسم الكاش هنا
+const CACHE_NAME = "bassam-invoice-cache-v5"; // غير الاسم كل مرة لو احتجت تحديث قوي
 
 const FILES_TO_CACHE = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js?v=500',
-  './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.png',
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js?v=900",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-512.png",
 ];
 
-// تثبيت الـ SW وتخزين الملفات
-self.addEventListener('install', (event) => {
+// تثبيت الكاش
+self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(FILES_TO_CACHE);
+    })
   );
 });
 
-// تفعيل وإزالة أي كاش قديم بإسم آخر
-self.addEventListener('activate', (event) => {
+// تفعيل وحذف الكاشات القديمة
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -35,8 +37,8 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// جلب الملفات من الكاش أو من الشبكة
-self.addEventListener('fetch', (event) => {
+// جلب من الكاش أو من الشبكة
+self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
