@@ -1,3 +1,6 @@
+/* ============================
+   RESET + GENERAL
+============================ */
 * {
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -32,6 +35,9 @@ h1 {
   font-size: 1.3rem;
 }
 
+/* ============================
+   HEADER FIELDS
+============================ */
 .invoice-header {
   background: #ffffff;
   padding: 1rem;
@@ -61,6 +67,9 @@ h1 {
   font-size: 0.95rem;
 }
 
+/* ============================
+   BUTTONS
+============================ */
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -92,17 +101,21 @@ h1 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
+/* ============================
+   TABLE
+============================ */
 .table-wrapper {
-  overflow-x: auto;
   background: white;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;  /* مهم.. يمنع السحب يمين/يسار */
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 700px;
+  table-layout: fixed; /* توزيع أعمدة أفضل */
+  min-width: unset !important; /* يمنع توسيع الجدول */
 }
 
 thead {
@@ -111,36 +124,37 @@ thead {
 
 th, td {
   border: 1px solid #e5e7eb;
-  padding: 0.35rem 0.4rem;
-  font-size: 0.85rem;
+  padding: 0.25rem 0.3rem;
+  font-size: 0.8rem;
   text-align: center;
   vertical-align: middle;
 }
 
+/* توزيع الأعمدة للجوال */
+th:nth-child(1), td:nth-child(1) { width: 10%; }  /* العدد */
+th:nth-child(2), td:nth-child(2) { width: 26%; }  /* الصنف */
+th:nth-child(3), td:nth-child(3) { width: 14%; }  /* وزن/كرتون */
+th:nth-child(4), td:nth-child(4) { width: 14%; }  /* قيمة/كرتون */
+th:nth-child(5), td:nth-child(5) { width: 18%; }  /* الوزن الكلي */
+th:nth-child(6), td:nth-child(6) { width: 18%; }  /* القيمة الكلية */
+th:nth-child(7), td:nth-child(7) { width: 10%; }  /* حذف */
+
 td input {
   width: 100%;
-  padding: 0.4rem 0.45rem;
-  border-radius: 0.55rem;
+  padding: 0.25rem 0.3rem;
+  border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   background: #f9fafb;
+  font-size: 0.75rem;
 }
 
-td input[type="number"] { text-align: center; }
-
-/* زر حذف */
-.delete-btn {
-  border: none;
-  background: #ef4444;
-  color: white;
-  border-radius: 999px;
-  padding: 0.35rem 0.6rem;
-  cursor: pointer;
-  font-size: 0.85rem;
+td input[type="number"] {
+  text-align: center;
 }
 
-.delete-btn:hover { background: #dc2626; }
-
-/* القسم بين الصف و زر التسجيل */
+/* ============================
+   VOICE BUTTON
+============================ */
 .row-voice-section {
   background: #e6ffe9;
   padding: 0.6rem;
@@ -149,7 +163,6 @@ td input[type="number"] { text-align: center; }
   text-align: center;
 }
 
-/* زر التسجيل الكبير */
 .voice-btn {
   background: #16a34a;
   color: white;
@@ -168,7 +181,9 @@ td input[type="number"] { text-align: center; }
   transform: scale(0.98);
 }
 
-/* إجمالي */
+/* ============================
+   TOTALS
+============================ */
 .totals {
   margin-top: 1rem;
   background: white;
@@ -178,14 +193,9 @@ td input[type="number"] { text-align: center; }
   font-size: 0.95rem;
 }
 
-.footer-note {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-/* الفواتير المحفوظة */
+/* ============================
+   SAVED INVOICES
+============================ */
 .saved-section {
   margin-top: 1.5rem;
   background: white;
@@ -193,7 +203,16 @@ td input[type="number"] { text-align: center; }
   border-radius: 0.75rem;
 }
 
-/* إخفاء الأشياء عند الطباعة */
+.footer-note {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ============================
+   PRINT RULES
+============================ */
 @media print {
   .actions, .saved-section, .footer-note, .voice-btn {
     display: none !important;
