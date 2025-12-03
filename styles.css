@@ -78,47 +78,23 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+  transition: 0.1s ease;
 }
 
-.btn.primary {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.btn.secondary {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.btn.pdf {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.btn.save {
-  background: #f97316;
-  color: #ffffff;
-}
-
-.btn.install {
-  background: #10b981;
-  color: #ffffff;
-}
+.btn.primary { background: #2563eb; color: white; }
+.btn.secondary { background: #e5e7eb; color: #111827; }
+.btn.pdf { background: #16a34a; color: white; }
+.btn.save { background: #f97316; color: white; }
+.btn.install { background: #10b981; color: white; }
 
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
-.btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
 .table-wrapper {
   overflow-x: auto;
-  background: #ffffff;
+  background: white;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
@@ -126,7 +102,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 650px;
+  min-width: 700px;
 }
 
 thead {
@@ -141,69 +117,65 @@ th, td {
   vertical-align: middle;
 }
 
-th {
-  white-space: nowrap;
-}
-
-td input[type="number"],
-td input[type="text"] {
+td input {
   width: 100%;
   padding: 0.4rem 0.45rem;
   border-radius: 0.55rem;
   border: 1px solid #d1d5db;
   background: #f9fafb;
-  font-size: 0.85rem;
 }
 
-td input[type="number"] {
-  text-align: center;
-}
+td input[type="number"] { text-align: center; }
 
-/* صف الصوت */
-.voice-row .row-voice-section {
-  padding: 0.3rem 0.5rem;
-  background: #f9fafb;
-}
-
-.voice-btn {
-  border-radius: 999px;
-  border: none;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.voice-btn:hover {
-  background: #fecaca;
-}
-
+/* زر حذف */
 .delete-btn {
   border: none;
   background: #ef4444;
-  color: #ffffff;
+  color: white;
   border-radius: 999px;
   padding: 0.35rem 0.6rem;
   cursor: pointer;
   font-size: 0.85rem;
 }
 
-.delete-btn:hover {
-  background: #dc2626;
+.delete-btn:hover { background: #dc2626; }
+
+/* القسم بين الصف و زر التسجيل */
+.row-voice-section {
+  background: #e6ffe9;
+  padding: 0.6rem;
+  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  text-align: center;
 }
 
+/* زر التسجيل الكبير */
+.voice-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.voice-btn:active {
+  background: #15803d;
+  transform: scale(0.98);
+}
+
+/* إجمالي */
 .totals {
   margin-top: 1rem;
-  background: #ffffff;
+  background: white;
   padding: 0.8rem 1rem;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   font-size: 0.95rem;
-}
-
-.totals p {
-  margin: 0.15rem 0;
 }
 
 .footer-note {
@@ -216,107 +188,14 @@ td input[type="number"] {
 /* الفواتير المحفوظة */
 .saved-section {
   margin-top: 1.5rem;
-  background: #ffffff;
+  background: white;
   padding: 0.9rem 1rem;
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-.saved-hint {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin-bottom: 0.4rem;
-}
-
-.saved-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.saved-card {
-  border-radius: 0.6rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 0.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-}
-
-.saved-card-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.saved-card-buttons {
-  display: flex;
-  gap: 0.3rem;
-}
-
-.saved-card button {
-  border-radius: 999px;
-  border: none;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.saved-load-btn {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.saved-delete-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-/* حجم الصفحة للطباعة */
-@page {
-  size: A4 portrait;
-  margin: 1cm;
-}
-
-/* طباعة – إخفاء الأزرار وبعض الأجزاء */
+/* إخفاء الأشياء عند الطباعة */
 @media print {
-  body {
-    background: #ffffff;
-  }
-
-  .container {
-    max-width: 100%;
-    margin: 0;
-    padding: 0.5cm;
-    box-shadow: none;
-  }
-
-  .actions,
-  .saved-section,
-  .footer-note {
+  .actions, .saved-section, .footer-note, .voice-btn {
     display: none !important;
-  }
-
-  /* إخفاء زر الحذف وأزرار الصوت في الطباعة فقط */
-  .delete-btn,
-  .voice-row,
-  .voice-btn {
-    display: none !important;
-  }
-
-  .table-wrapper {
-    box-shadow: none;
-  }
-
-  table {
-    width: 100%;
-  }
-
-  th, td {
-    padding: 0.2cm 0.15cm;
-    font-size: 11px;
   }
 }
