@@ -32,6 +32,22 @@ currencySelect.addEventListener("change", () => {
 });
 
 // ================================
+// ربط أزرار أعلى الصفحة
+// ================================
+addRowBtn.addEventListener("click", () => {
+  createRow();
+});
+
+printBtn.addEventListener("click", () => {
+  window.print();
+});
+
+pdfBtn.addEventListener("click", () => {
+  // نفس الطباعة، ومن نافذة الطباعة تختار "حفظ بتنسيق PDF"
+  window.print();
+});
+
+// ================================
 // إنشاء صف جديد (صف بيانات + صف زر تسجيل)
 // ================================
 function createRow(initial = {}) {
@@ -261,43 +277,43 @@ function stopRowVoice() {
 function parseArabicNumberWords(text) {
   const map = {
     "صفر": 0,
-  "واحد": 1,
-  "واحدة": 1,
-  "اثنين": 2,
-  "ثنين": 2,
-  "ثلاثة": 3,
-  "ثلاث": 3,
-  "اربعة": 4,
-  "أربعة": 4,
-  "خمسة": 5,
-  "ستة": 6,
-  "سبعة": 7,
-  "ثمانية": 8,
-  "ثمانيه": 8,
-  "تسعة": 9,
-  "تسعه": 9,
-  "عشرة": 10,
-  "عشره": 10,
-  "عشرين": 20,
-  "ثلاثين": 30,
-  "اربعين": 40,
-  "خمسين": 50,
-  "ستين": 60,
-  "سبعين": 70,
-  "ثمانين": 80,
-  "تسعين": 90,
-  "مئة": 100,
-  "مية": 100,
-  "مائتين": 200,
-  "ثلاثمائة": 300,
-  "اربعمائة": 400,
-  "خمسمائة": 500,
-  "ستمائة": 600,
-  "سبعمائة": 700,
-  "ثمانمائة": 800,
-  "تسعمائة": 900,
-  "الف": 1000,
-  "ألف": 1000
+    "واحد": 1,
+    "واحدة": 1,
+    "اثنين": 2,
+    "ثنين": 2,
+    "ثلاثة": 3,
+    "ثلاث": 3,
+    "اربعة": 4,
+    "أربعة": 4,
+    "خمسة": 5,
+    "ستة": 6,
+    "سبعة": 7,
+    "ثمانية": 8,
+    "ثمانيه": 8,
+    "تسعة": 9,
+    "تسعه": 9,
+    "عشرة": 10,
+    "عشره": 10,
+    "عشرين": 20,
+    "ثلاثين": 30,
+    "اربعين": 40,
+    "خمسين": 50,
+    "ستين": 60,
+    "سبعين": 70,
+    "ثمانين": 80,
+    "تسعين": 90,
+    "مئة": 100,
+    "مية": 100,
+    "مائتين": 200,
+    "ثلاثمائة": 300,
+    "اربعمائة": 400,
+    "خمسمائة": 500,
+    "ستمائة": 600,
+    "سبعمائة": 700,
+    "ثمانمائة": 800,
+    "تسعمائة": 900,
+    "الف": 1000,
+    "ألف": 1000
   };
 
   let sum = 0;
@@ -340,11 +356,16 @@ function fillRowFromVoice(row, text) {
   const weightInput = row.querySelector(".weight-per-carton-input");
   const priceInput = row.querySelector(".price-per-carton-input");
 
+  // نخلي الوصف من الكلام كامل
   descInput.value = text;
 
   const lower = text.toLowerCase();
   const nums = extractNumbersSmart(lower);
 
+  // من باب البساطة:
+  // الرقم الأول = العدد
+  // الرقم الثاني = وزن / كرتون (كيلو)
+  // الرقم الثالث = قيمة / كرتون
   if (nums[0] !== undefined) qtyInput.value = nums[0];
   if (nums[1] !== undefined) weightInput.value = nums[1];
   if (nums[2] !== undefined) priceInput.value = nums[2];
@@ -375,20 +396,23 @@ function captureCurrentInvoice() {
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty = (row.querySelector(".qty-input")?.value || "").trim();
     const desc = (row.querySelector(".desc-input")?.value || "").trim();
-    const weightPerCarton = (
-      row.querySelector(".weight-per-carton-input")?.value || ""
-    ).trim();
-    const pricePerCarton = (
-      row.querySelector(".price-per-carton-input")?.value || ""
-    ).trim();
-    const totalWeight = (
-      row.querySelector(".total-weight-input")?.value || ""
-    ).trim();
-    const totalValue = (
-      row.querySelector(".total-value-input")?.value || ""
-    ).trim();
+    const weightPerCarton =
+      (row.querySelector(".weight-per-carton-input")?.value || "").trim();
+    const pricePerCarton =
+      (row.querySelector(".price-per-carton-input")?.value || "").trim();
+    const totalWeight =
+      (row.querySelector(".total-weight-input")?.value || "").trim();
+    const totalValue =
+      (row.querySelector(".total-value-input")?.value || "").trim();
 
-    if (!qty && !desc && !weightPerCarton && !pricePerCarton && !totalWeight && !totalValue) {
+    if (
+      !qty &&
+      !desc &&
+      !weightPerCarton &&
+      !pricePerCarton &&
+      !totalWeight &&
+      !totalValue
+    ) {
       return;
     }
 
@@ -510,22 +534,6 @@ function loadInvoice(id) {
 }
 
 // ================================
-// ربط أزرار الصفحة الرئيسية
-// ================================
-
-addRowBtn.addEventListener("click", () => {
-  createRow();
-});
-
-printBtn.addEventListener("click", () => {
-  window.print();
-});
-
-pdfBtn.addEventListener("click", () => {
-  window.print();
-});
-
-// ================================
 // زر التثبيت PWA
 // ================================
 let deferredPrompt = null;
@@ -544,7 +552,7 @@ installBtn.addEventListener("click", async () => {
   installBtn.hidden = true;
 });
 
-// تسجيل Service Worker (اختياري)
+// تسجيل Service Worker
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
