@@ -32,22 +32,6 @@ currencySelect.addEventListener("change", () => {
 });
 
 // ================================
-// ربط أزرار أعلى الصفحة
-// ================================
-addRowBtn.addEventListener("click", () => {
-  createRow();
-});
-
-printBtn.addEventListener("click", () => {
-  window.print();
-});
-
-pdfBtn.addEventListener("click", () => {
-  // نفس الطباعة، ومن نافذة الطباعة تختار "حفظ بتنسيق PDF"
-  window.print();
-});
-
-// ================================
 // إنشاء صف جديد (صف بيانات + صف زر تسجيل)
 // ================================
 function createRow(initial = {}) {
@@ -120,6 +104,8 @@ function attachRowEvents(dataRow, voiceRow) {
   const descInput = dataRow.querySelector(".desc-input");
   const weightInput = dataRow.querySelector(".weight-per-carton-input");
   const priceInput = dataRow.querySelector(".price-per-carton-input");
+  const totalWeightInput = dataRow.querySelector(".total-weight-input");
+  const totalValueInput = dataRow.querySelector(".total-value-input");
 
   [qtyInput, descInput, weightInput, priceInput].forEach((input) => {
     input.addEventListener("input", () => {
@@ -131,6 +117,7 @@ function attachRowEvents(dataRow, voiceRow) {
   const deleteBtn = dataRow.querySelector(".delete-btn");
   deleteBtn.addEventListener("click", () => {
     if (!confirm("هل أنت متأكد من حذف هذا السطر؟")) return;
+    // حذف صف البيانات وصف التسجيل
     if (voiceRow && voiceRow.parentNode === itemsBody) {
       voiceRow.remove();
     }
@@ -159,18 +146,18 @@ function attachRowEvents(dataRow, voiceRow) {
 // ================================
 function updateRowTotals(dataRow) {
   const qty =
-    parseFloat((dataRow.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
+    parseFloat(dataRow.querySelector(".qty-input").value.replace(",", ".")) || 0;
   const weightPer =
     parseFloat(
-      (dataRow
+      dataRow
         .querySelector(".weight-per-carton-input")
-        .value || "").replace(",", ".")
+        .value.replace(",", ".")
     ) || 0;
   const pricePer =
     parseFloat(
-      (dataRow
+      dataRow
         .querySelector(".price-per-carton-input")
-        .value || "").replace(",", ".")
+        .value.replace(",", ".")
     ) || 0;
 
   const totalWeight = qty * weightPer;
@@ -194,14 +181,14 @@ function updateTotals() {
 
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty =
-      parseFloat((row.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
+      parseFloat(row.querySelector(".qty-input").value.replace(",", ".")) || 0;
     const w =
       parseFloat(
-        (row.querySelector(".total-weight-input").value || "").replace(",", ".")
+        row.querySelector(".total-weight-input").value.replace(",", ".")
       ) || 0;
     const v =
       parseFloat(
-        (row.querySelector(".total-value-input").value || "").replace(",", ".")
+        row.querySelector(".total-value-input").value.replace(",", ".")
       ) || 0;
 
     totalQty += qty;
@@ -281,6 +268,7 @@ function parseArabicNumberWords(text) {
     "واحدة": 1,
     "اثنين": 2,
     "ثنين": 2,
+    "اثنين": 2,
     "ثلاثة": 3,
     "ثلاث": 3,
     "اربعة": 4,
@@ -320,7 +308,7 @@ function parseArabicNumberWords(text) {
   const parts = text.split(/\s+/);
 
   parts.forEach((word) => {
-    const w = word.replace(/[^\u0600-\u06FF]/g, "");
+    const w = word.replace(/[^\u0600-\u06FF]/g, ""); // ابقي الأحرف العربية فقط
     if (map[w] !== undefined) {
       sum += map[w];
     }
@@ -396,23 +384,20 @@ function captureCurrentInvoice() {
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty = (row.querySelector(".qty-input")?.value || "").trim();
     const desc = (row.querySelector(".desc-input")?.value || "").trim();
-    const weightPerCarton =
-      (row.querySelector(".weight-per-carton-input")?.value || "").trim();
-    const pricePerCarton =
-      (row.querySelector(".price-per-carton-input")?.value || "").trim();
-    const totalWeight =
-      (row.querySelector(".total-weight-input")?.value || "").trim();
-    const totalValue =
-      (row.querySelector(".total-value-input")?.value || "").trim();
+    const weightPerCarton = (
+      row.querySelector(".weight-per-carton-input")?.value || ""
+    ).trim();
+    const pricePerCarton = (
+      row.querySelector(".price-per-carton-input")?.value || ""
+    ).trim();
+    const totalWeight = (
+      row.querySelector(".total-weight-input")?.value || ""
+    ).trim();
+    const totalValue = (
+      row.querySelector(".total-value-input")?.value || ""
+    ).trim();
 
-    if (
-      !qty &&
-      !desc &&
-      !weightPerCarton &&
-      !pricePerCarton &&
-      !totalWeight &&
-      !totalValue
-    ) {
+    if (!qty && !desc && !weightPerCarton && !pricePerCarton && !totalWeight && !totalValue) {
       return;
     }
 
@@ -524,6 +509,7 @@ function loadInvoice(id) {
 
   totalCurrencyLabel.textContent = currencySelect.value;
 
+  // مسح الصفوف الحالية
   itemsBody.innerHTML = "";
 
   (inv.items || []).forEach((item) => {
