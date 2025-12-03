@@ -32,7 +32,6 @@ h1 {
   font-size: 1.3rem;
 }
 
-/* ===== رأس الفاتورة ===== */
 .invoice-header {
   background: #ffffff;
   padding: 1rem;
@@ -62,7 +61,6 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* ===== الأزرار ===== */
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -94,19 +92,17 @@ h1 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
-/* ===== الجدول ===== */
 .table-wrapper {
   overflow-x: auto;
   background: white;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  margin-top: 0.75rem;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px; /* عشان الأعمدة ما تضيق كثير في الجوال */
+  min-width: 700px;
 }
 
 thead {
@@ -129,11 +125,8 @@ td input {
   background: #f9fafb;
 }
 
-td input[type="number"] {
-  text-align: center;
-}
+td input[type="number"] { text-align: center; }
 
-/* زر حذف */
 .delete-btn {
   border: none;
   background: #ef4444;
@@ -144,11 +137,8 @@ td input[type="number"] {
   font-size: 0.85rem;
 }
 
-.delete-btn:hover {
-  background: #dc2626;
-}
+.delete-btn:hover { background: #dc2626; }
 
-/* ===== زر التسجيل تحت الصف ===== */
 .row-voice-section {
   background: #e6ffe9;
   padding: 0.6rem;
@@ -175,7 +165,6 @@ td input[type="number"] {
   transform: scale(0.98);
 }
 
-/* ===== المجاميع والذيل ===== */
 .totals {
   margin-top: 1rem;
   background: white;
@@ -185,13 +174,6 @@ td input[type="number"] {
   font-size: 0.95rem;
 }
 
-.saved-section {
-  margin-top: 1.5rem;
-  background: white;
-  padding: 0.9rem 1rem;
-  border-radius: 0.75rem;
-}
-
 .footer-note {
   margin-top: 1.5rem;
   text-align: center;
@@ -199,29 +181,16 @@ td input[type="number"] {
   color: #6b7280;
 }
 
-/* ===== الطباعة (PDF) ===== */
+.saved-section {
+  margin-top: 1.5rem;
+  background: white;
+  padding: 0.9rem 1rem;
+  border-radius: 0.75rem;
+}
+
+/* عند الطباعة أخفي الأزرار والمايك */
 @media print {
-  .actions,
-  .saved-section,
-  .footer-note,
-  .row-voice-section,
-  .voice-btn {
+  .actions, .saved-section, .footer-note, .voice-btn {
     display: none !important;
-  }
-
-  .table-wrapper {
-    overflow: visible !important;
-    box-shadow: none;
-  }
-
-  table {
-    width: 100% !important;
-    min-width: 100% !important;
-    border-collapse: collapse;
-  }
-
-  th, td {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.25rem;
   }
 }
