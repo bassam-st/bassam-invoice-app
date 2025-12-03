@@ -126,7 +126,7 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 650px;
+  min-width: 750px;
 }
 
 thead {
@@ -157,6 +157,35 @@ td input[type="text"] {
 
 td input[type="number"] {
   text-align: center;
+}
+
+.delete-btn {
+  border: none;
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+.voice-row {
+  background: #fff7ed;
+}
+
+.voice-btn {
+  width: 100%;
+  background: #fee2e2;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #b91c1c;
 }
 
 .totals {
@@ -194,104 +223,44 @@ td input[type="number"] {
   margin-bottom: 0.4rem;
 }
 
-.saved-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.saved-card {
-  border-radius: 0.6rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 0.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-}
-
-.saved-card-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.saved-card-buttons {
-  display: flex;
-  gap: 0.3rem;
-}
-
-.saved-card button {
-  border-radius: 999px;
-  border: none;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.saved-load-btn {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.saved-delete-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-/* ========================================= */
-/*           🔥 وضع الطباعة / PDF            */
-/* ========================================= */
-
-@page {
-  size: A4 portrait;
-  margin: 10mm;
-}
+/* ============================
+     الطباعة – Print Mode
+   ============================ */
 
 @media print {
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 
   body {
     background: #ffffff !important;
   }
 
-  .container {
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0.4cm !important;
-    box-shadow: none !important;
-  }
-
-  /* إخفاء كل الأزرار وقت الطباعة */
   .actions,
+  .delete-btn,
+  .voice-btn,
   .saved-section,
   .footer-note {
     display: none !important;
   }
 
-  /* إخفاء زر الحذف وزر التسجيل الصوتي فقط وقت الطباعة */
-  .delete-btn,
-  .voice-row,
-  .voice-btn,
-  .row-voice-section {
-    display: none !important;
-  }
-
-  /* منع القص */
-  .table-wrapper {
-    overflow: visible !important;
-    box-shadow: none !important;
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   table {
-    width: 100% !important;
-    font-size: 0.8rem !important;
-    page-break-inside: auto;
+    zoom: 90%;
+    width: 100%;
   }
 
-  tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
+  td input,
+  th input {
+    border: none !important;
+    background: transparent !important;
+    font-size: 0.85rem;
   }
 }
