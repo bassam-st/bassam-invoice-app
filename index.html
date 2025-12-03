@@ -7,13 +7,14 @@
   <meta name="theme-color" content="#16a34a" />
 
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=2" />
 </head>
 
 <body>
   <div class="container">
     <h1>فاتورة بسام</h1>
 
+    <!-- رأس الفاتورة -->
     <section class="invoice-header">
       <div class="field-row">
         <label for="clientName">اسم العميل:</label>
@@ -42,6 +43,7 @@
       </div>
     </section>
 
+    <!-- أزرار الإجراءات -->
     <section class="actions">
       <button id="printBtn" class="btn secondary">🖨️ طباعة</button>
       <button id="pdfBtn" class="btn pdf">PDF</button>
@@ -52,6 +54,7 @@
 
     <h2 class="section-title">جدول الأصناف</h2>
 
+    <!-- جدول الأصناف -->
     <div class="table-wrapper">
       <table id="itemsTable">
         <thead>
@@ -66,25 +69,35 @@
           </tr>
         </thead>
         <tbody id="itemsBody">
+          <!-- الصفوف تتولد من جافاسكربت -->
         </tbody>
       </table>
     </div>
 
+    <!-- المجاميع -->
     <section class="totals">
       <p>إجمالي العدد: <span id="totalQty">0</span></p>
-      <p>إجمالي الوزن: <span id="totalWeight">0</span> كجم</p>
-      <p>إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>): <span id="totalValue">0</span></p>
+      <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
+      <p>
+        إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>):
+        <span id="totalValue">0</span>
+      </p>
     </section>
 
+    <!-- الفواتير المحفوظة -->
     <section id="savedInvoicesSection" class="saved-section">
       <h2>الفواتير المحفوظة</h2>
       <p class="saved-hint">هذه الفواتير محفوظة في هذا الجهاز فقط.</p>
-      <div id="savedInvoicesList" class="saved-list"></div>
+      <div id="savedInvoicesList" class="saved-list">
+        <!-- تمتلئ من جافاسكربت -->
+      </div>
     </section>
 
-    <p class="footer-note">تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة</p>
+    <p class="footer-note">
+      تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة
+    </p>
   </div>
 
-  <script src="app.js"></script>
+  <script src="./app.js?v=3"></script>
 </body>
 </html>
