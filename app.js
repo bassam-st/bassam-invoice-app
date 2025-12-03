@@ -32,6 +32,22 @@ currencySelect.addEventListener("change", () => {
 });
 
 // ================================
+// ربط أزرار (إضافة سطر / طباعة / PDF)
+// ================================
+addRowBtn.addEventListener("click", () => {
+  createRow();
+});
+
+printBtn.addEventListener("click", () => {
+  window.print();
+});
+
+// نفس الطباعة، والمستخدم يختار "حفظ كـ PDF"
+pdfBtn.addEventListener("click", () => {
+  window.print();
+});
+
+// ================================
 // إنشاء صف جديد (صف بيانات + صف زر تسجيل)
 // ================================
 function createRow(initial = {}) {
@@ -104,8 +120,6 @@ function attachRowEvents(dataRow, voiceRow) {
   const descInput = dataRow.querySelector(".desc-input");
   const weightInput = dataRow.querySelector(".weight-per-carton-input");
   const priceInput = dataRow.querySelector(".price-per-carton-input");
-  const totalWeightInput = dataRow.querySelector(".total-weight-input");
-  const totalValueInput = dataRow.querySelector(".total-value-input");
 
   [qtyInput, descInput, weightInput, priceInput].forEach((input) => {
     input.addEventListener("input", () => {
@@ -117,7 +131,6 @@ function attachRowEvents(dataRow, voiceRow) {
   const deleteBtn = dataRow.querySelector(".delete-btn");
   deleteBtn.addEventListener("click", () => {
     if (!confirm("هل أنت متأكد من حذف هذا السطر؟")) return;
-    // حذف صف البيانات وصف التسجيل
     if (voiceRow && voiceRow.parentNode === itemsBody) {
       voiceRow.remove();
     }
@@ -125,7 +138,6 @@ function attachRowEvents(dataRow, voiceRow) {
     updateTotals();
   });
 
-  // زر المايك لهذا السطر
   const voiceBtn = voiceRow.querySelector(".voice-btn");
   voiceBtn.addEventListener("mousedown", () => startRowVoice(dataRow));
   voiceBtn.addEventListener("touchstart", (e) => {
@@ -246,9 +258,7 @@ function startRowVoice(row) {
   currentVoiceRow = row;
   try {
     rec.start();
-  } catch (e) {
-    // أحياناً لو كان شغال مسبقاً
-  }
+  } catch (e) {}
 }
 
 function stopRowVoice() {
@@ -307,7 +317,7 @@ function parseArabicNumberWords(text) {
   const parts = text.split(/\s+/);
 
   parts.forEach((word) => {
-    const w = word.replace(/[^\u0600-\u06FF]/g, ""); // ابقي الأحرف العربية فقط
+    const w = word.replace(/[^\u0600-\u06FF]/g, "");
     if (map[w] !== undefined) {
       sum += map[w];
     }
@@ -343,16 +353,11 @@ function fillRowFromVoice(row, text) {
   const weightInput = row.querySelector(".weight-per-carton-input");
   const priceInput = row.querySelector(".price-per-carton-input");
 
-  // نخلي الوصف من الكلام كامل
   descInput.value = text;
 
   const lower = text.toLowerCase();
   const nums = extractNumbersSmart(lower);
 
-  // من باب البساطة:
-  // الرقم الأول = العدد
-  // الرقم الثاني = وزن / كرتون (كيلو)
-  // الرقم الثالث = قيمة / كرتون
   if (nums[0] !== undefined) qtyInput.value = nums[0];
   if (nums[1] !== undefined) weightInput.value = nums[1];
   if (nums[2] !== undefined) priceInput.value = nums[2];
@@ -508,7 +513,6 @@ function loadInvoice(id) {
 
   totalCurrencyLabel.textContent = currencySelect.value;
 
-  // مسح الصفوف الحالية
   itemsBody.innerHTML = "";
 
   (inv.items || []).forEach((item) => {
@@ -517,21 +521,6 @@ function loadInvoice(id) {
 
   updateTotals();
 }
-
-// ================================
-// أزرار التحكم (إضافة سطر / طباعة / PDF)
-// ================================
-addRowBtn.addEventListener("click", () => {
-  createRow();
-});
-
-printBtn.addEventListener("click", () => {
-  window.print();
-});
-
-pdfBtn.addEventListener("click", () => {
-  window.print();
-});
 
 // ================================
 // زر التثبيت PWA
