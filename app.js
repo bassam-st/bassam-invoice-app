@@ -1,3 +1,14 @@
+// إلغاء أي Service Worker قديم لهذا الموقع (مرة واحدة فقط)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    if (regs.length > 0 && !localStorage.getItem('sw_cleared_v2')) {
+      regs.forEach((reg) => reg.unregister());
+      localStorage.setItem('sw_cleared_v2', '1');
+      // إعادة تحميل الصفحة بعد إلغاء السيرفس ووركر حتى يحمل الأكواد الجديدة
+      location.reload();
+    }
+  });
+}
 // ================================
 // العناصر الرئيسية
 // ================================
