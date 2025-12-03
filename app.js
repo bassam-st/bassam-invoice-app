@@ -1,14 +1,16 @@
-// إلغاء أي Service Worker قديم لهذا الموقع (مرة واحدة فقط)
+// ================================
+// إلغاء أي Service Worker قديم (مرة واحدة فقط)
+// ================================
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) => {
-    if (regs.length > 0 && !localStorage.getItem('sw_cleared_v2')) {
+    if (regs.length > 0 && !localStorage.getItem('sw_cleared_v3')) {
       regs.forEach((reg) => reg.unregister());
-      localStorage.setItem('sw_cleared_v2', '1');
-      // إعادة تحميل الصفحة بعد إلغاء السيرفس ووركر حتى يحمل الأكواد الجديدة
+      localStorage.setItem('sw_cleared_v3', '1');
       location.reload();
     }
   });
 }
+
 // ================================
 // العناصر الرئيسية
 // ================================
@@ -47,7 +49,7 @@ currencySelect.addEventListener("change", () => {
 });
 
 // ================================
-// إنشاء صف جديد (سطر + زر الصوت)
+// إنشاء صف جديد (سطر + سطر زر الصوت تحت)
 // ================================
 function createRow(initial = {}) {
   const block = document.createElement("tbody");
@@ -172,7 +174,7 @@ function updateTotals() {
 }
 
 // ================================
-// ذكاء الصوت
+// ذكاء الصوت (SpeechRecognition)
 // ================================
 let recognition = null;
 let voiceTargetRow = null;
@@ -225,7 +227,7 @@ function startRowVoice(block) {
       try {
         recognition.start();
       } catch (_) {}
-    }, 200);
+    }, 250);
   }
 }
 
@@ -237,7 +239,7 @@ function stopRowVoice() {
 }
 
 // ================================
-// تحليل أرقام بسيطة من النص
+// استخراج أرقام من النص
 // ================================
 function extractNumbers(text) {
   const nums = [];
@@ -249,7 +251,7 @@ function extractNumbers(text) {
 }
 
 // ================================
-// تعبئة السطر من الكلام
+// تعبئة السطر من النص الصوتي
 // ================================
 function fillRowFromVoice(block, text) {
   text = text.replace(/[،٬]/g, " ").trim();
@@ -264,10 +266,10 @@ function fillRowFromVoice(block, text) {
 
   const nums = extractNumbers(text);
 
-  // مثال بسيط:
+  // مثال مبسط:
   // أول رقم = العدد
-  // ثاني رقم = وزن الكرتون (إن وجد)
-  // ثالث رقم = قيمة الكرتون
+  // ثاني رقم = وزن/كرتون
+  // ثالث رقم = قيمة/كرتون
   if (nums.length >= 1) qtyInput.value = nums[0];
   if (nums.length >= 2) weightInput.value = nums[1];
   if (nums.length >= 3) priceInput.value = nums[2];
@@ -430,7 +432,7 @@ pdfBtn.addEventListener("click", () => window.print());
 saveInvoiceBtn.addEventListener("click", saveCurrentInvoice);
 
 // ================================
-// PWA: زر التثبيت
+// PWA: زر التثبيت (بدون Service Worker)
 // ================================
 let deferredPrompt = null;
 
@@ -448,13 +450,6 @@ if (installBtn) {
     deferredPrompt = null;
     installBtn.hidden = true;
   });
-}
-
-// ================================
-// تسجيل الـ Service Worker
-// ================================
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js").catch(() => {});
 }
 
 // ================================
