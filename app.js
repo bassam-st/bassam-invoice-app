@@ -502,11 +502,14 @@ addRowBtn.addEventListener("click", () => {
   createRow();
 });
 
+// هنا نضيف تنبيه للتأكد أن الزر يشتغل
 printBtn.addEventListener("click", () => {
+  alert("الآن اختر (طباعة) أو (حفظ كـ PDF) من شاشة النظام.");
   window.print();
 });
 
 pdfBtn.addEventListener("click", () => {
+  alert("الآن سيُفتح نفس شاشة الطباعة، اختر (حفظ كـ PDF).");
   window.print(); // المستخدم يختار "حفظ كـ PDF"
 });
 
