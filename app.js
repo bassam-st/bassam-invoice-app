@@ -104,8 +104,6 @@ function attachRowEvents(dataRow, voiceRow) {
   const descInput = dataRow.querySelector(".desc-input");
   const weightInput = dataRow.querySelector(".weight-per-carton-input");
   const priceInput = dataRow.querySelector(".price-per-carton-input");
-  const totalWeightInput = dataRow.querySelector(".total-weight-input");
-  const totalValueInput = dataRow.querySelector(".total-value-input");
 
   [qtyInput, descInput, weightInput, priceInput].forEach((input) => {
     input.addEventListener("input", () => {
@@ -117,7 +115,6 @@ function attachRowEvents(dataRow, voiceRow) {
   const deleteBtn = dataRow.querySelector(".delete-btn");
   deleteBtn.addEventListener("click", () => {
     if (!confirm("هل أنت متأكد من حذف هذا السطر؟")) return;
-    // حذف صف البيانات وصف التسجيل
     if (voiceRow && voiceRow.parentNode === itemsBody) {
       voiceRow.remove();
     }
@@ -146,18 +143,18 @@ function attachRowEvents(dataRow, voiceRow) {
 // ================================
 function updateRowTotals(dataRow) {
   const qty =
-    parseFloat(dataRow.querySelector(".qty-input").value.replace(",", ".")) || 0;
+    parseFloat((dataRow.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
   const weightPer =
     parseFloat(
-      dataRow
+      (dataRow
         .querySelector(".weight-per-carton-input")
-        .value.replace(",", ".")
+        .value || "").replace(",", ".")
     ) || 0;
   const pricePer =
     parseFloat(
-      dataRow
+      (dataRow
         .querySelector(".price-per-carton-input")
-        .value.replace(",", ".")
+        .value || "").replace(",", ".")
     ) || 0;
 
   const totalWeight = qty * weightPer;
@@ -181,14 +178,14 @@ function updateTotals() {
 
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty =
-      parseFloat(row.querySelector(".qty-input").value.replace(",", ".")) || 0;
+      parseFloat((row.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
     const w =
       parseFloat(
-        row.querySelector(".total-weight-input").value.replace(",", ".")
+        (row.querySelector(".total-weight-input").value || "").replace(",", ".")
       ) || 0;
     const v =
       parseFloat(
-        row.querySelector(".total-value-input").value.replace(",", ".")
+        (row.querySelector(".total-value-input").value || "").replace(",", ".")
       ) || 0;
 
     totalQty += qty;
@@ -264,43 +261,43 @@ function stopRowVoice() {
 function parseArabicNumberWords(text) {
   const map = {
     "صفر": 0,
-    "واحد": 1,
-    "واحدة": 1,
-    "اثنين": 2,
-    "ثنين": 2,
-    "ثلاثة": 3,
-    "ثلاث": 3,
-    "اربعة": 4,
-    "أربعة": 4,
-    "خمسة": 5,
-    "ستة": 6,
-    "سبعة": 7,
-    "ثمانية": 8,
-    "ثمانيه": 8,
-    "تسعة": 9,
-    "تسعه": 9,
-    "عشرة": 10,
-    "عشره": 10,
-    "عشرين": 20,
-    "ثلاثين": 30,
-    "اربعين": 40,
-    "خمسين": 50,
-    "ستين": 60,
-    "سبعين": 70,
-    "ثمانين": 80,
-    "تسعين": 90,
-    "مئة": 100,
-    "مية": 100,
-    "مائتين": 200,
-    "ثلاثمائة": 300,
-    "اربعمائة": 400,
-    "خمسمائة": 500,
-    "ستمائة": 600,
-    "سبعمائة": 700,
-    "ثمانمائة": 800,
-    "تسعمائة": 900,
-    "الف": 1000,
-    "ألف": 1000
+  "واحد": 1,
+  "واحدة": 1,
+  "اثنين": 2,
+  "ثنين": 2,
+  "ثلاثة": 3,
+  "ثلاث": 3,
+  "اربعة": 4,
+  "أربعة": 4,
+  "خمسة": 5,
+  "ستة": 6,
+  "سبعة": 7,
+  "ثمانية": 8,
+  "ثمانيه": 8,
+  "تسعة": 9,
+  "تسعه": 9,
+  "عشرة": 10,
+  "عشره": 10,
+  "عشرين": 20,
+  "ثلاثين": 30,
+  "اربعين": 40,
+  "خمسين": 50,
+  "ستين": 60,
+  "سبعين": 70,
+  "ثمانين": 80,
+  "تسعين": 90,
+  "مئة": 100,
+  "مية": 100,
+  "مائتين": 200,
+  "ثلاثمائة": 300,
+  "اربعمائة": 400,
+  "خمسمائة": 500,
+  "ستمائة": 600,
+  "سبعمائة": 700,
+  "ثمانمائة": 800,
+  "تسعمائة": 900,
+  "الف": 1000,
+  "ألف": 1000
   };
 
   let sum = 0;
@@ -343,16 +340,11 @@ function fillRowFromVoice(row, text) {
   const weightInput = row.querySelector(".weight-per-carton-input");
   const priceInput = row.querySelector(".price-per-carton-input");
 
-  // نخلي الوصف من الكلام كامل
   descInput.value = text;
 
   const lower = text.toLowerCase();
   const nums = extractNumbersSmart(lower);
 
-  // من باب البساطة:
-  // الرقم الأول = العدد
-  // الرقم الثاني = وزن / كرتون (كيلو)
-  // الرقم الثالث = قيمة / كرتون
   if (nums[0] !== undefined) qtyInput.value = nums[0];
   if (nums[1] !== undefined) weightInput.value = nums[1];
   if (nums[2] !== undefined) priceInput.value = nums[2];
@@ -508,7 +500,6 @@ function loadInvoice(id) {
 
   totalCurrencyLabel.textContent = currencySelect.value;
 
-  // مسح الصفوف الحالية
   itemsBody.innerHTML = "";
 
   (inv.items || []).forEach((item) => {
@@ -522,17 +513,14 @@ function loadInvoice(id) {
 // ربط أزرار الصفحة الرئيسية
 // ================================
 
-// إضافة سطر جديد
 addRowBtn.addEventListener("click", () => {
   createRow();
 });
 
-// طباعة (وتستخدم أيضاً كـ PDF من خيار "حفظ كـ PDF")
 printBtn.addEventListener("click", () => {
   window.print();
 });
 
-// زر PDF يستدعي نفس نافذة الطباعة
 pdfBtn.addEventListener("click", () => {
   window.print();
 });
@@ -556,7 +544,7 @@ installBtn.addEventListener("click", async () => {
   installBtn.hidden = true;
 });
 
-// تسجيل Service Worker
+// تسجيل Service Worker (اختياري)
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
 }
