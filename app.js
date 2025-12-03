@@ -44,65 +44,13 @@ function createRow(initial = {}) {
 
   block.innerHTML = `
     <tr>
-      <td>
-        <input
-          type="number"
-          class="qty-input"
-          value="${initial.qty ?? ""}"
-          placeholder="0"
-        />
-      </td>
-
-      <td>
-        <input
-          type="text"
-          class="desc-input"
-          value="${initial.desc ?? ""}"
-          placeholder="وصف الصنف"
-        />
-      </td>
-
-      <td>
-        <input
-          type="number"
-          class="weight-per-carton-input"
-          value="${initial.weightPerCarton ?? ""}"
-          placeholder="0"
-        />
-      </td>
-
-      <td>
-        <input
-          type="number"
-          class="price-per-carton-input"
-          value="${initial.pricePerCarton ?? ""}"
-          placeholder="0"
-        />
-      </td>
-
-      <td>
-        <input
-          type="number"
-          class="total-weight-input"
-          value="${initial.totalWeight ?? ""}"
-          placeholder="0"
-          readonly
-        />
-      </td>
-
-      <td>
-        <input
-          type="number"
-          class="total-value-input"
-          value="${initial.totalValue ?? ""}"
-          placeholder="0"
-          readonly
-        />
-      </td>
-
-      <td>
-        <button class="delete-btn">✕</button>
-      </td>
+      <td><input type="number" class="qty-input" value="${initial.qty ?? ""}" placeholder="0" /></td>
+      <td><input type="text" class="desc-input" value="${initial.desc ?? ""}" placeholder="وصف الصنف" /></td>
+      <td><input type="number" class="weight-per-carton-input" value="${initial.weightPerCarton ?? ""}" placeholder="0" /></td>
+      <td><input type="number" class="price-per-carton-input" value="${initial.pricePerCarton ?? ""}" placeholder="0" /></td>
+      <td><input type="number" class="total-weight-input" value="${initial.totalWeight ?? ""}" placeholder="0" readonly /></td>
+      <td><input type="number" class="total-value-input" value="${initial.totalValue ?? ""}" placeholder="0" readonly /></td>
+      <td><button class="delete-btn">✕</button></td>
     </tr>
 
     <tr>
@@ -145,12 +93,8 @@ function attachRowEvents(block) {
     }
   });
 
-  // الصوت: ضغط/لمس لبدء التسجيل، وعند الرفع يتوقف
   voiceBtn.addEventListener("mousedown", () => startRowVoice(block));
-  voiceBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    startRowVoice(block);
-  });
+  voiceBtn.addEventListener("touchstart", (e) => { e.preventDefault(); startRowVoice(block); });
 
   voiceBtn.addEventListener("mouseup", stopRowVoice);
   voiceBtn.addEventListener("mouseleave", stopRowVoice);
@@ -161,41 +105,27 @@ function attachRowEvents(block) {
 // حساب وزن وقيمة السطر
 // ================================
 function updateRowTotals(block) {
-  const qty =
-    parseFloat(block.querySelector(".qty-input").value) || 0;
-  const weightPer =
-    parseFloat(block.querySelector(".weight-per-carton-input").value) || 0;
-  const pricePer =
-    parseFloat(block.querySelector(".price-per-carton-input").value) || 0;
+  const qty = parseFloat(block.querySelector(".qty-input").value) || 0;
+  const weightPer = parseFloat(block.querySelector(".weight-per-carton-input").value) || 0;
+  const pricePer = parseFloat(block.querySelector(".price-per-carton-input").value) || 0;
 
   const totalWeight = qty * weightPer;
   const totalValue = qty * pricePer;
 
-  block.querySelector(".total-weight-input").value =
-    totalWeight ? totalWeight.toFixed(2) : "";
-  block.querySelector(".total-value-input").value =
-    totalValue ? totalValue.toFixed(2) : "";
+  block.querySelector(".total-weight-input").value = totalWeight ? totalWeight.toFixed(2) : "";
+  block.querySelector(".total-value-input").value = totalValue ? totalValue.toFixed(2) : "";
 }
 
 // ================================
-// تحديث المجاميع في أسفل الصفحة
+// تحديث المجاميع
 // ================================
 function updateTotals() {
-  let totalQty = 0;
-  let totalWeight = 0;
-  let totalValue = 0;
+  let totalQty = 0, totalWeight = 0, totalValue = 0;
 
   itemsBody.querySelectorAll(".item-block").forEach((block) => {
-    const qty =
-      parseFloat(block.querySelector(".qty-input").value) || 0;
-    const w =
-      parseFloat(block.querySelector(".total-weight-input").value) || 0;
-    const v =
-      parseFloat(block.querySelector(".total-value-input").value) || 0;
-
-    totalQty += qty;
-    totalWeight += w;
-    totalValue += v;
+    totalQty += parseFloat(block.querySelector(".qty-input").value) || 0;
+    totalWeight += parseFloat(block.querySelector(".total-weight-input").value) || 0;
+    totalValue += parseFloat(block.querySelector(".total-value-input").value) || 0;
   });
 
   totalQtyEl.textContent = totalQty;
@@ -210,173 +140,101 @@ let recognition = null;
 let voiceTargetRow = null;
 
 function initRecognition() {
-  const SR =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    alert(
-      "المتصفح لا يدعم التسجيل الصوتي. جرّب متصفح كروم على أندرويد."
-    );
+    alert("⚠️ المتصفح لا يدعم التسجيل الصوتي — استخدم Google Chrome.");
     return null;
   }
 
   const rec = new SR();
   rec.lang = "ar-SA";
   rec.interimResults = false;
-  rec.maxAlternatives = 1;
 
   rec.addEventListener("result", (event) => {
     const text = event.results[0][0].transcript;
-    if (!voiceTargetRow || !text) return;
-
-    fillRowFromVoice(voiceTargetRow, text);
-    updateRowTotals(voiceTargetRow);
-    updateTotals();
+    if (voiceTargetRow) {
+      fillRowFromVoice(voiceTargetRow, text);
+      updateRowTotals(voiceTargetRow);
+      updateTotals();
+    }
   });
 
-  rec.addEventListener("end", () => {
-    voiceTargetRow = null;
-  });
-
-  rec.addEventListener("error", () => {
-    voiceTargetRow = null;
-  });
+  rec.addEventListener("end", () => (voiceTargetRow = null));
 
   return rec;
 }
 
 function startRowVoice(block) {
-  if (!recognition) {
-    recognition = initRecognition();
-  }
+  if (!recognition) recognition = initRecognition();
   if (!recognition) return;
 
   voiceTargetRow = block;
 
-  try {
-    recognition.start();
-  } catch (e) {
-    try {
-      recognition.stop();
-    } catch (_) {}
-    setTimeout(() => {
-      try {
-        recognition.start();
-      } catch (_) {}
-    }, 250);
+  try { recognition.start(); }
+  catch {
+    try { recognition.stop(); } catch {}
+    setTimeout(() => { try { recognition.start(); } catch {} }, 200);
   }
 }
 
 function stopRowVoice() {
-  if (!recognition) return;
-  try {
-    recognition.stop();
-  } catch (_) {}
+  if (recognition) {
+    try { recognition.stop(); } catch {}
+  }
 }
 
 // ================================
-// تحليل النص العربي للأرقام
+// تحليل الأرقام والكلمات العربية
 // ================================
 function parseArabicNumberWords(text) {
   const map = {
-    صفر: 0,
-    واحد: 1,
-    واحدة: 1,
-    اثنين: 2,
-    ثنين: 2,
-    اثنان: 2,
-    ثلاثة: 3,
-    ثلاث: 3,
-    اربعة: 4,
-    أربعة: 4,
-    خمسة: 5,
-    ستة: 6,
-    سبعة: 7,
-    ثمانية: 8,
-    ثمانيه: 8,
-    تسعة: 9,
-    عشرة: 10,
-    عشرين: 20,
-    ثلاثين: 30,
-    اربعين: 40,
-    خمسين: 50,
-    ستين: 60,
-    سبعين: 70,
-    ثمانين: 80,
-    تسعين: 90,
-    مئة: 100,
-    مية: 100,
-    مائتين: 200,
-    ثلاثمائة: 300,
-    اربعمائة: 400,
-    خمسمائة: 500,
-    ستمائة: 600,
-    سبعمائة: 700,
-    ثمانمائة: 800,
-    تسعمائة: 900,
-    ألف: 1000,
-    الف: 1000,
+    "صفر": 0, "واحد": 1, "واحدة": 1, "اثنين": 2, "ثنين": 2,
+    "ثلاثة": 3, "ثلاث": 3, "اربعة": 4, "أربعة": 4,
+    "خمسة": 5, "ستة": 6, "سبعة": 7, "ثمانية": 8, "تسعة": 9,
+    "عشرة": 10, "عشرين": 20, "ثلاثين": 30, "اربعين": 40,
+    "خمسين": 50, "ستين": 60, "سبعين": 70, "ثمانين": 80,
+    "تسعين": 90, "مئة": 100, "مية": 100, "مائتين": 200,
+    "ثلاثمائة": 300, "اربعمائة": 400, "خمسمائة": 500,
+    "ستمائة": 600, "سبعمائة": 700, "ثمانمائة": 800,
+    "تسعمائة": 900, "ألف": 1000, "الف": 1000
   };
 
   let sum = 0;
-  const parts = text.split(/\s+/);
-
-  parts.forEach((word) => {
+  text.split(/\s+/).forEach((word) => {
     const clean = word.replace(/[^\u0600-\u06FF0-9\.]/g, "");
-    if (map[clean] != null) {
-      sum += map[clean];
-    } else if (!isNaN(Number(clean))) {
-      sum += Number(clean);
-    }
+    if (map[clean] != null) sum += map[clean];
+    else if (!isNaN(Number(clean))) sum += Number(clean);
   });
-
   return sum;
 }
 
 function extractWeight(text) {
-  let grams = text.match(
-    /(\d+(\.\d+)?)\s*(جرام|غرام|g)\b/
-  );
-  let kilo = text.match(
-    /(\d+(\.\d+)?)\s*(كيلو|كجم|kg)\b/
-  );
-
-  if (grams) return parseFloat(grams[1]) / 1000;
-  if (kilo) return parseFloat(kilo[1]);
+  let g = text.match(/(\d+(\.\d+)?)\s*(جرام|غرام|g)/);
+  let kg = text.match(/(\d+(\.\d+)?)\s*(كيلو|كجم|kg)/);
+  if (g) return parseFloat(g[1]) / 1000;
+  if (kg) return parseFloat(kg[1]);
   return null;
 }
 
 // ================================
-// تعبئة السطر من النص الصوتي
+// تعبئة السطر من الكلام
 // ================================
 function fillRowFromVoice(block, text) {
-  text = text.replace(/[،٬]/g, " ").trim();
+  text = text.replace(/[،٬]/g, " ");
 
-  const descInput = block.querySelector(".desc-input");
+  block.querySelector(".desc-input").value = text;
+
   const qtyInput = block.querySelector(".qty-input");
   const weightInput = block.querySelector(".weight-per-carton-input");
   const priceInput = block.querySelector(".price-per-carton-input");
 
-  // الوصف = الجملة كاملة (تقدر تعدله بعدين)
-  descInput.value = text;
+  const q = parseArabicNumberWords(text);
+  if (q) qtyInput.value = q;
 
-  // العدد: رقم بعد "عدد / كراتين / كرتون / حبة / حبات"
-  let qtyMatch = text.match(
-    /(?:عدد|كراتين|كرتون|كرتونه|حبة|حبات)\s+(\S+)/
-  );
-  if (qtyMatch) {
-    const q = parseArabicNumberWords(qtyMatch[1]);
-    if (q) qtyInput.value = q;
-  } else {
-    const anyNumber = text.match(/(\d+(\.\d+)?)/);
-    if (anyNumber) qtyInput.value = parseFloat(anyNumber[1]);
-  }
+  const w = extractWeight(text);
+  if (w) weightInput.value = w;
 
-  const extractedWeight = extractWeight(text);
-  if (extractedWeight) {
-    weightInput.value = extractedWeight;
-  }
-
-  let priceMatch = text.match(/(?:قيمة|سعر)\s+(\S+)/);
+  let priceMatch = text.match(/(?:سعر|قيمة)\s+(\S+)/);
   if (priceMatch) {
     const p = parseArabicNumberWords(priceMatch[1]);
     if (p) priceInput.value = p;
@@ -384,7 +242,7 @@ function fillRowFromVoice(block, text) {
 }
 
 // ================================
-// حفظ الفاتورة في localStorage
+// حفظ الفواتير
 // ================================
 const STORAGE_KEY = "bassam_invoice_app_invoices";
 
@@ -392,39 +250,24 @@ function getCurrentInvoiceData() {
   const items = [];
 
   itemsBody.querySelectorAll(".item-block").forEach((block) => {
-    const qty = block.querySelector(".qty-input").value || "";
-    const desc = block.querySelector(".desc-input").value || "";
-    const weightPerCarton =
-      block.querySelector(".weight-per-carton-input").value || "";
-    const pricePerCarton =
-      block.querySelector(".price-per-carton-input").value || "";
-    const totalWeight =
-      block.querySelector(".total-weight-input").value || "";
-    const totalValue =
-      block.querySelector(".total-value-input").value || "";
+    const entry = {
+      qty: block.querySelector(".qty-input").value,
+      desc: block.querySelector(".desc-input").value,
+      weightPerCarton: block.querySelector(".weight-per-carton-input").value,
+      pricePerCarton: block.querySelector(".price-per-carton-input").value,
+      totalWeight: block.querySelector(".total-weight-input").value,
+      totalValue: block.querySelector(".total-value-input").value,
+    };
 
-    if (
-      qty !== "" ||
-      desc !== "" ||
-      weightPerCarton !== "" ||
-      pricePerCarton !== ""
-    ) {
-      items.push({
-        qty,
-        desc,
-        weightPerCarton,
-        pricePerCarton,
-        totalWeight,
-        totalValue,
-      });
-    }
+    if (entry.qty || entry.desc || entry.weightPerCarton || entry.pricePerCarton)
+      items.push(entry);
   });
 
   return {
-    clientName: clientNameInput.value || "",
-    invoiceNumber: invoiceNumberInput.value || "",
+    clientName: clientNameInput.value,
+    invoiceNumber: invoiceNumberInput.value,
     currency: currencySelect.value,
-    date: invoiceDateInput.value || "",
+    date: invoiceDateInput.value,
     totals: {
       qty: totalQtyEl.textContent,
       weight: totalWeightEl.textContent,
@@ -436,117 +279,75 @@ function getCurrentInvoiceData() {
 
 function saveCurrentInvoice() {
   const data = getCurrentInvoiceData();
-  if (!data.items.length) {
-    alert("لا توجد أصناف في الفاتورة لحفظها.");
-    return;
-  }
+  if (!data.items.length) return alert("لا توجد أصناف للحفظ.");
 
   const titleBase =
-    data.invoiceNumber ||
-    (data.clientName
-      ? data.clientName.slice(0, 20)
-      : "فاتورة بدون رقم");
-  const customTitle =
-    prompt("اسم الفاتورة للحفظ:", titleBase) || titleBase;
+    data.invoiceNumber || (data.clientName ? data.clientName.slice(0, 20) : "فاتورة");
 
-  const stored = JSON.parse(
-    localStorage.getItem(STORAGE_KEY) || "[]"
-  );
+  const title = prompt("اسم الفاتورة:", titleBase) || titleBase;
 
-  const invoice = {
-    id: Date.now(),
-    title: customTitle,
-    ...data,
-  };
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  stored.push({ id: Date.now(), title, ...data });
 
-  stored.push(invoice);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
   renderSavedInvoices();
-  alert("تم حفظ الفاتورة في هذا الجهاز.");
+  alert("تم حفظ الفاتورة.");
 }
 
 function renderSavedInvoices() {
   savedInvoicesList.innerHTML = "";
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 
-  const stored = JSON.parse(
-    localStorage.getItem(STORAGE_KEY) || "[]"
-  );
   if (!stored.length) {
-    savedInvoicesList.textContent =
-      "لا توجد فواتير محفوظة حتى الآن.";
+    savedInvoicesList.textContent = "لا توجد فواتير محفوظة.";
     return;
   }
 
   stored.forEach((inv) => {
     const div = document.createElement("div");
-    div.className = "saved-item";
+    div.style.padding = "4px 0";
+    div.style.borderBottom = "1px solid #ddd";
     div.style.display = "flex";
     div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    div.style.padding = "0.4rem 0";
-    div.style.borderBottom = "1px solid #e5e7eb";
 
-    const info = document.createElement("div");
-    info.innerHTML = `<strong>${inv.title}</strong><br><small>${
-      inv.date || ""
-    }</small>`;
-
-    const actions = document.createElement("div");
-    const loadBtn = document.createElement("button");
-    loadBtn.textContent = "عرض";
-    loadBtn.style.marginLeft = "0.25rem";
-    loadBtn.className = "btn secondary";
-    loadBtn.style.padding = "0.2rem 0.6rem";
-    loadBtn.style.fontSize = "0.8rem";
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "حذف";
-    delBtn.className = "btn";
-    delBtn.style.background = "#ef4444";
-    delBtn.style.color = "#fff";
-    delBtn.style.padding = "0.2rem 0.6rem";
-    delBtn.style.fontSize = "0.8rem";
-
-    loadBtn.addEventListener("click", () => loadInvoice(inv.id));
-    delBtn.addEventListener("click", () => deleteInvoice(inv.id));
-
-    actions.appendChild(loadBtn);
-    actions.appendChild(delBtn);
-
-    div.appendChild(info);
-    div.appendChild(actions);
+    div.innerHTML = `
+      <div>
+        <strong>${inv.title}</strong><br>
+        <small>${inv.date}</small>
+      </div>
+      <div>
+        <button class="btn secondary" style="padding:2px 8px;font-size:12px" onclick="loadInvoice(${inv.id})">عرض</button>
+        <button class="btn" style="background:#ef4444;color:white;padding:2px 8px;font-size:12px" onclick="deleteInvoice(${inv.id})">حذف</button>
+      </div>
+    `;
 
     savedInvoicesList.appendChild(div);
   });
 }
 
 function loadInvoice(id) {
-  const stored = JSON.parse(
-    localStorage.getItem(STORAGE_KEY) || "[]"
-  );
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   const inv = stored.find((x) => x.id === id);
   if (!inv) return;
 
-  clientNameInput.value = inv.clientName || "";
-  invoiceNumberInput.value = inv.invoiceNumber || "";
-  currencySelect.value = inv.currency || "ريال سعودي";
-  totalCurrencyLabel.textContent = currencySelect.value;
-  invoiceDateInput.value = inv.date || "";
+  clientNameInput.value = inv.clientName;
+  invoiceNumberInput.value = inv.invoiceNumber;
+  currencySelect.value = inv.currency;
+  totalCurrencyLabel.textContent = inv.currency;
+  invoiceDateInput.value = inv.date;
 
   itemsBody.innerHTML = "";
-  inv.items.forEach((item) => {
-    createRow(item);
-  });
+  inv.items.forEach((item) => createRow(item));
+
   updateTotals();
 }
 
 function deleteInvoice(id) {
-  if (!confirm("هل تريد حذف هذه الفاتورة المحفوظة؟")) return;
+  if (!confirm("تأكيد الحذف؟")) return;
 
-  let stored = JSON.parse(
-    localStorage.getItem(STORAGE_KEY) || "[]"
-  );
+  let stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   stored = stored.filter((x) => x.id !== id);
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
   renderSavedInvoices();
 }
@@ -560,30 +361,28 @@ pdfBtn.addEventListener("click", () => window.print());
 saveInvoiceBtn.addEventListener("click", saveCurrentInvoice);
 
 // ================================
-// PWA: زر التثبيت
+// PWA
 // ================================
 let deferredPrompt = null;
 
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  if (installBtn) {
-    installBtn.hidden = false;
-  }
+  installBtn.hidden = false;
 });
 
-if (installBtn) {
-  installBtn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBtn.hidden = true;
-  });
-}
+installBtn.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+
+  deferredPrompt = null;
+  installBtn.hidden = true;
+});
 
 // ================================
-// تهيئة أولية
+// تهيئة
 // ================================
 createRow();
 renderSavedInvoices();
