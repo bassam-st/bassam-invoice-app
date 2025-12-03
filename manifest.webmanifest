@@ -1,12 +1,10 @@
 {
   "name": "فاتورة بسام",
   "short_name": "فاتورة بسام",
-  "lang": "ar",
-  "dir": "rtl",
-  "start_url": "./",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#111827",
+  "theme_color": "#16a34a",
   "icons": [
     {
       "src": "icon-192.png",
