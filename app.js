@@ -31,6 +31,13 @@ currencySelect.addEventListener("change", () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
 
+// دالة تصغير/تكبير خانة الوصف تلقائياً
+function autoResizeDesc(el) {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
 // ================================
 // إنشاء صف جديد (صف بيانات + صف زر تسجيل)
 // ================================
@@ -46,9 +53,10 @@ function createRow(initial = {}) {
              value="${initial.qty ?? ""}" placeholder="0" />
     </td>
     <td>
-      <input type="text"
-             class="desc-input"
-             value="${initial.desc ?? ""}" placeholder="وصف الصنف" />
+      <textarea
+        class="desc-input"
+        rows="1"
+        placeholder="وصف الصنف">${(initial.desc ?? "")}</textarea>
     </td>
     <td>
       <input type="number" min="0" step="0.01"
@@ -92,6 +100,11 @@ function createRow(initial = {}) {
   itemsBody.appendChild(voiceRow);
 
   attachRowEvents(dataRow, voiceRow);
+
+  // اضبط ارتفاع الوصف لو فيه نص مبدئي
+  const descInput = dataRow.querySelector(".desc-input");
+  autoResizeDesc(descInput);
+
   updateRowTotals(dataRow);
   updateTotals();
 }
@@ -105,11 +118,18 @@ function attachRowEvents(dataRow, voiceRow) {
   const weightInput = dataRow.querySelector(".weight-per-carton-input");
   const priceInput = dataRow.querySelector(".price-per-carton-input");
 
-  [qtyInput, descInput, weightInput, priceInput].forEach((input) => {
+  [qtyInput, weightInput, priceInput].forEach((input) => {
     input.addEventListener("input", () => {
       updateRowTotals(dataRow);
       updateTotals();
     });
+  });
+
+  // الوصف: تحديث المجاميع + تكبير الخانة
+  descInput.addEventListener("input", () => {
+    autoResizeDesc(descInput);
+    updateRowTotals(dataRow);
+    updateTotals();
   });
 
   const deleteBtn = dataRow.querySelector(".delete-btn");
@@ -337,6 +357,7 @@ function fillRowFromVoice(row, text) {
   const priceInput = row.querySelector(".price-per-carton-input");
 
   descInput.value = text;
+  autoResizeDesc(descInput);
 
   const lower = text.toLowerCase();
   const nums = extractNumbersSmart(lower);
@@ -511,7 +532,7 @@ function loadInvoice(id) {
 function openPrintWindow() {
   const container = document.querySelector(".container");
   if (!container) {
-    window.print(); // احتياط
+    window.print();
     return;
   }
 
@@ -519,7 +540,6 @@ function openPrintWindow() {
   const printWindow = window.open("", "_blank");
 
   if (!printWindow) {
-    // لو المتصفح منع النوافذ المنبثقة
     window.print();
     return;
   }
@@ -542,15 +562,11 @@ function openPrintWindow() {
   `);
   printWindow.document.close();
 
-  // ننتظر قليلاً حتى يتم تحميل الـ CSS ثم نطبع
   printWindow.focus();
   setTimeout(() => {
     try {
       printWindow.print();
-      // يمكن إغلاق النافذة بعد الطباعة لو حاب:
-      // printWindow.close();
     } catch (e) {
-      // لو في مشكلة نرجع للطباعة العادية
       window.print();
     }
   }, 600);
@@ -568,7 +584,7 @@ printBtn.addEventListener("click", () => {
 });
 
 pdfBtn.addEventListener("click", () => {
-  openPrintWindow(); // المستخدم يختار "حفظ كـ PDF" من شاشة النظام
+  openPrintWindow(); // المستخدم يختار حفظ كـ PDF
 });
 
 // ================================
