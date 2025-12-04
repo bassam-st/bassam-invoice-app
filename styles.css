@@ -1,310 +1,37 @@
-* {
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* نجعل الجدول يستخدم عرض ثابت لتوزيع الأعمدة */
+#itemsTable {
+  table-layout: fixed;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #f3f4f6;
-  direction: rtl;
+/* توزيع عرض الأعمدة:
+   1- العدد      = 10%
+   2- الصنف      = 40% (هنا التكبير الحقيقي)
+   3-4-5-6       = 10–12% تقريباً
+   7- حذف        = 8%
+*/
+
+#itemsTable th:nth-child(1),
+#itemsTable td:nth-child(1) {
+  width: 10%;
 }
 
-body {
-  color: #111827;
-}
-
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.8rem;
-}
-
-.section-title {
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  font-size: 1.3rem;
-}
-
-.invoice-header {
-  background: #ffffff;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  margin-bottom: 1rem;
-}
-
-.field-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  margin-bottom: 0.6rem;
-}
-
-.field-row label {
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-.field-row input,
-.field-row select {
-  padding: 0.55rem 0.7rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 0.95rem;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0;
-  justify-content: center;
-}
-
-.btn {
-  border: none;
-  border-radius: 999px;
-  padding: 0.55rem 1.2rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-}
-
-.btn.primary {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.btn.secondary {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.btn.pdf {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.btn.save {
-  background: #f97316;
-  color: #ffffff;
-}
-
-.btn.install {
-  background: #10b981;
-  color: #ffffff;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-}
-
-.btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  background: #ffffff;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 650px;
-}
-
-thead {
-  background: #f9fafb;
-}
-
-th, td {
-  border: 1px solid #e5e7eb;
-  padding: 0.35rem 0.4rem;
-  font-size: 0.85rem;
-  text-align: center;
-  vertical-align: middle;
-}
-
-th {
-  white-space: nowrap;
-}
-
-td input[type="number"],
-td input[type="text"] {
-  width: 100%;
-  padding: 0.4rem 0.45rem;
-  border-radius: 0.55rem;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 0.85rem;
-}
-
-td input[type="number"] {
-  text-align: center;
-}
-
-.field-with-mic {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.mic-btn {
-  border: none;
-  background: #fee2e2;
-  color: #b91c1c;
-  border-radius: 999px;
-  padding: 0.2rem 0.45rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.mic-btn:hover {
-  background: #fecaca;
-}
-
-.delete-btn {
-  border: none;
-  background: #ef4444;
-  color: #ffffff;
-  border-radius: 999px;
-  padding: 0.35rem 0.6rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-}
-
-.totals {
-  margin-top: 1rem;
-  background: #ffffff;
-  padding: 0.8rem 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  font-size: 0.95rem;
-}
-
-.totals p {
-  margin: 0.15rem 0;
-}
-
-.footer-note {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-/* الفواتير المحفوظة */
-.saved-section {
-  margin-top: 1.5rem;
-  background: #ffffff;
-  padding: 0.9rem 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.saved-hint {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin-bottom: 0.4rem;
-}
-
-.saved-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.saved-card {
-  border-radius: 0.6rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 0.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-}
-
-.saved-card-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.saved-card-buttons {
-  display: flex;
-  gap: 0.3rem;
-}
-
-.saved-card button {
-  border-radius: 999px;
-  border: none;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.saved-load-btn {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.saved-delete-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-/* طباعة – إخفاء أزرار التحكم أثناء الطباعة */
-@media print {
-  .actions,
-  .saved-section,
-  .footer-note {
-    display: none !important;
-  }
-
-  body {
-    background: #ffffff;
-  }
-
-  .container {
-    box-shadow: none;
-    padding: 0;
-    max-width: 100%;
-  }
-
-  .table-wrapper {
-    box-shadow: none;
-  }
-
-  .delete-btn,
-  .mic-btn {
-    display: none !important;
-  }
-}
-
-/* ✅ تكبير عمود خانة الصنف ليكون أوسع */
 #itemsTable th:nth-child(2),
 #itemsTable td:nth-child(2) {
-  min-width: 260px;   /* تقدّر تكبره أو تصغّره كما تحب */
+  width: 40%;   /* 👈 خانة الصنف الآن عريضة جداً */
+}
+
+#itemsTable th:nth-child(3),
+#itemsTable td:nth-child(3),
+#itemsTable th:nth-child(4),
+#itemsTable td:nth-child(4),
+#itemsTable th:nth-child(5),
+#itemsTable td:nth-child(5),
+#itemsTable th:nth-child(6),
+#itemsTable td:nth-child(6) {
+  width: 10%;
+}
+
+#itemsTable th:nth-child(7),
+#itemsTable td:nth-child(7) {
+  width: 8%;
 }
