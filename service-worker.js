@@ -1,9 +1,22 @@
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open("invoice-cache").then((cache) => {
+      return cache.addAll([
+        "./",
+        "index.html",
+        "styles.css",
+        "app.js",
+        "manifest.json",
+        "html2pdf.bundle.min.js"
+      ]);
+    })
+  );
 });
 
-self.addEventListener("activate", (event) => {
-  self.clients.claim();
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((resp) => {
+      return resp || fetch(event.request);
+    })
+  );
 });
-
-// لا نستخدم fetch هنا حتى لا نخرب الطباعة أو نحجز نسخة قديمة من الملفات

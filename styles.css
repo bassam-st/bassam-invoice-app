@@ -159,32 +159,26 @@ td input[type="number"] {
   text-align: center;
 }
 
-/* صف التسجيل الصوتي لكل سطر */
-.voice-row td {
-  background: #f9fafb;
-  padding: 0.3rem 0.5rem;
-}
-
-.row-voice-section {
+.field-with-mic {
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-.voice-btn {
+.mic-btn {
   border: none;
-  border-radius: 999px;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.85rem;
   background: #fee2e2;
   color: #b91c1c;
+  border-radius: 999px;
+  padding: 0.2rem 0.45rem;
   cursor: pointer;
+  font-size: 0.8rem;
 }
 
-.voice-btn:active {
-  transform: scale(0.97);
+.mic-btn:hover {
+  background: #fecaca;
 }
 
-/* زر الحذف */
 .delete-btn {
   border: none;
   background: #ef4444;
@@ -281,12 +275,11 @@ td input[type="number"] {
   color: #b91c1c;
 }
 
-/* طباعة – إخفاء أزرار التحكم وأزرار الصوت والحذف */
+/* طباعة – إخفاء أزرار التحكم أثناء الطباعة */
 @media print {
   .actions,
   .saved-section,
-  .footer-note,
-  .voice-row {
+  .footer-note {
     display: none !important;
   }
 
@@ -296,8 +289,7 @@ td input[type="number"] {
 
   .container {
     box-shadow: none;
-    padding: 0.5cm;
-    margin: 0;
+    padding: 0;
     max-width: 100%;
   }
 
@@ -305,11 +297,8 @@ td input[type="number"] {
     box-shadow: none;
   }
 
-  .delete-btn {
+  .delete-btn,
+  .mic-btn {
     display: none !important;
-  }
-
-  table {
-    font-size: 0.8rem;
   }
 }
