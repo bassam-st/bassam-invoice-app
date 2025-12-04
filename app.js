@@ -26,12 +26,12 @@ const savedInvoicesList = document.getElementById("savedInvoicesList");
   invoiceDateInput.value = today;
 })();
 
-// تغيير العملة في النص أسفل
+// تغيير العملة
 currencySelect.addEventListener("change", () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
 
-// دالة تصغير/تكبير خانة الوصف تلقائياً
+// دالة تكبير خانة الوصف تلقائياً
 function autoResizeDesc(el) {
   if (!el) return;
   el.style.height = "auto";
@@ -56,7 +56,7 @@ function createRow(initial = {}) {
       <textarea
         class="desc-input"
         rows="1"
-        placeholder="وصف الصنف">${(initial.desc ?? "")}</textarea>
+        placeholder="وصف الصنف">${initial.desc ?? ""}</textarea>
     </td>
     <td>
       <input type="number" min="0" step="0.01"
@@ -83,7 +83,7 @@ function createRow(initial = {}) {
     </td>
   `;
 
-  // صف زر التسجيل الصوتي لهذا السطر
+  // صف زر التسجيل الصوتي
   const voiceRow = document.createElement("tr");
   voiceRow.classList.add("voice-row");
   voiceRow.innerHTML = `
@@ -125,11 +125,9 @@ function attachRowEvents(dataRow, voiceRow) {
     });
   });
 
-  // الوصف: تحديث المجاميع + تكبير الخانة
+  // الوصف: تكبير تلقائي + تحديث المجاميع
   descInput.addEventListener("input", () => {
     autoResizeDesc(descInput);
-    updateRowTotals(dataRow);
-    updateTotals();
   });
 
   const deleteBtn = dataRow.querySelector(".delete-btn");
@@ -219,7 +217,7 @@ function updateTotals() {
 }
 
 // ================================
-// الصوت – Web Speech API (ضغط مستمر)
+// الصوت – Web Speech API
 // ================================
 let recognition = null;
 let currentVoiceRow = null;
@@ -263,9 +261,7 @@ function startRowVoice(row) {
   currentVoiceRow = row;
   try {
     rec.start();
-  } catch (e) {
-    // أحياناً يكون شغال مسبقاً
-  }
+  } catch (e) {}
 }
 
 function stopRowVoice() {
@@ -275,7 +271,7 @@ function stopRowVoice() {
   } catch (e) {}
 }
 
-// تحليل أرقام بالعربي/أرقام عادية
+// تحليل الأرقام من الكلام
 function parseArabicNumberWords(text) {
   const map = {
     "صفر": 0,
@@ -527,7 +523,7 @@ function loadInvoice(id) {
 }
 
 // ================================
-// طباعة – فتح نافذة جديدة ثم print()
+// نافذة الطباعة (تعمل أيضاً كـ PDF)
 // ================================
 function openPrintWindow() {
   const container = document.querySelector(".container");
@@ -572,9 +568,7 @@ function openPrintWindow() {
   }, 600);
 }
 
-// ================================
-// أزرار إضافة سطر + طباعة + PDF
-// ================================
+// أزرار الواجهة
 addRowBtn.addEventListener("click", () => {
   createRow();
 });
@@ -584,7 +578,7 @@ printBtn.addEventListener("click", () => {
 });
 
 pdfBtn.addEventListener("click", () => {
-  openPrintWindow(); // المستخدم يختار حفظ كـ PDF
+  openPrintWindow(); // المستخدم يختار "حفظ كـ PDF"
 });
 
 // ================================
@@ -611,6 +605,6 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").catch(() => {});
 }
 
-// إنشاء أول صف وتحميل الفواتير المحفوظة
+// إنشاء أول صف وتحميل الفواتير
 createRow();
 renderSavedInvoices();
