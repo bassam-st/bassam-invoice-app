@@ -78,47 +78,18 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+  transition: 0.15s;
 }
 
-.btn.primary {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.btn.secondary {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.btn.pdf {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.btn.save {
-  background: #f97316;
-  color: #ffffff;
-}
-
-.btn.install {
-  background: #10b981;
-  color: #ffffff;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-}
-
-.btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
+.btn.primary { background: #2563eb; color: #fff; }
+.btn.secondary { background: #e5e7eb; color: #111; }
+.btn.pdf { background: #16a34a; color: #fff; }
+.btn.save { background: #f97316; color: #fff; }
+.btn.install { background: #10b981; color: #fff; }
 
 .table-wrapper {
   overflow-x: auto;
-  background: #ffffff;
+  background: #fff;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
@@ -126,7 +97,8 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 650px;
+  table-layout: fixed;
+  min-width: 700px;
 }
 
 thead {
@@ -141,12 +113,36 @@ th, td {
   vertical-align: middle;
 }
 
-th {
-  white-space: nowrap;
+/* =============================== */
+/*    تكبير خانة الوصف (الصنف)     */
+/* =============================== */
+#itemsTable th:nth-child(2),
+#itemsTable td:nth-child(2) {
+  width: 50%;        /* خانة الصنف كبيرة جداً وواضحة */
+  white-space: normal;
+  overflow: visible;
 }
 
-td input[type="number"],
-td input[type="text"] {
+/* بقية الأعمدة */
+#itemsTable th:nth-child(1),
+#itemsTable td:nth-child(1) { width: 8%; }
+
+#itemsTable th:nth-child(3),
+#itemsTable td:nth-child(3),
+#itemsTable th:nth-child(4),
+#itemsTable td:nth-child(4),
+#itemsTable th:nth-child(5),
+#itemsTable td:nth-child(5),
+#itemsTable th:nth-child(6),
+#itemsTable td:nth-child(6) {
+  width: 10%;
+}
+
+#itemsTable th:nth-child(7),
+#itemsTable td:nth-child(7) { width: 6%; }
+
+td input[type="text"],
+td input[type="number"] {
   width: 100%;
   padding: 0.4rem 0.45rem;
   border-radius: 0.55rem;
@@ -155,9 +151,7 @@ td input[type="text"] {
   font-size: 0.85rem;
 }
 
-td input[type="number"] {
-  text-align: center;
-}
+td input[type="number"] { text-align: center; }
 
 .field-with-mic {
   display: flex;
@@ -175,112 +169,35 @@ td input[type="number"] {
   font-size: 0.8rem;
 }
 
-.mic-btn:hover {
-  background: #fecaca;
-}
-
 .delete-btn {
   border: none;
   background: #ef4444;
-  color: #ffffff;
+  color: #fff;
   border-radius: 999px;
   padding: 0.35rem 0.6rem;
   cursor: pointer;
-  font-size: 0.85rem;
 }
 
-.delete-btn:hover {
-  background: #dc2626;
-}
-
-.totals {
-  margin-top: 1rem;
-  background: #ffffff;
-  padding: 0.8rem 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  font-size: 0.95rem;
-}
-
-.totals p {
-  margin: 0.15rem 0;
-}
-
-.footer-note {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-/* الفواتير المحفوظة */
-.saved-section {
-  margin-top: 1.5rem;
-  background: #ffffff;
-  padding: 0.9rem 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.saved-hint {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin-bottom: 0.4rem;
-}
-
-.saved-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.saved-card {
-  border-radius: 0.6rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 0.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-}
-
-.saved-card-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.saved-card-buttons {
-  display: flex;
-  gap: 0.3rem;
-}
-
-.saved-card button {
-  border-radius: 999px;
-  border: none;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.saved-load-btn {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.saved-delete-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-/* طباعة – إخفاء أزرار التحكم أثناء الطباعة */
+/* ============================ */
+/*       الطباعة (PDF)          */
+/* ============================ */
 @media print {
+
+  /* إخفاء الأزرار */
   .actions,
   .saved-section,
   .footer-note {
     display: none !important;
+  }
+
+  .desc-input {
+    white-space: normal !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  td:nth-child(2) {
+    white-space: normal !important;
   }
 
   body {
@@ -291,10 +208,6 @@ td input[type="number"] {
     box-shadow: none;
     padding: 0;
     max-width: 100%;
-  }
-
-  .table-wrapper {
-    box-shadow: none;
   }
 
   .delete-btn,
