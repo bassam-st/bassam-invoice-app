@@ -11,49 +11,13 @@ html, body {
   direction: rtl;
 }
 
-body {
-  color: #111827;
-}
+body { color: #111827; }
 
 .container {
   max-width: 900px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
 }
-
-/* ========= صناديق الرأس ============ */
-
-.field-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  margin-bottom: 0.6rem;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 1rem 0;
-  justify-content: center;
-}
-
-.btn {
-  border: none;
-  border-radius: 999px;
-  padding: 0.55rem 1.2rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.btn.primary { background: #2563eb; color: #ffffff; }
-.btn.secondary { background: #e5e7eb; color: #111827; }
-.btn.pdf { background: #16a34a; color: #ffffff; }
-.btn.save { background: #f97316; color: #ffffff; }
-.btn.install { background: #10b981; color: #ffffff; }
 
 /* ========= الجدول ============ */
 
@@ -79,12 +43,11 @@ th, td {
   vertical-align: middle;
 }
 
-/* ========= تكبير خانة الصنف ============ */
-/* 🔥 عرضها 30% + التفاف النص */
+/* ========= خانة الصنف 20% ============ */
 #itemsTable th:nth-child(2),
 #itemsTable td:nth-child(2) {
-  width: 30% !important;
-  white-space: normal !important;
+  width: 20% !important; 
+  white-space: normal !important; 
   overflow: visible !important;
   word-wrap: break-word !important;
   text-align: right !important;
@@ -93,11 +56,9 @@ th, td {
 
 /* العدد */
 #itemsTable th:nth-child(1),
-#itemsTable td:nth-child(1) {
-  width: 8% !important;
-}
+#itemsTable td:nth-child(1) { width: 10% !important; }
 
-/* وزن/قيمة/وزن كلي/قيمة كليّة */
+/* وزن/قيمة/وزن كلي/قيمة كلية */
 #itemsTable th:nth-child(3),
 #itemsTable td:nth-child(3),
 #itemsTable th:nth-child(4),
@@ -111,11 +72,7 @@ th, td {
 
 /* حذف */
 #itemsTable th:nth-child(7),
-#itemsTable td:nth-child(7) {
-  width: 6% !important;
-}
-
-/* ========= حقول الإدخال ============ */
+#itemsTable td:nth-child(7) { width: 6% !important; }
 
 td input[type="text"],
 td input[type="number"] {
@@ -133,14 +90,12 @@ td input[type="number"] {
   word-wrap: break-word !important;
   height: auto !important;
   text-align: right !important;
-  line-height: 1.4;
 }
 
 /* ========= الطباعة ============ */
 
 @media print {
 
-  /* إخفاء ما لا يلزم */
   .actions,
   .saved-section,
   .footer-note,
@@ -149,7 +104,6 @@ td input[type="number"] {
     display: none !important;
   }
 
-  /* الوصف يظهر كامل */
   td:nth-child(2),
   .desc-input {
     white-space: normal !important;
@@ -159,7 +113,6 @@ td input[type="number"] {
   }
 
   body { background: #ffffff; }
-
   .container {
     padding: 0;
     max-width: 100%;
