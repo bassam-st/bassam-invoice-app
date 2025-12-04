@@ -1,4 +1,4 @@
-const CACHE_NAME = "bassam-invoice-v10";
+const CACHE_NAME = "bassam-invoice-v12";
 
 const ASSETS = [
   "./",
@@ -17,15 +17,13 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => key !== CACHE_NAME && caches.delete(key))
-      )
+      Promise.all(keys.map(key => key !== CACHE_NAME && caches.delete(key)))
     )
   );
 });
 
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(res => res || fetch(event.request))
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
