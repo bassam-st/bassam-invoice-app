@@ -21,9 +21,45 @@ body {
   padding: 1.5rem 1rem 3rem;
 }
 
+/* ========= صناديق الرأس ============ */
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  justify-content: center;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn.primary { background: #2563eb; color: #ffffff; }
+.btn.secondary { background: #e5e7eb; color: #111827; }
+.btn.pdf { background: #16a34a; color: #ffffff; }
+.btn.save { background: #f97316; color: #ffffff; }
+.btn.install { background: #10b981; color: #ffffff; }
+
+/* ========= الجدول ============ */
+
 .table-wrapper {
   overflow-x: auto;
-  background: #fff;
+  background: #ffffff;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
@@ -32,26 +68,36 @@ table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  min-width: 800px;
+  min-width: 780px;
 }
 
-/* ========= الأعمدة ============ */
-
-/* خانة العدد */
-#itemsTable th:nth-child(1),
-#itemsTable td:nth-child(1) {
-  width: 8%;
+th, td {
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 0.4rem;
+  font-size: 0.85rem;
+  text-align: center;
+  vertical-align: middle;
 }
 
-/* خانة الوصف (الصنف) — مكبّرة 60% */
+/* ========= تكبير خانة الصنف ============ */
+/* 🔥 عرضها 40% + التفاف النص */
 #itemsTable th:nth-child(2),
 #itemsTable td:nth-child(2) {
-  width: 60%;
+  width: 40% !important;
   white-space: normal !important;
   overflow: visible !important;
+  word-wrap: break-word !important;
+  text-align: right !important;
+  line-height: 1.4;
 }
 
-/* بقية الأعمدة */
+/* العدد */
+#itemsTable th:nth-child(1),
+#itemsTable td:nth-child(1) {
+  width: 8% !important;
+}
+
+/* وزن/قيمة/وزن كلي/قيمة كليّة */
 #itemsTable th:nth-child(3),
 #itemsTable td:nth-child(3),
 #itemsTable th:nth-child(4),
@@ -60,12 +106,13 @@ table {
 #itemsTable td:nth-child(5),
 #itemsTable th:nth-child(6),
 #itemsTable td:nth-child(6) {
-  width: 10%;
+  width: 10% !important;
 }
 
+/* حذف */
 #itemsTable th:nth-child(7),
 #itemsTable td:nth-child(7) {
-  width: 8%;
+  width: 6% !important;
 }
 
 /* ========= الحقول داخل الجدول ============ */
@@ -83,11 +130,12 @@ td input[type="number"] {
 .desc-input {
   white-space: normal !important;
   overflow: visible !important;
+  word-wrap: break-word !important;
   height: auto !important;
-  line-height: 1.4;
+  text-align: right !important;
 }
 
-/* ========= الطباعة (PDF) ============ */
+/* ========= الطباعة ============ */
 
 @media print {
 
@@ -95,20 +143,9 @@ td input[type="number"] {
   .actions,
   .saved-section,
   .footer-note,
-  .mic-btn,
-  .delete-btn {
+  .delete-btn,
+  .mic-btn {
     display: none !important;
-  }
-
-  /* تكبير الصفحة */
-  body {
-    background: #fff;
-  }
-
-  .container {
-    padding: 0;
-    max-width: 100%;
-    box-shadow: none;
   }
 
   /* الوصف يظهر كامل */
@@ -116,6 +153,15 @@ td input[type="number"] {
   .desc-input {
     white-space: normal !important;
     overflow: visible !important;
+    word-wrap: break-word !important;
     height: auto !important;
+  }
+
+  body { background: #ffffff; }
+
+  .container {
+    padding: 0;
+    max-width: 100%;
+    box-shadow: none;
   }
 }
