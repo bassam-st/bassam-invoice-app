@@ -129,6 +129,13 @@ table {
   min-width: 650px;
 }
 
+/* ========================= */
+/*  جعل الجدول ثابت الأعمدة  */
+/* ========================= */
+#itemsTable {
+  table-layout: fixed;
+}
+
 thead {
   background: #f9fafb;
 }
@@ -275,7 +282,41 @@ td input[type="number"] {
   color: #b91c1c;
 }
 
-/* طباعة – إخفاء أزرار التحكم أثناء الطباعة */
+/* ========================= */
+/*     توزيع عرض الأعمدة     */
+/* ========================= */
+
+/* العدد */
+#itemsTable th:nth-child(1),
+#itemsTable td:nth-child(1) {
+  width: 10%;
+}
+
+/* الصنف – تكبيرها 40% */
+#itemsTable th:nth-child(2),
+#itemsTable td:nth-child(2) {
+  width: 40%;
+}
+
+/* وزن / قيمة / وزن كلي / قيمة كلية */
+#itemsTable th:nth-child(3),
+#itemsTable td:nth-child(3),
+#itemsTable th:nth-child(4),
+#itemsTable td:nth-child(4),
+#itemsTable th:nth-child(5),
+#itemsTable td:nth-child(5),
+#itemsTable th:nth-child(6),
+#itemsTable td:nth-child(6) {
+  width: 10%;
+}
+
+/* حذف */
+#itemsTable th:nth-child(7),
+#itemsTable td:nth-child(7) {
+  width: 8%;
+}
+
+/* الطباعة */
 @media print {
   .actions,
   .saved-section,
@@ -301,10 +342,4 @@ td input[type="number"] {
   .mic-btn {
     display: none !important;
   }
-}
-
-/* ✅ تكبير عمود خانة الصنف ليكون أوسع */
-#itemsTable th:nth-child(2),
-#itemsTable td:nth-child(2) {
-  min-width: 260px;   /* تقدّر تكبره أو تصغّره كما تحب */
 }
