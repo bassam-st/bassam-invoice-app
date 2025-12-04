@@ -302,3 +302,9 @@ td input[type="number"] {
     display: none !important;
   }
 }
+
+/* ✅ تكبير عمود خانة الصنف ليكون أوسع */
+#itemsTable th:nth-child(2),
+#itemsTable td:nth-child(2) {
+  min-width: 260px;   /* تقدّر تكبره أو تصغّره كما تحب */
+}
