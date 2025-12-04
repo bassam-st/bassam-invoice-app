@@ -61,7 +61,6 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* الأزرار العلوية */
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -117,7 +116,6 @@ h1 {
   box-shadow: none;
 }
 
-/* الجدول */
 .table-wrapper {
   overflow-x: auto;
   background: #ffffff;
@@ -161,32 +159,32 @@ td input[type="number"] {
   text-align: center;
 }
 
-/* سطر زر التسجيل الصوتي */
+/* صف التسجيل الصوتي لكل سطر */
 .voice-row td {
-  background: #f0fdf4;
-  padding: 0.5rem 0.6rem;
+  background: #f9fafb;
+  padding: 0.3rem 0.5rem;
 }
 
 .row-voice-section {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .voice-btn {
   border: none;
   border-radius: 999px;
-  padding: 0.4rem 1.3rem;
-  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
+  background: #fee2e2;
+  color: #b91c1c;
   cursor: pointer;
-  background: #16a34a;
-  color: #ffffff;
 }
 
 .voice-btn:active {
-  opacity: 0.9;
+  transform: scale(0.97);
 }
 
-/* زر حذف السطر */
+/* زر الحذف */
 .delete-btn {
   border: none;
   background: #ef4444;
@@ -201,7 +199,6 @@ td input[type="number"] {
   background: #dc2626;
 }
 
-/* المجاميع */
 .totals {
   margin-top: 1rem;
   background: #ffffff;
@@ -215,7 +212,6 @@ td input[type="number"] {
   margin: 0.15rem 0;
 }
 
-/* الفوتر */
 .footer-note {
   margin-top: 1.5rem;
   text-align: center;
@@ -285,14 +281,12 @@ td input[type="number"] {
   color: #b91c1c;
 }
 
-/* الطباعة */
+/* طباعة – إخفاء أزرار التحكم وأزرار الصوت والحذف */
 @media print {
   .actions,
   .saved-section,
   .footer-note,
-  .voice-row,
-  .delete-btn,
-  #installBtn {
+  .voice-row {
     display: none !important;
   }
 
@@ -302,12 +296,20 @@ td input[type="number"] {
 
   .container {
     box-shadow: none;
+    padding: 0.5cm;
     margin: 0;
-    padding: 0.5cm 0.7cm;
     max-width: 100%;
   }
 
   .table-wrapper {
     box-shadow: none;
+  }
+
+  .delete-btn {
+    display: none !important;
+  }
+
+  table {
+    font-size: 0.8rem;
   }
 }
