@@ -75,7 +75,7 @@ function createRow(initial = {}) {
     </td>
   `;
 
-  // صف زر التسجيل
+  // صف زر التسجيل الصوتي لهذا السطر
   const voiceRow = document.createElement("tr");
   voiceRow.classList.add("voice-row");
   voiceRow.innerHTML = `
@@ -244,7 +244,7 @@ function startRowVoice(row) {
   try {
     rec.start();
   } catch (e) {
-    // أحياناً يكون شغال
+    // أحياناً يكون شغال مسبقاً
   }
 }
 
@@ -506,6 +506,57 @@ function loadInvoice(id) {
 }
 
 // ================================
+// طباعة – فتح نافذة جديدة ثم print()
+// ================================
+function openPrintWindow() {
+  const container = document.querySelector(".container");
+  if (!container) {
+    window.print(); // احتياط
+    return;
+  }
+
+  const printContent = container.innerHTML;
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    // لو المتصفح منع النوافذ المنبثقة
+    window.print();
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(`
+    <!doctype html>
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="utf-8" />
+      <title>طباعة فاتورة بسام</title>
+      <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+      <div class="container">
+        ${printContent}
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+
+  // ننتظر قليلاً حتى يتم تحميل الـ CSS ثم نطبع
+  printWindow.focus();
+  setTimeout(() => {
+    try {
+      printWindow.print();
+      // يمكن إغلاق النافذة بعد الطباعة لو حاب:
+      // printWindow.close();
+    } catch (e) {
+      // لو في مشكلة نرجع للطباعة العادية
+      window.print();
+    }
+  }, 600);
+}
+
+// ================================
 // أزرار إضافة سطر + طباعة + PDF
 // ================================
 addRowBtn.addEventListener("click", () => {
@@ -513,11 +564,11 @@ addRowBtn.addEventListener("click", () => {
 });
 
 printBtn.addEventListener("click", () => {
-  window.print();
+  openPrintWindow();
 });
 
 pdfBtn.addEventListener("click", () => {
-  window.print(); // المستخدم يختار "حفظ كـ PDF" من شاشة النظام
+  openPrintWindow(); // المستخدم يختار "حفظ كـ PDF" من شاشة النظام
 });
 
 // ================================
@@ -539,7 +590,7 @@ installBtn.addEventListener("click", async () => {
   installBtn.hidden = true;
 });
 
-// تسجيل Service Worker (بسيط حتى لا يخرب الطباعة)
+// تسجيل Service Worker
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").catch(() => {});
 }
