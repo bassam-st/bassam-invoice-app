@@ -1,4 +1,4 @@
-const CACHE_NAME = "bassam-invoice-v9";
+const CACHE_NAME = "bassam-invoice-v10";
 
 const ASSETS = [
   "./",
