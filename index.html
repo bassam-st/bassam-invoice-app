@@ -14,7 +14,6 @@
   <div class="container">
     <h1>فاتورة بسام</h1>
 
-    <!-- رأس الفاتورة -->
     <section class="invoice-header">
       <div class="field-row">
         <label for="clientName">اسم العميل:</label>
@@ -43,7 +42,6 @@
       </div>
     </section>
 
-    <!-- الأزرار الرئيسية -->
     <section class="actions">
       <button id="printBtn" class="btn secondary">🖨️ طباعة</button>
       <button id="pdfBtn" class="btn pdf">PDF</button>
@@ -52,7 +50,6 @@
       <button id="installBtn" class="btn install" hidden>📲 تثبيت</button>
     </section>
 
-    <!-- جدول الأصناف -->
     <h2 class="section-title">جدول الأصناف</h2>
 
     <div class="table-wrapper">
@@ -69,24 +66,22 @@
           </tr>
         </thead>
         <tbody id="itemsBody">
-          <!-- الصفوف تتولّد من app.js -->
+          <!-- الصفوف تتولد من جافاسكربت -->
         </tbody>
       </table>
     </div>
 
-    <!-- المجاميع -->
     <section class="totals">
       <p>إجمالي العدد: <span id="totalQty">0</span></p>
       <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
       <p>إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>): <span id="totalValue">0</span></p>
     </section>
 
-    <!-- الفواتير المحفوظة -->
     <section id="savedInvoicesSection" class="saved-section">
       <h2>الفواتير المحفوظة</h2>
       <p class="saved-hint">هذه الفواتير محفوظة في هذا الجهاز فقط.</p>
       <div id="savedInvoicesList" class="saved-list">
-        <!-- تمتلئ من app.js -->
+        <!-- الفواتير المحفوظة تظهر هنا -->
       </div>
     </section>
 
