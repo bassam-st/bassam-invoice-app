@@ -26,7 +26,7 @@ const savedInvoicesList = document.getElementById("savedInvoicesList");
   invoiceDateInput.value = today;
 })();
 
-// تغيير العملة
+// تغيير العملة في النص أسفل
 currencySelect.addEventListener("change", () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
@@ -143,18 +143,18 @@ function attachRowEvents(dataRow, voiceRow) {
 // ================================
 function updateRowTotals(dataRow) {
   const qty =
-    parseFloat(dataRow.querySelector(".qty-input").value.replace(",", ".")) || 0;
+    parseFloat((dataRow.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
   const weightPer =
     parseFloat(
-      dataRow
+      (dataRow
         .querySelector(".weight-per-carton-input")
-        .value.replace(",", ".")
+        .value || "").replace(",", ".")
     ) || 0;
   const pricePer =
     parseFloat(
-      dataRow
+      (dataRow
         .querySelector(".price-per-carton-input")
-        .value.replace(",", ".")
+        .value || "").replace(",", ".")
     ) || 0;
 
   const totalWeight = qty * weightPer;
@@ -178,14 +178,14 @@ function updateTotals() {
 
   itemsBody.querySelectorAll("tr.item-row").forEach((row) => {
     const qty =
-      parseFloat(row.querySelector(".qty-input").value.replace(",", ".")) || 0;
+      parseFloat((row.querySelector(".qty-input").value || "").replace(",", ".")) || 0;
     const w =
       parseFloat(
-        row.querySelector(".total-weight-input").value.replace(",", ".")
+        (row.querySelector(".total-weight-input").value || "").replace(",", ".")
       ) || 0;
     const v =
       parseFloat(
-        row.querySelector(".total-value-input").value.replace(",", ".")
+        (row.querySelector(".total-value-input").value || "").replace(",", ".")
       ) || 0;
 
     totalQty += qty;
@@ -244,7 +244,7 @@ function startRowVoice(row) {
   try {
     rec.start();
   } catch (e) {
-    // أحياناً لو كان شغال مسبقاً
+    // أحياناً يكون شغال
   }
 }
 
@@ -255,9 +255,7 @@ function stopRowVoice() {
   } catch (e) {}
 }
 
-// ================================
-// دوال مساعدة لتحليل الأرقام من الكلام
-// ================================
+// تحليل أرقام بالعربي/أرقام عادية
 function parseArabicNumberWords(text) {
   const map = {
     "صفر": 0,
@@ -331,9 +329,7 @@ function extractNumbersSmart(text) {
   return fromWords ? [fromWords] : [];
 }
 
-// ================================
-// تعبئة السطر من الصوت
-// ================================
+// تعبئة السطر من الكلام
 function fillRowFromVoice(row, text) {
   const descInput = row.querySelector(".desc-input");
   const qtyInput = row.querySelector(".qty-input");
@@ -521,7 +517,7 @@ printBtn.addEventListener("click", () => {
 });
 
 pdfBtn.addEventListener("click", () => {
-  window.print();
+  window.print(); // المستخدم يختار "حفظ كـ PDF" من شاشة النظام
 });
 
 // ================================
@@ -543,11 +539,11 @@ installBtn.addEventListener("click", async () => {
   installBtn.hidden = true;
 });
 
-// تسجيل Service Worker
+// تسجيل Service Worker (بسيط حتى لا يخرب الطباعة)
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
 }
 
-// إنشاء أول صف وتحميل الفواتير
+// إنشاء أول صف وتحميل الفواتير المحفوظة
 createRow();
 renderSavedInvoices();
