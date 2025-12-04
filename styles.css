@@ -80,10 +80,10 @@ th, td {
 }
 
 /* ========= تكبير خانة الصنف ============ */
-/* 🔥 عرضها 40% + التفاف النص */
+/* 🔥 عرضها 30% + التفاف النص */
 #itemsTable th:nth-child(2),
 #itemsTable td:nth-child(2) {
-  width: 40% !important;
+  width: 30% !important;
   white-space: normal !important;
   overflow: visible !important;
   word-wrap: break-word !important;
@@ -106,7 +106,7 @@ th, td {
 #itemsTable td:nth-child(5),
 #itemsTable th:nth-child(6),
 #itemsTable td:nth-child(6) {
-  width: 10% !important;
+  width: 12% !important;
 }
 
 /* حذف */
@@ -115,7 +115,7 @@ th, td {
   width: 6% !important;
 }
 
-/* ========= الحقول داخل الجدول ============ */
+/* ========= حقول الإدخال ============ */
 
 td input[type="text"],
 td input[type="number"] {
@@ -133,13 +133,14 @@ td input[type="number"] {
   word-wrap: break-word !important;
   height: auto !important;
   text-align: right !important;
+  line-height: 1.4;
 }
 
 /* ========= الطباعة ============ */
 
 @media print {
 
-  /* إخفاء الأزرار */
+  /* إخفاء ما لا يلزم */
   .actions,
   .saved-section,
   .footer-note,
