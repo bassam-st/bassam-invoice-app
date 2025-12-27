@@ -11,7 +11,11 @@
 </head>
 <body>
   <div class="container">
-    <h1>فاتورة بسام</h1>
+
+    <!-- عنوان الفاتورة قابل للتحرير -->
+    <div class="invoice-title-wrap">
+      <input id="invoiceTitle" class="invoice-title-input" type="text" value="فاتورة بسام" placeholder="اكتب عنوان الفاتورة (مثال: فاتورة تجارية)" />
+    </div>
 
     <section class="invoice-header">
       <div class="field-row">
@@ -64,7 +68,9 @@
             <th>حذف</th>
           </tr>
         </thead>
-        <tbody id="itemsBody"></tbody>
+        <tbody id="itemsBody">
+          <!-- الصفوف تتولد من جافاسكربت -->
+        </tbody>
       </table>
     </div>
 
@@ -74,15 +80,38 @@
       <p>إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>): <span id="totalValue">0</span></p>
     </section>
 
+    <!-- خانات أسفل الفاتورة: الاسم/التوقيع/الختم -->
+    <section class="signature-section">
+      <div class="sig-grid">
+        <div class="sig-box">
+          <label for="sigName">الاسم:</label>
+          <input id="sigName" type="text" placeholder="اكتب الاسم هنا" />
+        </div>
+
+        <div class="sig-box">
+          <label for="sigSignature">التوقيع:</label>
+          <input id="sigSignature" type="text" placeholder="اكتب التوقيع أو اتركه فارغًا" />
+        </div>
+
+        <div class="sig-box">
+          <label for="sigStamp">الختم:</label>
+          <input id="sigStamp" type="text" placeholder="مثال: ختم الشركة" />
+        </div>
+      </div>
+
+      <div class="sig-notes">
+        <label for="sigNotes">ملاحظات (اختياري):</label>
+        <textarea id="sigNotes" rows="2" placeholder="أي ملاحظات إضافية تظهر في أسفل الفاتورة"></textarea>
+      </div>
+    </section>
+
     <section id="savedInvoicesSection" class="saved-section">
       <h2>الفواتير المحفوظة</h2>
       <p class="saved-hint">هذه الفواتير محفوظة في هذا الجهاز فقط.</p>
       <div id="savedInvoicesList" class="saved-list"></div>
     </section>
 
-    <p class="footer-note">
-      تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة
-    </p>
+    <p class="footer-note">تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة</p>
   </div>
 
   <script src="app.js"></script>
