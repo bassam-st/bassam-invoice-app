@@ -11,10 +11,6 @@ const currencySelect = document.getElementById('currencySelect');
 const invoiceDateInput = document.getElementById('invoiceDate');
 
 const invoiceTitleInput = document.getElementById('invoiceTitle');
-const sigNameInput = document.getElementById('sigName');
-const sigSignatureInput = document.getElementById('sigSignature');
-const sigStampInput = document.getElementById('sigStamp');
-const sigNotesInput = document.getElementById('sigNotes');
 
 const addRowBtn = document.getElementById('addRowBtn');
 const printBtn = document.getElementById('printBtn');
@@ -74,13 +70,9 @@ function createRow(initial = {}) {
     </td>
 
     <td>
-      <div class="desc-cell">
-        <div class="mic-wrap">
-          <input type="text" class="desc-input" value="${initial.desc ?? ''}" placeholder="وصف الصنف" />
-          <button type="button" class="mic-under" data-mic title="إدخال بالصوت">🎤</button>
-        </div>
-
-        <button type="button" class="row-save-btn" title="تسجيل هذا السطر">🖊️ تسجيل هذا السطر</button>
+      <div class="mic-wrap">
+        <input type="text" class="desc-input" value="${initial.desc ?? ''}" placeholder="وصف الصنف" />
+        <button type="button" class="mic-under" data-mic title="إدخال بالصوت">🎤</button>
       </div>
     </td>
 
@@ -132,15 +124,6 @@ function attachRowEvents(row) {
       updateTotals();
     });
   });
-
-  // زر تسجيل هذا السطر
-  const rowSaveBtn = row.querySelector('.row-save-btn');
-  if (rowSaveBtn) {
-    rowSaveBtn.addEventListener('click', () => {
-      rowSaveBtn.textContent = '✅ تم التسجيل';
-      rowSaveBtn.disabled = true;
-    });
-  }
 
   // حذف الصف
   const deleteBtn = row.querySelector('.delete-btn');
@@ -313,14 +296,8 @@ function captureCurrentInvoice() {
   return {
     id: Date.now(),
 
-    // جديد: عنوان الفاتورة + التوقيع/الختم
+    // عنوان الفاتورة (يبقى)
     title: invoiceTitleInput ? invoiceTitleInput.value.trim() : '',
-    sig: {
-      name: sigNameInput ? sigNameInput.value.trim() : '',
-      signature: sigSignatureInput ? sigSignatureInput.value.trim() : '',
-      stamp: sigStampInput ? sigStampInput.value.trim() : '',
-      notes: sigNotesInput ? sigNotesInput.value.trim() : ''
-    },
 
     clientName: clientNameInput.value.trim(),
     invoiceNumber: invoiceNumberInput.value.trim(),
@@ -412,12 +389,8 @@ function loadInvoice(id) {
   const inv = invoices.find(i => i.id === id);
   if (!inv) return;
 
-  // جديد: عنوان الفاتورة + التوقيع/الختم
+  // عنوان الفاتورة
   if (invoiceTitleInput) invoiceTitleInput.value = inv.title || 'فاتورة بسام';
-  if (sigNameInput) sigNameInput.value = inv.sig?.name || '';
-  if (sigSignatureInput) sigSignatureInput.value = inv.sig?.signature || '';
-  if (sigStampInput) sigStampInput.value = inv.sig?.stamp || '';
-  if (sigNotesInput) sigNotesInput.value = inv.sig?.notes || '';
 
   clientNameInput.value = inv.clientName || '';
   invoiceNumberInput.value = inv.invoiceNumber || '';
