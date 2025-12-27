@@ -19,6 +19,32 @@ body { color: #111827; }
   padding: 1.5rem 1rem 3rem;
 }
 
+/* ========= عنوان الفاتورة (قابل للتحرير) ============ */
+.invoice-title-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0.25rem 0 1rem;
+}
+
+.invoice-title-input {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #111827;
+  padding: 0.25rem 0.5rem;
+}
+
+.invoice-title-input:focus {
+  outline: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
 /* ========= الجدول ============ */
 
 .table-wrapper {
@@ -43,18 +69,19 @@ th, td {
   vertical-align: middle;
 }
 
-/* ========= خانة الصنف ============ */
+/* ========= خانة الصنف 20% ============ */
 #itemsTable th:nth-child(2),
 #itemsTable td:nth-child(2) {
   width: 20% !important;
   text-align: right !important;
+  line-height: 1.4;
 }
 
 /* العدد */
 #itemsTable th:nth-child(1),
 #itemsTable td:nth-child(1) { width: 10% !important; }
 
-/* بقية الأعمدة */
+/* وزن/قيمة/وزن كلي/قيمة كلية */
 #itemsTable th:nth-child(3),
 #itemsTable td:nth-child(3),
 #itemsTable th:nth-child(4),
@@ -70,7 +97,8 @@ th, td {
 #itemsTable th:nth-child(7),
 #itemsTable td:nth-child(7) { width: 6% !important; }
 
-td input {
+td input[type="text"],
+td input[type="number"] {
   width: 100%;
   padding: 0.4rem;
   border-radius: 0.55rem;
@@ -79,24 +107,121 @@ td input {
   font-size: 0.85rem;
 }
 
-/* ========= الطباعة ============ */
+/* ========= ميكروفون تحت كل خانة ============ */
+.mic-wrap{
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: stretch;
+}
 
+.mic-under{
+  width: 40px;
+  height: 26px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  align-self: flex-start; /* في RTL يظهر تحت الخانة جهة اليمين */
+}
+
+.desc-input {
+  text-align: right !important;
+}
+
+/* ========= زر التسجيل تحت الصنف ============ */
+.desc-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.row-save-btn {
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.row-save-btn:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+
+/* ========= قسم التوقيع/الختم ============ */
+.signature-section {
+  margin-top: 1rem;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.sig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.sig-box label,
+.sig-notes label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #111827;
+}
+
+.sig-box input {
+  width: 100%;
+  padding: 0.55rem;
+  border-radius: 0.6rem;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+}
+
+.sig-notes {
+  margin-top: 0.75rem;
+}
+
+.sig-notes textarea {
+  width: 100%;
+  padding: 0.55rem;
+  border-radius: 0.6rem;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  resize: vertical;
+}
+
+/* ========= الطباعة ============ */
 @media print {
 
   .actions,
   .saved-section,
   .footer-note,
   .delete-btn,
-  .mic-btn {
+  .mic-under,
+  .row-save-btn {
     display: none !important;
   }
 
-  /* نخفي input الوصف لأنه يُقص في الطباعة */
+  /* عنوان الفاتورة في الطباعة يظهر كنص طبيعي (input بدون إطار) */
+  .invoice-title-input {
+    outline: none !important;
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  /* FIX للطباعة: input الوصف قد يُقص في PDF، نخفيه ونطبع نص بديل */
   .desc-input {
     display: none !important;
   }
 
-  /* النص البديل القابل للطباعة */
   .print-desc {
     display: block !important;
     white-space: pre-wrap !important;
@@ -111,5 +236,11 @@ td input {
     padding: 0;
     max-width: 100%;
     box-shadow: none;
+  }
+
+  /* قسم التوقيع يظهر في الطباعة */
+  .signature-section {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
   }
 }
