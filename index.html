@@ -42,21 +42,11 @@
     </section>
 
     <section class="actions">
-      <button id="printBtn" class="btn secondary">
-        🖨️ طباعة
-      </button>
-      <button id="pdfBtn" class="btn pdf">
-        PDF
-      </button>
-      <button id="addRowBtn" class="btn primary">
-        + إضافة سطر
-      </button>
-      <button id="saveInvoiceBtn" class="btn save">
-        💾 حفظ الفاتورة
-      </button>
-      <button id="installBtn" class="btn install" hidden>
-        📲 تثبيت
-      </button>
+      <button id="printBtn" class="btn secondary">🖨️ طباعة</button>
+      <button id="pdfBtn" class="btn pdf">PDF</button>
+      <button id="addRowBtn" class="btn primary">+ إضافة سطر</button>
+      <button id="saveInvoiceBtn" class="btn save">💾 حفظ الفاتورة</button>
+      <button id="installBtn" class="btn install" hidden>📲 تثبيت</button>
     </section>
 
     <h2 class="section-title">جدول الأصناف</h2>
@@ -74,9 +64,7 @@
             <th>حذف</th>
           </tr>
         </thead>
-        <tbody id="itemsBody">
-          <!-- الصفوف تتولد من جافاسكربت -->
-        </tbody>
+        <tbody id="itemsBody"></tbody>
       </table>
     </div>
 
@@ -89,9 +77,7 @@
     <section id="savedInvoicesSection" class="saved-section">
       <h2>الفواتير المحفوظة</h2>
       <p class="saved-hint">هذه الفواتير محفوظة في هذا الجهاز فقط.</p>
-      <div id="savedInvoicesList" class="saved-list">
-        <!-- تمتلئ تلقائيًا -->
-      </div>
+      <div id="savedInvoicesList" class="saved-list"></div>
     </section>
 
     <p class="footer-note">
