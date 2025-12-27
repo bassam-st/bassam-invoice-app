@@ -43,22 +43,18 @@ th, td {
   vertical-align: middle;
 }
 
-/* ========= خانة الصنف 20% ============ */
+/* ========= خانة الصنف ============ */
 #itemsTable th:nth-child(2),
 #itemsTable td:nth-child(2) {
-  width: 20% !important; 
-  white-space: normal !important; 
-  overflow: visible !important;
-  word-wrap: break-word !important;
+  width: 20% !important;
   text-align: right !important;
-  line-height: 1.4;
 }
 
 /* العدد */
 #itemsTable th:nth-child(1),
 #itemsTable td:nth-child(1) { width: 10% !important; }
 
-/* وزن/قيمة/وزن كلي/قيمة كلية */
+/* بقية الأعمدة */
 #itemsTable th:nth-child(3),
 #itemsTable td:nth-child(3),
 #itemsTable th:nth-child(4),
@@ -74,22 +70,13 @@ th, td {
 #itemsTable th:nth-child(7),
 #itemsTable td:nth-child(7) { width: 6% !important; }
 
-td input[type="text"],
-td input[type="number"] {
+td input {
   width: 100%;
   padding: 0.4rem;
   border-radius: 0.55rem;
   border: 1px solid #d1d5db;
   background: #f9fafb;
   font-size: 0.85rem;
-}
-
-.desc-input {
-  white-space: normal !important;
-  overflow: visible !important;
-  word-wrap: break-word !important;
-  height: auto !important;
-  text-align: right !important;
 }
 
 /* ========= الطباعة ============ */
@@ -104,12 +91,19 @@ td input[type="number"] {
     display: none !important;
   }
 
-  td:nth-child(2),
+  /* نخفي input الوصف لأنه يُقص في الطباعة */
   .desc-input {
-    white-space: normal !important;
-    overflow: visible !important;
-    word-wrap: break-word !important;
-    height: auto !important;
+    display: none !important;
+  }
+
+  /* النص البديل القابل للطباعة */
+  .print-desc {
+    display: block !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.4 !important;
+    text-align: right !important;
   }
 
   body { background: #ffffff; }
