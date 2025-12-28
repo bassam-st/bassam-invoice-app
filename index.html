@@ -6,30 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#16a34a" />
 
-  <!-- خط عربي قوي (يُحسن الطباعة غالبًا) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <div class="container" id="appRoot">
 
-    <!-- هيدر/شعار مفخم -->
-    <header class="brand-header">
-      <div class="brand-badge">
-        <div class="brand-mark">ب</div>
-      </div>
-
-      <div class="brand-text">
-        <div class="brand-title">مكتب بسام الشتيمي للتخليص الجمركي</div>
-        <div class="brand-sub">
-          <span>جوال: 00967771997809</span>
-          <span class="dot">•</span>
-          <span>Bassam.7111111@gmail.com</span>
-        </div>
+    <!-- هيدر مفخم (يظهر في الصفحة والطباعة) -->
+    <header class="brand-header" id="brandHeader">
+      <div class="brand-title">مكتب بسام الشتيمي للتخليص الجمركي</div>
+      <div class="brand-sub">
+        <span>جوال: 00967771997809</span>
+        <span class="dot">•</span>
+        <span>Bassam.7111111@gmail.com</span>
       </div>
     </header>
 
@@ -47,7 +37,7 @@
 
       <div class="field-row">
         <label for="invoiceNumber">رقم الفاتورة:</label>
-        <input id="invoiceNumber" type="text" placeholder="مثال: 001-2025" />
+        <input id="invoiceNumber" type="text" placeholder="مثال: 2025-001" />
       </div>
 
       <div class="field-row">
