@@ -20,37 +20,6 @@ const installBtn = document.getElementById('installBtn');
 
 const savedInvoicesList = document.getElementById('savedInvoicesList');
 
-const invoiceArea = document.getElementById('invoiceArea'); // المنطقة التي سنحوّلها PDF
-
-/* ======================================================
-   FIX: طباعة وصف الصنف كامل في الطباعة/PDF (نضيف DIV مؤقت)
-   ====================================================== */
-function preparePrintDescriptions() {
-  document.querySelectorAll('.print-desc').forEach(el => el.remove());
-
-  document.querySelectorAll('.desc-input').forEach(input => {
-    const td = input.closest('td');
-    if (!td) return;
-
-    if (td.querySelector('.print-desc')) return;
-
-    const div = document.createElement('div');
-    div.className = 'print-desc';
-    div.style.marginTop = '6px';
-    div.style.whiteSpace = 'pre-wrap';
-    div.style.wordBreak = 'break-word';
-    div.textContent = input.value || '';
-    td.appendChild(div);
-  });
-}
-
-function cleanupPrintDescriptions() {
-  document.querySelectorAll('.print-desc').forEach(el => el.remove());
-}
-
-window.addEventListener('beforeprint', preparePrintDescriptions);
-window.addEventListener('afterprint', cleanupPrintDescriptions);
-
 // إعداد التاريخ الحالي
 (function setToday() {
   const today = new Date().toISOString().slice(0, 10);
@@ -185,144 +154,195 @@ function updateTotals() {
 }
 
 // زر إضافة سطر
-addRowBtn.addEventListener('click', () => {
-  createRow();
-});
+addRowBtn.addEventListener('click', () => createRow());
 
-/* ======================================================
-   طباعة محسّنة: نفتح نافذة جديدة ثم نطبع
-   (أفضل من window.print داخل WebView)
-   ====================================================== */
-function openPrintWindow() {
-  preparePrintDescriptions();
-
-  const html = `
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>طباعة الفاتورة</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body{ font-family:"Cairo", Arial, sans-serif; margin:16px; }
-    .actions, #savedInvoicesSection, .footer-note{ display:none !important; }
-    table{ width:100%; border-collapse:collapse; }
-    th,td{ border:1px solid #ddd; padding:8px; vertical-align:top; }
-    input,select,button{ display:none !important; } /* نخفي حقول الإدخال في نسخة الطباعة */
-    .print-desc{ display:block; white-space:pre-wrap; word-break:break-word; }
-    h2,h1{ margin:12px 0; }
-    @media print { body{ margin:0; } }
-  </style>
-</head>
-<body>
-  ${invoiceArea.innerHTML}
-  <script>
-    window.onload = function(){
-      setTimeout(function(){ window.print(); }, 400);
-    }
-  </script>
-</body>
-</html>`;
-
-  const w = window.open('', '_blank');
-  if (!w) {
-    cleanupPrintDescriptions();
-    alert('المتصفح منع فتح نافذة جديدة. فعّل النوافذ المنبثقة (Popups) للتطبيق/المتصفح.');
-    return;
-  }
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-
-  setTimeout(cleanupPrintDescriptions, 800);
+// ==========================
+//  طباعة/PDF داخل APK (IFRAME)
+// ==========================
+function escapeHtml(str) {
+  return (str ?? '').toString()
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
+function buildPrintableHTML() {
+  const title = escapeHtml(invoiceTitleInput?.value || 'فاتورة بسام');
+  const client = escapeHtml(clientNameInput.value || '');
+  const invNo = escapeHtml(invoiceNumberInput.value || '');
+  const cur = escapeHtml(currencySelect.value || '');
+  const date = escapeHtml(invoiceDateInput.value || '');
+
+  // بيانات مكتبك (الهيدر في الطباعة)
+  const officeName = 'مكتب بسام الشتيمي للتخليص الجمركي';
+  const phone = '00967771997809';
+  const email = 'Bassam.7111111@gmail.com';
+
+  let rowsHtml = '';
+  let idx = 1;
+
+  itemsBody.querySelectorAll('tr').forEach(row => {
+    const qty = escapeHtml(row.querySelector('.qty-input')?.value || '');
+    const desc = escapeHtml(row.querySelector('.desc-input')?.value || '');
+    const wpc = escapeHtml(row.querySelector('.weight-per-carton-input')?.value || '');
+    const ppc = escapeHtml(row.querySelector('.price-per-carton-input')?.value || '');
+    const tw = escapeHtml(row.querySelector('.total-weight-input')?.value || '');
+    const tv = escapeHtml(row.querySelector('.total-value-input')?.value || '');
+
+    // تجاهل الصف الفاضي تمامًا
+    if (!qty && !desc && !wpc && !ppc && !tw && !tv) return;
+
+    rowsHtml += `
+      <tr>
+        <td class="c">${idx++}</td>
+        <td class="c">${qty || '0'}</td>
+        <td class="r">${desc}</td>
+        <td class="c">${wpc || '0'}</td>
+        <td class="c">${ppc || '0'}</td>
+        <td class="c">${tw || '0'}</td>
+        <td class="c">${tv || '0'}</td>
+      </tr>
+    `;
+  });
+
+  const totalQty = escapeHtml(totalQtyEl.textContent);
+  const totalWeight = escapeHtml(totalWeightEl.textContent);
+  const totalValue = escapeHtml(totalValueEl.textContent);
+
+  const css = `
+    @page { size: A4; margin: 14mm; }
+    body { font-family: "Cairo", Arial, sans-serif; direction: rtl; color: #111; }
+    .top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .brand { display:flex; gap:10px; align-items:center; }
+    .mark { width:44px; height:44px; border-radius:12px; background:#16a34a; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; }
+    .brand .t1 { font-weight:800; font-size:14px; }
+    .brand .t2 { font-size:11px; color:#444; }
+    h1 { margin: 10px 0 6px; font-size:18px; text-align:center; }
+    .meta { margin: 8px 0 10px; font-size:12px; display:grid; grid-template-columns: 1fr 1fr; gap:6px 10px; }
+    .meta div { padding:6px 8px; border:1px solid #e6e6e6; border-radius:10px; }
+    table { width:100%; border-collapse: collapse; margin-top:8px; font-size:12px; }
+    th, td { border:1px solid #dcdcdc; padding:7px 8px; vertical-align:top; }
+    th { background:#f3f6ff; }
+    .c { text-align:center; }
+    .r { text-align:right; }
+    .totals { margin-top:10px; display:flex; gap:12px; justify-content:flex-start; flex-wrap:wrap; font-size:12px; }
+    .totals .box { border:1px solid #e6e6e6; border-radius:10px; padding:8px 10px; }
+    .foot { margin-top:14px; font-size:11px; color:#555; text-align:center; }
+  `;
+
+  return `
+    <!doctype html>
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+      <title>${title}</title>
+      <style>${css}</style>
+    </head>
+    <body>
+      <div class="top">
+        <div class="brand">
+          <div class="mark">ب</div>
+          <div>
+            <div class="t1">${officeName}</div>
+            <div class="t2">جوال: ${phone} • ${email}</div>
+          </div>
+        </div>
+        <div style="text-align:left;font-size:11px;color:#666;direction:ltr">A4</div>
+      </div>
+
+      <h1>${title}</h1>
+
+      <div class="meta">
+        <div><strong>اسم العميل:</strong> ${client || '—'}</div>
+        <div><strong>رقم الفاتورة:</strong> ${invNo || '—'}</div>
+        <div><strong>العملة:</strong> ${cur || '—'}</div>
+        <div><strong>التاريخ:</strong> ${date || '—'}</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="c">#</th>
+            <th class="c">العدد</th>
+            <th class="r">الصنف</th>
+            <th class="c">وزن/كرتون</th>
+            <th class="c">قيمة/كرتون</th>
+            <th class="c">الوزن الكلي</th>
+            <th class="c">القيمة الكلية</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml || `<tr><td class="c" colspan="7">لا توجد أصناف</td></tr>`}
+        </tbody>
+      </table>
+
+      <div class="totals">
+        <div class="box"><strong>إجمالي العدد:</strong> ${totalQty}</div>
+        <div class="box"><strong>إجمالي الوزن (كجم):</strong> ${totalWeight}</div>
+        <div class="box"><strong>إجمالي القيمة (${cur}):</strong> ${totalValue}</div>
+      </div>
+
+      <div class="foot">تم الإنشاء بواسطة تطبيق فاتورة بسام</div>
+
+      <script>
+        // بعض WebView تحتاج تأخير بسيط قبل الطباعة
+        setTimeout(() => { window.print(); }, 400);
+      </script>
+    </body>
+    </html>
+  `;
+}
+
+function printViaIframe() {
+  const html = buildPrintableHTML();
+
+  // إزالة أي iframe قديم
+  const old = document.getElementById('printFrame');
+  if (old) old.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'printFrame';
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.style.opacity = '0';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(html);
+  doc.close();
+
+  // تنظيف بعد الطباعة
+  const cleanup = () => {
+    setTimeout(() => {
+      try { iframe.remove(); } catch {}
+    }, 800);
+  };
+
+  iframe.contentWindow.onafterprint = cleanup;
+
+  // احتياط: لو onafterprint ما اشتغل
+  setTimeout(cleanup, 3000);
+}
+
+// زر الطباعة
 printBtn.addEventListener('click', () => {
-  openPrintWindow();
+  printViaIframe();
 });
 
-/* ======================================================
-   PDF حقيقي بدون تشويه العربية:
-   نصوّر الفاتورة (Canvas) ثم نضعها داخل PDF
-   ====================================================== */
-async function generatePdfFromInvoice() {
-  try {
-    preparePrintDescriptions();
-
-    // نخفي أزرار الأكشن أثناء التصوير (حتى لا تظهر داخل PDF)
-    const actionsEl = document.querySelector('.actions');
-    const savedEl = document.getElementById('savedInvoicesSection');
-    const footerEl = document.querySelector('.footer-note');
-    const oldDisplay = {
-      actions: actionsEl ? actionsEl.style.display : '',
-      saved: savedEl ? savedEl.style.display : '',
-      footer: footerEl ? footerEl.style.display : ''
-    };
-    if (actionsEl) actionsEl.style.display = 'none';
-    if (savedEl) savedEl.style.display = 'none';
-    if (footerEl) footerEl.style.display = 'none';
-
-    // تصوير
-    const canvas = await html2canvas(invoiceArea, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      windowWidth: document.documentElement.scrollWidth,
-      windowHeight: document.documentElement.scrollHeight
-    });
-
-    // رجّع الإخفاء لوضعه السابق
-    if (actionsEl) actionsEl.style.display = oldDisplay.actions;
-    if (savedEl) savedEl.style.display = oldDisplay.saved;
-    if (footerEl) footerEl.style.display = oldDisplay.footer;
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    // حساب أبعاد الصورة على A4
-    const imgProps = pdf.getImageProperties(imgData);
-    const imgWidth = pageWidth;
-    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-
-    // إذا الصورة أطول من صفحة واحدة: نقسّمها صفحات
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft > 0) {
-      pdf.addPage();
-      position = heightLeft - imgHeight; // تحريك للأعلى (قيمة سالبة)
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    // اسم الملف
-    const invNo = (invoiceNumberInput.value || 'invoice').replace(/[^\w\-]+/g, '_');
-    const date = invoiceDateInput.value || '';
-    const filename = `فاتورة_${invNo}_${date || 'بدون_تاريخ'}.pdf`;
-
-    pdf.save(filename);
-
-  } catch (e) {
-    console.error(e);
-    alert('حصل خطأ أثناء إنشاء PDF. تأكد من وجود إنترنت، ثم جرّب مرة أخرى.');
-  } finally {
-    cleanupPrintDescriptions();
-  }
-}
-
+// زر PDF (على أندرويد: اختَر "حفظ كـ PDF" من شاشة الطباعة)
 pdfBtn.addEventListener('click', () => {
-  generatePdfFromInvoice();
+  printViaIframe();
 });
 
 // ======================
@@ -336,7 +356,7 @@ function getRecognition() {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    alert('خاصية الإملاء بالصوت غير مدعومة في هذا المتصفح. جرب Google Chrome على أندرويد.');
+    alert('خاصية الإملاء بالصوت غير مدعومة هنا. الأفضل فتحه عبر Chrome.');
     return null;
   }
 
@@ -407,9 +427,7 @@ function captureCurrentInvoice() {
     const totalWeight = row.querySelector('.total-weight-input').value.trim();
     const totalValue = row.querySelector('.total-value-input').value.trim();
 
-    if (!qty && !desc && !weightPerCarton && !pricePerCarton && !totalWeight && !totalValue) {
-      return;
-    }
+    if (!qty && !desc && !weightPerCarton && !pricePerCarton && !totalWeight && !totalValue) return;
 
     items.push({ qty, desc, weightPerCarton, pricePerCarton, totalWeight, totalValue });
   });
@@ -459,9 +477,7 @@ function renderSavedInvoices() {
       const loadBtn = document.createElement('button');
       loadBtn.className = 'saved-load-btn';
       loadBtn.textContent = 'تحميل';
-      loadBtn.addEventListener('click', () => {
-        loadInvoice(invoice.id);
-      });
+      loadBtn.addEventListener('click', () => loadInvoice(invoice.id));
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'saved-delete-btn';
@@ -555,8 +571,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
-// إنشاء صف أولي واحد عند فتح الصفحة
+// بدء التطبيق
 createRow();
-
-// تحميل الفواتير المحفوظة في البداية
 renderSavedInvoices();
+updateTotals();
