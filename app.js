@@ -20,9 +20,38 @@ const installBtn = document.getElementById('installBtn');
 
 const savedInvoicesList = document.getElementById('savedInvoicesList');
 
-// ======================
+const invoiceArea = document.getElementById('invoiceArea'); // المنطقة التي سنحوّلها PDF
+
+/* ======================================================
+   FIX: طباعة وصف الصنف كامل في الطباعة/PDF (نضيف DIV مؤقت)
+   ====================================================== */
+function preparePrintDescriptions() {
+  document.querySelectorAll('.print-desc').forEach(el => el.remove());
+
+  document.querySelectorAll('.desc-input').forEach(input => {
+    const td = input.closest('td');
+    if (!td) return;
+
+    if (td.querySelector('.print-desc')) return;
+
+    const div = document.createElement('div');
+    div.className = 'print-desc';
+    div.style.marginTop = '6px';
+    div.style.whiteSpace = 'pre-wrap';
+    div.style.wordBreak = 'break-word';
+    div.textContent = input.value || '';
+    td.appendChild(div);
+  });
+}
+
+function cleanupPrintDescriptions() {
+  document.querySelectorAll('.print-desc').forEach(el => el.remove());
+}
+
+window.addEventListener('beforeprint', preparePrintDescriptions);
+window.addEventListener('afterprint', cleanupPrintDescriptions);
+
 // إعداد التاريخ الحالي
-// ======================
 (function setToday() {
   const today = new Date().toISOString().slice(0, 10);
   invoiceDateInput.value = today;
@@ -33,9 +62,7 @@ currencySelect.addEventListener('change', () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
 
-// ======================
 // إنشاء صف جديد
-// ======================
 function createRow(initial = {}) {
   const row = document.createElement('tr');
 
@@ -88,16 +115,13 @@ function createRow(initial = {}) {
   updateTotals();
 }
 
-// ======================
 // ربط الأحداث لكل صف
-// ======================
 function attachRowEvents(row) {
   const qtyInput = row.querySelector('.qty-input');
   const weightPerCartonInput = row.querySelector('.weight-per-carton-input');
   const pricePerCartonInput = row.querySelector('.price-per-carton-input');
   const descInput = row.querySelector('.desc-input');
 
-  // تحديث المجاميع عند التغيير
   [qtyInput, weightPerCartonInput, pricePerCartonInput, descInput].forEach(input => {
     input.addEventListener('input', () => {
       updateRowTotals(row);
@@ -105,7 +129,6 @@ function attachRowEvents(row) {
     });
   });
 
-  // حذف الصف
   const deleteBtn = row.querySelector('.delete-btn');
   deleteBtn.addEventListener('click', () => {
     const ok = confirm('هل أنت متأكد من حذف هذا السطر؟');
@@ -114,7 +137,6 @@ function attachRowEvents(row) {
     updateTotals();
   });
 
-  // أزرار الصوت: كل زر مربوط بالخانة فوقه داخل .mic-wrap
   const micButtons = row.querySelectorAll('[data-mic]');
   micButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -125,9 +147,7 @@ function attachRowEvents(row) {
   });
 }
 
-// ======================
 // حساب وزن وقيمة الصف
-// ======================
 function updateRowTotals(row) {
   const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
   const weightPerCarton = parseFloat(row.querySelector('.weight-per-carton-input').value) || 0;
@@ -143,9 +163,7 @@ function updateRowTotals(row) {
   totalValueInput.value = totalValue ? totalValue.toFixed(2) : '';
 }
 
-// ======================
 // حساب مجاميع الفاتورة
-// ======================
 function updateTotals() {
   let totalQty = 0;
   let totalWeight = 0;
@@ -171,136 +189,144 @@ addRowBtn.addEventListener('click', () => {
   createRow();
 });
 
-// ======================================================
-// PDF/Print داخل AppsGeyser (بدون window.print)
-// ======================================================
-function safeFileName(s) {
-  return String(s || '')
-    .replace(/[\\/:*?"<>|]+/g, '-')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 80) || 'invoice';
-}
+/* ======================================================
+   طباعة محسّنة: نفتح نافذة جديدة ثم نطبع
+   (أفضل من window.print داخل WebView)
+   ====================================================== */
+function openPrintWindow() {
+  preparePrintDescriptions();
 
-function getInvoiceDataForPdf() {
-  const title = (invoiceTitleInput ? invoiceTitleInput.value.trim() : '') || 'فاتورة';
-  const clientName = clientNameInput.value.trim() || '-';
-  const invoiceNumber = invoiceNumberInput.value.trim() || '-';
-  const date = invoiceDateInput.value || '-';
-  const currency = currencySelect.value || '-';
-
-  const rows = [];
-  itemsBody.querySelectorAll('tr').forEach((row, i) => {
-    const qty = row.querySelector('.qty-input')?.value || '';
-    const desc = row.querySelector('.desc-input')?.value || '';
-    const wpc = row.querySelector('.weight-per-carton-input')?.value || '';
-    const vpc = row.querySelector('.price-per-carton-input')?.value || '';
-    const tw = row.querySelector('.total-weight-input')?.value || '';
-    const tv = row.querySelector('.total-value-input')?.value || '';
-
-    // لا نرمي السطر الفاضي بالكامل
-    if (!qty && !desc && !wpc && !vpc && !tw && !tv) return;
-
-    rows.push([String(i + 1), desc, qty, wpc, vpc, tw, tv]);
-  });
-
-  return {
-    title,
-    clientName,
-    invoiceNumber,
-    date,
-    currency,
-    rows,
-    totals: {
-      qty: totalQtyEl.textContent || '0',
-      weight: totalWeightEl.textContent || '0',
-      value: totalValueEl.textContent || '0',
+  const html = `
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>طباعة الفاتورة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{ font-family:"Cairo", Arial, sans-serif; margin:16px; }
+    .actions, #savedInvoicesSection, .footer-note{ display:none !important; }
+    table{ width:100%; border-collapse:collapse; }
+    th,td{ border:1px solid #ddd; padding:8px; vertical-align:top; }
+    input,select,button{ display:none !important; } /* نخفي حقول الإدخال في نسخة الطباعة */
+    .print-desc{ display:block; white-space:pre-wrap; word-break:break-word; }
+    h2,h1{ margin:12px 0; }
+    @media print { body{ margin:0; } }
+  </style>
+</head>
+<body>
+  ${invoiceArea.innerHTML}
+  <script>
+    window.onload = function(){
+      setTimeout(function(){ window.print(); }, 400);
     }
-  };
+  </script>
+</body>
+</html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) {
+    cleanupPrintDescriptions();
+    alert('المتصفح منع فتح نافذة جديدة. فعّل النوافذ المنبثقة (Popups) للتطبيق/المتصفح.');
+    return;
+  }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+
+  setTimeout(cleanupPrintDescriptions, 800);
 }
 
-async function buildAndSavePdf() {
+printBtn.addEventListener('click', () => {
+  openPrintWindow();
+});
+
+/* ======================================================
+   PDF حقيقي بدون تشويه العربية:
+   نصوّر الفاتورة (Canvas) ثم نضعها داخل PDF
+   ====================================================== */
+async function generatePdfFromInvoice() {
   try {
-    if (!window.jspdf || !window.jspdf.jsPDF || !window.jspdf?.jsPDF) {
-      // بعض البيئات: jsPDF موجود في window.jspdf.jsPDF
-      // نحن سنتعامل مع الأكثر شيوعاً:
-    }
+    preparePrintDescriptions();
 
-    // jsPDF UMD
-    const jsPDF = (window.jspdf && (window.jspdf.jsPDF || window.jspdf)) ? (window.jspdf.jsPDF || window.jspdf) : null;
-    if (!jsPDF) {
-      alert('مكتبات PDF غير موجودة. تأكد أنك أضفت jsPDF و AutoTable في index.html.');
-      return;
-    }
+    // نخفي أزرار الأكشن أثناء التصوير (حتى لا تظهر داخل PDF)
+    const actionsEl = document.querySelector('.actions');
+    const savedEl = document.getElementById('savedInvoicesSection');
+    const footerEl = document.querySelector('.footer-note');
+    const oldDisplay = {
+      actions: actionsEl ? actionsEl.style.display : '',
+      saved: savedEl ? savedEl.style.display : '',
+      footer: footerEl ? footerEl.style.display : ''
+    };
+    if (actionsEl) actionsEl.style.display = 'none';
+    if (savedEl) savedEl.style.display = 'none';
+    if (footerEl) footerEl.style.display = 'none';
 
-    const data = getInvoiceDataForPdf();
-    if (!data.rows.length) {
-      alert('لا توجد أصناف لإنشاء PDF.');
-      return;
-    }
-
-    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-
-    // عنوان
-    doc.setFontSize(18);
-    doc.text(data.title, 555, 40, { align: 'right' });
-
-    // معلومات
-    doc.setFontSize(11);
-    doc.text(`اسم العميل: ${data.clientName}`, 555, 70, { align: 'right' });
-    doc.text(`رقم الفاتورة: ${data.invoiceNumber}`, 555, 86, { align: 'right' });
-    doc.text(`التاريخ: ${data.date}`, 555, 102, { align: 'right' });
-    doc.text(`العملة: ${data.currency}`, 555, 118, { align: 'right' });
-
-    // جدول
-    if (typeof doc.autoTable !== 'function') {
-      alert('مكتبة AutoTable غير موجودة. تأكد أنك أضفت jsPDF AutoTable في index.html.');
-      return;
-    }
-
-    doc.autoTable({
-      startY: 140,
-      head: [[ '#', 'الصنف', 'العدد', 'وزن/كرتون', 'قيمة/كرتون', 'الوزن الكلي', 'القيمة الكلية' ]],
-      body: data.rows,
-      margin: { left: 40, right: 40 },
-      styles: { fontSize: 10, halign: 'right', cellPadding: 6 },
-      headStyles: { halign: 'right' },
-      didParseCell: (hook) => {
-        // توسيط الرقم والعدد
-        if (hook.column.index === 0 || hook.column.index === 2) {
-          hook.cell.styles.halign = 'center';
-        }
-      }
+    // تصوير
+    const canvas = await html2canvas(invoiceArea, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight
     });
 
-    // إجماليات
-    const y = doc.lastAutoTable.finalY + 25;
-    doc.setFontSize(12);
-    doc.text(`إجمالي العدد: ${data.totals.qty}`, 555, y, { align: 'right' });
-    doc.text(`إجمالي الوزن: ${data.totals.weight}`, 555, y + 16, { align: 'right' });
-    doc.text(`إجمالي القيمة (${data.currency}): ${data.totals.value}`, 555, y + 32, { align: 'right' });
+    // رجّع الإخفاء لوضعه السابق
+    if (actionsEl) actionsEl.style.display = oldDisplay.actions;
+    if (savedEl) savedEl.style.display = oldDisplay.saved;
+    if (footerEl) footerEl.style.display = oldDisplay.footer;
 
-    // حفظ
-    const fileName = `${safeFileName(data.title)}_${safeFileName(data.invoiceNumber || data.date)}.pdf`;
-    doc.save(fileName);
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // حساب أبعاد الصورة على A4
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pageWidth;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+    // إذا الصورة أطول من صفحة واحدة: نقسّمها صفحات
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      pdf.addPage();
+      position = heightLeft - imgHeight; // تحريك للأعلى (قيمة سالبة)
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    // اسم الملف
+    const invNo = (invoiceNumberInput.value || 'invoice').replace(/[^\w\-]+/g, '_');
+    const date = invoiceDateInput.value || '';
+    const filename = `فاتورة_${invNo}_${date || 'بدون_تاريخ'}.pdf`;
+
+    pdf.save(filename);
 
   } catch (e) {
-    alert('حدث خطأ أثناء إنشاء PDF. إذا ظهر PDF لكن العربي مربعات، أخبرني لأعطيك نسخة بخط عربي.');
+    console.error(e);
+    alert('حصل خطأ أثناء إنشاء PDF. تأكد من وجود إنترنت، ثم جرّب مرة أخرى.');
+  } finally {
+    cleanupPrintDescriptions();
   }
 }
 
-// زر PDF (يعمل داخل AppsGeyser)
 pdfBtn.addEventListener('click', () => {
-  buildAndSavePdf();
-});
-
-// زر طباعة: نفس PDF (لأن window.print لا يعمل داخل AppsGeyser)
-printBtn.addEventListener('click', () => {
-  buildAndSavePdf();
+  generatePdfFromInvoice();
 });
 
 // ======================
-// الصوت (Speech-to-Text)
+//  الصوت (Speech-to-Text)
 // ======================
 let recognition = null;
 let recognitionActive = false;
@@ -332,7 +358,6 @@ function startVoiceForInput(targetInput) {
     const transcript = event.results[0][0].transcript || '';
 
     if (targetInput.type === 'number') {
-      // يسمح بالأرقام والنقطة العشرية
       const digits = transcript.replace(/[^\d.]/g, '');
       if (digits) targetInput.value = digits;
     } else {
@@ -353,7 +378,7 @@ function startVoiceForInput(targetInput) {
 }
 
 // ======================
-// حفظ الفواتير (localStorage)
+//  حفظ الفواتير (localStorage)
 // ======================
 const STORAGE_KEY = 'bassamInvoiceApp:savedInvoices';
 
@@ -391,10 +416,7 @@ function captureCurrentInvoice() {
 
   return {
     id: Date.now(),
-
-    // عنوان الفاتورة (يبقى)
     title: invoiceTitleInput ? invoiceTitleInput.value.trim() : '',
-
     clientName: clientNameInput.value.trim(),
     invoiceNumber: invoiceNumberInput.value.trim(),
     currency: currencySelect.value,
@@ -462,7 +484,6 @@ function renderSavedInvoices() {
     });
 }
 
-// زر حفظ الفاتورة
 saveInvoiceBtn.addEventListener('click', () => {
   const invoice = captureCurrentInvoice();
 
@@ -479,13 +500,11 @@ saveInvoiceBtn.addEventListener('click', () => {
   alert('تم حفظ الفاتورة في هذا الجهاز ✅');
 });
 
-// تحميل فاتورة محفوظة
 function loadInvoice(id) {
   const invoices = loadSavedInvoicesFromStorage();
   const inv = invoices.find(i => i.id === id);
   if (!inv) return;
 
-  // عنوان الفاتورة
   if (invoiceTitleInput) invoiceTitleInput.value = inv.title || 'فاتورة بسام';
 
   clientNameInput.value = inv.clientName || '';
@@ -501,7 +520,7 @@ function loadInvoice(id) {
 }
 
 // ======================
-// زر التثبيت PWA
+//  زر التثبيت PWA
 // ======================
 let deferredPrompt = null;
 
@@ -523,7 +542,6 @@ installBtn.addEventListener('click', async () => {
   alert('إذا لم تظهر نافذة التثبيت: افتح قائمة Chrome (⋮) ثم اختر "إضافة إلى الشاشة الرئيسية".');
 });
 
-// إخفاء زر التثبيت إذا كان التطبيق مثبت
 window.addEventListener('DOMContentLoaded', () => {
   const isStandalone =
     window.matchMedia('(display-mode: standalone)').matches ||
