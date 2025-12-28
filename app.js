@@ -20,6 +20,160 @@ const installBtn = document.getElementById('installBtn');
 
 const savedInvoicesList = document.getElementById('savedInvoicesList');
 
+/* ======================================================
+   تجهيز نسخة طباعة نظيفة + حل WebView (فتح صفحة طباعة مستقلة)
+   ====================================================== */
+function buildPrintableHTML() {
+  const title = (invoiceTitleInput?.value || 'فاتورة').trim();
+  const clientName = (clientNameInput.value || '').trim();
+  const invoiceNumber = (invoiceNumberInput.value || '').trim();
+  const currency = (currencySelect.value || '').trim();
+  const date = (invoiceDateInput.value || '').trim();
+
+  // بناء صفوف للطباعة
+  const rows = [];
+  let idx = 1;
+
+  itemsBody.querySelectorAll('tr').forEach(row => {
+    const qty = row.querySelector('.qty-input')?.value || '';
+    const desc = row.querySelector('.desc-input')?.value || '';
+    const wpc = row.querySelector('.weight-per-carton-input')?.value || '';
+    const ppc = row.querySelector('.price-per-carton-input')?.value || '';
+    const tw = row.querySelector('.total-weight-input')?.value || '';
+    const tv = row.querySelector('.total-value-input')?.value || '';
+
+    if (!qty && !desc && !wpc && !ppc && !tw && !tv) return;
+
+    rows.push(`
+      <tr>
+        <td>${idx++}</td>
+        <td>${escapeHtml(desc)}</td>
+        <td>${escapeHtml(qty)}</td>
+        <td>${escapeHtml(wpc)}</td>
+        <td>${escapeHtml(ppc)}</td>
+        <td>${escapeHtml(tw)}</td>
+        <td>${escapeHtml(tv)}</td>
+      </tr>
+    `);
+  });
+
+  const totalQty = totalQtyEl.textContent || '0';
+  const totalWeight = totalWeightEl.textContent || '0';
+  const totalValue = totalValueEl.textContent || '0';
+
+  // صفحة مستقلة للطباعة (حتى لو الـ WebView يتعب مع window.print في نفس الصفحة)
+  return `
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>${escapeHtml(title)}</title>
+<style>
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", "Noto Kufi Arabic", Tahoma, Arial, sans-serif;
+    margin:0; padding:18px; color:#111827; direction:rtl;
+  }
+  .brand{
+    border:1px solid #e5e7eb; border-radius:14px; padding:12px;
+    background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+    margin-bottom: 12px;
+  }
+  .brand h1{margin:0; font-size:18px; color:#0f7a36; font-weight:900}
+  .brand p{margin:6px 0 0; color:#6b7280; font-size:12px}
+  .title{margin: 10px 0 8px; font-size:20px; font-weight:900; text-align:center}
+  .meta{
+    display:grid; gap:6px; margin: 10px 0 12px;
+    border:1px solid #e5e7eb; border-radius:14px; padding:10px;
+  }
+  .meta div{display:flex; justify-content:space-between; gap:10px; font-size:13px}
+  .meta b{color:#6b7280}
+  table{width:100%; border-collapse:collapse; margin-top:10px}
+  th,td{border:1px solid #e5e7eb; padding:8px; text-align:center; font-size:12px}
+  th{background:#f3f4f6}
+  td:nth-child(2){text-align:right}
+  .totals{
+    margin-top:12px; border:1px solid #e5e7eb; border-radius:14px; padding:10px;
+    display:grid; gap:6px; font-weight:800;
+  }
+  .btns{display:flex; gap:10px; margin-top:14px; justify-content:center}
+  button{
+    border:1px solid #e5e7eb; border-radius:12px; padding:10px 14px; cursor:pointer; background:#fff;
+    font-size:14px;
+  }
+  .primary{background:#16a34a; color:#fff; border-color:#16a34a}
+  @media print{ .btns{display:none} body{padding:0} }
+</style>
+</head>
+<body>
+  <div class="brand">
+    <h1>مكتب بسام الشتيمي للتخليص الجمركي</h1>
+    <p>جوال: 00967771997809 • Bassam.7111111@gmail.com</p>
+  </div>
+
+  <div class="title">${escapeHtml(title)}</div>
+
+  <div class="meta">
+    <div><b>اسم العميل:</b><span>${escapeHtml(clientName || '—')}</span></div>
+    <div><b>رقم الفاتورة:</b><span>${escapeHtml(invoiceNumber || '—')}</span></div>
+    <div><b>العملة:</b><span>${escapeHtml(currency || '—')}</span></div>
+    <div><b>التاريخ:</b><span>${escapeHtml(date || '—')}</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>الصنف</th>
+        <th>العدد</th>
+        <th>وزن/كرتون</th>
+        <th>قيمة/كرتون</th>
+        <th>الوزن الكلي</th>
+        <th>القيمة الكلية</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.length ? rows.join('') : `<tr><td colspan="7">لا توجد أصناف</td></tr>`}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div>إجمالي العدد: ${escapeHtml(totalQty)}</div>
+    <div>إجمالي الوزن (كجم): ${escapeHtml(totalWeight)}</div>
+    <div>إجمالي القيمة (${escapeHtml(currency)}): ${escapeHtml(totalValue)}</div>
+  </div>
+
+  <div class="btns">
+    <button class="primary" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+    <button onclick="window.close()">إغلاق</button>
+  </div>
+</body>
+</html>
+  `;
+}
+
+function openPrintWindow() {
+  const html = buildPrintableHTML();
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  // محاولة فتح نافذة/تبويب جديد (في بعض WebView قد تُمنع)
+  const win = window.open(url, '_blank');
+  if (!win) {
+    alert('الطباعة داخل APK قد تكون محجوبة. افتح نفس الصفحة في Google Chrome ثم اضغط طباعة/PDF.');
+  }
+}
+
+// حماية بسيطة للنصوص
+function escapeHtml(str) {
+  return String(str || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 // إعداد التاريخ الحالي
 (function setToday() {
   const today = new Date().toISOString().slice(0, 10);
@@ -91,6 +245,7 @@ function attachRowEvents(row) {
   const pricePerCartonInput = row.querySelector('.price-per-carton-input');
   const descInput = row.querySelector('.desc-input');
 
+  // تحديث المجاميع عند التغيير
   [qtyInput, weightPerCartonInput, pricePerCartonInput, descInput].forEach(input => {
     input.addEventListener('input', () => {
       updateRowTotals(row);
@@ -98,6 +253,7 @@ function attachRowEvents(row) {
     });
   });
 
+  // حذف الصف
   const deleteBtn = row.querySelector('.delete-btn');
   deleteBtn.addEventListener('click', () => {
     const ok = confirm('هل أنت متأكد من حذف هذا السطر؟');
@@ -106,6 +262,7 @@ function attachRowEvents(row) {
     updateTotals();
   });
 
+  // أزرار الصوت
   const micButtons = row.querySelectorAll('[data-mic]');
   micButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -156,198 +313,16 @@ function updateTotals() {
 // زر إضافة سطر
 addRowBtn.addEventListener('click', () => createRow());
 
-// ==========================
-//  طباعة/PDF داخل APK (IFRAME)
-// ==========================
-function escapeHtml(str) {
-  return (str ?? '').toString()
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function buildPrintableHTML() {
-  const title = escapeHtml(invoiceTitleInput?.value || 'فاتورة بسام');
-  const client = escapeHtml(clientNameInput.value || '');
-  const invNo = escapeHtml(invoiceNumberInput.value || '');
-  const cur = escapeHtml(currencySelect.value || '');
-  const date = escapeHtml(invoiceDateInput.value || '');
-
-  // بيانات مكتبك (الهيدر في الطباعة)
-  const officeName = 'مكتب بسام الشتيمي للتخليص الجمركي';
-  const phone = '00967771997809';
-  const email = 'Bassam.7111111@gmail.com';
-
-  let rowsHtml = '';
-  let idx = 1;
-
-  itemsBody.querySelectorAll('tr').forEach(row => {
-    const qty = escapeHtml(row.querySelector('.qty-input')?.value || '');
-    const desc = escapeHtml(row.querySelector('.desc-input')?.value || '');
-    const wpc = escapeHtml(row.querySelector('.weight-per-carton-input')?.value || '');
-    const ppc = escapeHtml(row.querySelector('.price-per-carton-input')?.value || '');
-    const tw = escapeHtml(row.querySelector('.total-weight-input')?.value || '');
-    const tv = escapeHtml(row.querySelector('.total-value-input')?.value || '');
-
-    // تجاهل الصف الفاضي تمامًا
-    if (!qty && !desc && !wpc && !ppc && !tw && !tv) return;
-
-    rowsHtml += `
-      <tr>
-        <td class="c">${idx++}</td>
-        <td class="c">${qty || '0'}</td>
-        <td class="r">${desc}</td>
-        <td class="c">${wpc || '0'}</td>
-        <td class="c">${ppc || '0'}</td>
-        <td class="c">${tw || '0'}</td>
-        <td class="c">${tv || '0'}</td>
-      </tr>
-    `;
-  });
-
-  const totalQty = escapeHtml(totalQtyEl.textContent);
-  const totalWeight = escapeHtml(totalWeightEl.textContent);
-  const totalValue = escapeHtml(totalValueEl.textContent);
-
-  const css = `
-    @page { size: A4; margin: 14mm; }
-    body { font-family: "Cairo", Arial, sans-serif; direction: rtl; color: #111; }
-    .top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
-    .brand { display:flex; gap:10px; align-items:center; }
-    .mark { width:44px; height:44px; border-radius:12px; background:#16a34a; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; }
-    .brand .t1 { font-weight:800; font-size:14px; }
-    .brand .t2 { font-size:11px; color:#444; }
-    h1 { margin: 10px 0 6px; font-size:18px; text-align:center; }
-    .meta { margin: 8px 0 10px; font-size:12px; display:grid; grid-template-columns: 1fr 1fr; gap:6px 10px; }
-    .meta div { padding:6px 8px; border:1px solid #e6e6e6; border-radius:10px; }
-    table { width:100%; border-collapse: collapse; margin-top:8px; font-size:12px; }
-    th, td { border:1px solid #dcdcdc; padding:7px 8px; vertical-align:top; }
-    th { background:#f3f6ff; }
-    .c { text-align:center; }
-    .r { text-align:right; }
-    .totals { margin-top:10px; display:flex; gap:12px; justify-content:flex-start; flex-wrap:wrap; font-size:12px; }
-    .totals .box { border:1px solid #e6e6e6; border-radius:10px; padding:8px 10px; }
-    .foot { margin-top:14px; font-size:11px; color:#555; text-align:center; }
-  `;
-
-  return `
-    <!doctype html>
-    <html lang="ar" dir="rtl">
-    <head>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1"/>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-      <title>${title}</title>
-      <style>${css}</style>
-    </head>
-    <body>
-      <div class="top">
-        <div class="brand">
-          <div class="mark">ب</div>
-          <div>
-            <div class="t1">${officeName}</div>
-            <div class="t2">جوال: ${phone} • ${email}</div>
-          </div>
-        </div>
-        <div style="text-align:left;font-size:11px;color:#666;direction:ltr">A4</div>
-      </div>
-
-      <h1>${title}</h1>
-
-      <div class="meta">
-        <div><strong>اسم العميل:</strong> ${client || '—'}</div>
-        <div><strong>رقم الفاتورة:</strong> ${invNo || '—'}</div>
-        <div><strong>العملة:</strong> ${cur || '—'}</div>
-        <div><strong>التاريخ:</strong> ${date || '—'}</div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th class="c">#</th>
-            <th class="c">العدد</th>
-            <th class="r">الصنف</th>
-            <th class="c">وزن/كرتون</th>
-            <th class="c">قيمة/كرتون</th>
-            <th class="c">الوزن الكلي</th>
-            <th class="c">القيمة الكلية</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml || `<tr><td class="c" colspan="7">لا توجد أصناف</td></tr>`}
-        </tbody>
-      </table>
-
-      <div class="totals">
-        <div class="box"><strong>إجمالي العدد:</strong> ${totalQty}</div>
-        <div class="box"><strong>إجمالي الوزن (كجم):</strong> ${totalWeight}</div>
-        <div class="box"><strong>إجمالي القيمة (${cur}):</strong> ${totalValue}</div>
-      </div>
-
-      <div class="foot">تم الإنشاء بواسطة تطبيق فاتورة بسام</div>
-
-      <script>
-        // بعض WebView تحتاج تأخير بسيط قبل الطباعة
-        setTimeout(() => { window.print(); }, 400);
-      </script>
-    </body>
-    </html>
-  `;
-}
-
-function printViaIframe() {
-  const html = buildPrintableHTML();
-
-  // إزالة أي iframe قديم
-  const old = document.getElementById('printFrame');
-  if (old) old.remove();
-
-  const iframe = document.createElement('iframe');
-  iframe.id = 'printFrame';
-  iframe.style.position = 'fixed';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = '0';
-  iframe.style.opacity = '0';
-  document.body.appendChild(iframe);
-
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
-
-  // تنظيف بعد الطباعة
-  const cleanup = () => {
-    setTimeout(() => {
-      try { iframe.remove(); } catch {}
-    }, 800);
-  };
-
-  iframe.contentWindow.onafterprint = cleanup;
-
-  // احتياط: لو onafterprint ما اشتغل
-  setTimeout(cleanup, 3000);
-}
-
 // زر الطباعة
-printBtn.addEventListener('click', () => {
-  printViaIframe();
-});
+printBtn.addEventListener('click', () => openPrintWindow());
 
-// زر PDF (على أندرويد: اختَر "حفظ كـ PDF" من شاشة الطباعة)
-pdfBtn.addEventListener('click', () => {
-  printViaIframe();
-});
+// زر PDF (نفس الطباعة لأن Android يسمح بحفظ PDF من نافذة الطباعة)
+pdfBtn.addEventListener('click', () => openPrintWindow());
 
 // ======================
 //  الصوت (Speech-to-Text)
 // ======================
+
 let recognition = null;
 let recognitionActive = false;
 
@@ -356,7 +331,7 @@ function getRecognition() {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    alert('خاصية الإملاء بالصوت غير مدعومة هنا. الأفضل فتحه عبر Chrome.');
+    alert('خاصية الإملاء بالصوت غير مدعومة هنا. جرّب Google Chrome على أندرويد.');
     return null;
   }
 
@@ -394,12 +369,13 @@ function startVoiceForInput(targetInput) {
   rec.onerror = () => { recognitionActive = false; };
   rec.onend = () => { recognitionActive = false; };
 
-  try { rec.start(); } catch (e) { recognitionActive = false; }
+  try { rec.start(); } catch { recognitionActive = false; }
 }
 
 // ======================
 //  حفظ الفواتير (localStorage)
 // ======================
+
 const STORAGE_KEY = 'bassamInvoiceApp:savedInvoices';
 
 function loadSavedInvoicesFromStorage() {
@@ -500,6 +476,7 @@ function renderSavedInvoices() {
     });
 }
 
+// زر حفظ الفاتورة
 saveInvoiceBtn.addEventListener('click', () => {
   const invoice = captureCurrentInvoice();
 
@@ -516,6 +493,7 @@ saveInvoiceBtn.addEventListener('click', () => {
   alert('تم حفظ الفاتورة في هذا الجهاز ✅');
 });
 
+// تحميل فاتورة محفوظة
 function loadInvoice(id) {
   const invoices = loadSavedInvoicesFromStorage();
   const inv = invoices.find(i => i.id === id);
@@ -554,7 +532,6 @@ installBtn.addEventListener('click', async () => {
     installBtn.hidden = true;
     return;
   }
-
   alert('إذا لم تظهر نافذة التثبيت: افتح قائمة Chrome (⋮) ثم اختر "إضافة إلى الشاشة الرئيسية".');
 });
 
@@ -566,12 +543,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (isStandalone) installBtn.hidden = true;
 });
 
-// تسجيل Service Worker إن وجد
+// تسجيل Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
-// بدء التطبيق
+// صف أولي
 createRow();
 renderSavedInvoices();
-updateTotals();
