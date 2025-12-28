@@ -1,173 +1,245 @@
-/* ========= الإعدادات العامة ============ */
-* {
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+:root{
+  --green:#16a34a;
+  --green2:#0f7a36;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+  --bg:#ffffff;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #f3f4f6;
-  direction: rtl;
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text)}
+body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", "Noto Kufi Arabic", Tahoma, Arial, sans-serif;
+  direction:rtl;
 }
 
-body { color: #111827; }
-
-.container {
-  max-width: 900px;
+.container{
+  max-width: 980px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 16px;
 }
 
-/* ========= عنوان الفاتورة (قابل للتحرير) ============ */
-.invoice-title-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 0.25rem 0 1rem;
+.brand-header{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 14px;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  margin-bottom: 14px;
 }
 
-.invoice-title-input {
-  width: 100%;
-  max-width: 520px;
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 800;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: #111827;
-  padding: 0.25rem 0.5rem;
+.brand-title{
+  font-weight:800;
+  font-size: 20px;
+  color: var(--green2);
+  letter-spacing: .2px;
 }
 
-.invoice-title-input:focus {
-  outline: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  background: #ffffff;
+.brand-sub{
+  margin-top:6px;
+  color: var(--muted);
+  font-size: 13px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+.brand-sub .dot{opacity:.6}
+
+.invoice-title-wrap{margin: 10px 0 14px}
+.invoice-title-input{
+  width:100%;
+  padding:12px 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  font-size:22px;
+  font-weight:800;
+  text-align:center;
 }
 
-/* ========= الجدول ============ */
-
-.table-wrapper {
-  overflow-x: auto;
-  background: #ffffff;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+.invoice-header{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+  margin-bottom: 12px;
 }
 
-table {
-  width: 100%;
+.field-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px;
+}
+
+.field-row label{
+  white-space:nowrap;
+  color: var(--muted);
+  font-weight:700;
+  font-size:14px;
+}
+
+.field-row input, .field-row select{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 10px;
+  font-size:15px;
+  outline:none;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin: 10px 0 16px;
+}
+
+.btn{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:15px;
+  cursor:pointer;
+  background:#fff;
+}
+
+.btn.primary{background: var(--green); color:#fff; border-color: var(--green)}
+.btn.save{background:#111827;color:#fff;border-color:#111827}
+.btn.secondary{background:#f9fafb}
+.btn.pdf{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
+.btn.install{background:#f59e0b;color:#111827;border-color:#f59e0b}
+
+.section-title{
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.table-wrapper{
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:#fff;
+}
+
+table{
+  width:100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  min-width: 780px;
+  min-width: 860px;
 }
 
-th, td {
-  border: 1px solid #e5e7eb;
-  padding: 0.35rem 0.4rem;
-  font-size: 0.85rem;
-  text-align: center;
-  vertical-align: middle;
+thead th{
+  background:#f3f4f6;
+  padding:10px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+  text-align:center;
 }
 
-/* ========= خانة الصنف 20% ============ */
-#itemsTable th:nth-child(2),
-#itemsTable td:nth-child(2) {
-  width: 20% !important;
-  text-align: right !important;
-  line-height: 1.4;
+tbody td{
+  padding:10px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
 }
 
-/* العدد */
-#itemsTable th:nth-child(1),
-#itemsTable td:nth-child(1) { width: 10% !important; }
+tbody tr:last-child td{border-bottom:none}
 
-/* وزن/قيمة/وزن كلي/قيمة كلية */
-#itemsTable th:nth-child(3),
-#itemsTable td:nth-child(3),
-#itemsTable th:nth-child(4),
-#itemsTable td:nth-child(4),
-#itemsTable th:nth-child(5),
-#itemsTable td:nth-child(5),
-#itemsTable th:nth-child(6),
-#itemsTable td:nth-child(6) {
-  width: 12% !important;
+input[type="number"], input[type="text"]{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 9px;
+  font-size:14px;
+  outline:none;
 }
 
-/* حذف */
-#itemsTable th:nth-child(7),
-#itemsTable td:nth-child(7) { width: 6% !important; }
-
-td input[type="text"],
-td input[type="number"] {
-  width: 100%;
-  padding: 0.4rem;
-  border-radius: 0.55rem;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 0.85rem;
-}
-
-/* ========= ميكروفون تحت كل خانة ============ */
-.mic-wrap{
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  align-items: stretch;
-}
-
+.mic-wrap{position:relative}
 .mic-under{
-  width: 40px;
-  height: 26px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  cursor: pointer;
-  font-size: 0.85rem;
-  align-self: flex-start; /* في RTL يظهر تحت الخانة جهة اليمين */
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  border:none;
+  background:#eef2ff;
+  border-radius:10px;
+  padding:6px 8px;
+  cursor:pointer;
+  font-size:14px;
 }
 
-.desc-input {
-  text-align: right !important;
+.delete-btn{
+  width:100%;
+  border:1px solid #fecaca;
+  background:#fff1f2;
+  color:#9f1239;
+  border-radius:10px;
+  padding:9px;
+  cursor:pointer;
 }
 
-/* ========= (باقي الواجهة/الأزرار عندك إن كانت موجودة في ملفك الأصلي تُترك كما هي) ============ */
+.totals{
+  margin: 14px 0 8px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  background:#fff;
+  display:grid;
+  gap:6px;
+  font-weight:800;
+}
+.totals span{font-weight:900}
 
-/* ========= الطباعة ============ */
-@media print {
+.saved-section{
+  margin-top: 14px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  background:#fff;
+}
+.saved-hint{color:var(--muted);margin:0 0 10px}
 
+.saved-list{display:grid;gap:10px}
+.saved-card{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  display:flex;
+  gap:10px;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+.saved-card-main{display:grid;gap:4px}
+.saved-card-main span{color:var(--muted);font-size:13px}
+.saved-card-buttons{display:flex;gap:8px}
+.saved-load-btn,.saved-delete-btn{
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:10px;
+  padding:9px 12px;
+  cursor:pointer;
+}
+.saved-delete-btn{border-color:#fecaca;background:#fff1f2;color:#9f1239}
+
+.footer-note{
+  text-align:center;
+  color:var(--muted);
+  margin: 14px 0 6px;
+  font-size: 13px;
+}
+
+/* ============ طباعة ============ */
+@media print{
   .actions,
   .saved-section,
   .footer-note,
-  .delete-btn,
-  .mic-under {
-    display: none !important;
+  .mic-under,
+  .delete-btn{
+    display:none !important;
   }
 
-  /* عنوان الفاتورة في الطباعة يظهر كنص طبيعي (input بدون إطار) */
-  .invoice-title-input {
-    outline: none !important;
-    background: transparent !important;
-    border: 0 !important;
-  }
-
-  /* FIX للطباعة: input الوصف قد يُقص في PDF، نخفيه ونطبع نص بديل */
-  .desc-input {
-    display: none !important;
-  }
-
-  .print-desc {
-    display: block !important;
-    white-space: pre-wrap !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
-    line-height: 1.4 !important;
-    text-align: right !important;
-  }
-
-  body { background: #ffffff; }
-  .container {
-    padding: 0;
-    max-width: 100%;
-    box-shadow: none;
-  }
+  .container{max-width:none;padding:0}
+  .table-wrapper{border:none}
+  table{min-width:auto}
+  thead th{background:#e5e7eb !important;-webkit-print-color-adjust: exact; print-color-adjust: exact;}
 }
