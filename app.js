@@ -20,33 +20,9 @@ const installBtn = document.getElementById('installBtn');
 
 const savedInvoicesList = document.getElementById('savedInvoicesList');
 
-/* ======================================================
-   FIX: طباعة وصف الصنف كامل في PDF
-   ====================================================== */
-function preparePrintDescriptions() {
-  document.querySelectorAll('.print-desc').forEach(el => el.remove());
-
-  document.querySelectorAll('.desc-input').forEach(input => {
-    const td = input.closest('td');
-    if (!td) return;
-
-    if (td.querySelector('.print-desc')) return;
-
-    const div = document.createElement('div');
-    div.className = 'print-desc';
-    div.textContent = input.value || '';
-    td.appendChild(div);
-  });
-}
-
-function cleanupPrintDescriptions() {
-  document.querySelectorAll('.print-desc').forEach(el => el.remove());
-}
-
-window.addEventListener('beforeprint', preparePrintDescriptions);
-window.addEventListener('afterprint', cleanupPrintDescriptions);
-
+// ======================
 // إعداد التاريخ الحالي
+// ======================
 (function setToday() {
   const today = new Date().toISOString().slice(0, 10);
   invoiceDateInput.value = today;
@@ -57,7 +33,9 @@ currencySelect.addEventListener('change', () => {
   totalCurrencyLabel.textContent = currencySelect.value;
 });
 
+// ======================
 // إنشاء صف جديد
+// ======================
 function createRow(initial = {}) {
   const row = document.createElement('tr');
 
@@ -110,7 +88,9 @@ function createRow(initial = {}) {
   updateTotals();
 }
 
+// ======================
 // ربط الأحداث لكل صف
+// ======================
 function attachRowEvents(row) {
   const qtyInput = row.querySelector('.qty-input');
   const weightPerCartonInput = row.querySelector('.weight-per-carton-input');
@@ -145,7 +125,9 @@ function attachRowEvents(row) {
   });
 }
 
+// ======================
 // حساب وزن وقيمة الصف
+// ======================
 function updateRowTotals(row) {
   const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
   const weightPerCarton = parseFloat(row.querySelector('.weight-per-carton-input').value) || 0;
@@ -161,7 +143,9 @@ function updateRowTotals(row) {
   totalValueInput.value = totalValue ? totalValue.toFixed(2) : '';
 }
 
+// ======================
 // حساب مجاميع الفاتورة
+// ======================
 function updateTotals() {
   let totalQty = 0;
   let totalWeight = 0;
@@ -187,24 +171,137 @@ addRowBtn.addEventListener('click', () => {
   createRow();
 });
 
-// زر الطباعة
-printBtn.addEventListener('click', () => {
-  preparePrintDescriptions();
-  window.print();
-  setTimeout(cleanupPrintDescriptions, 400);
-});
+// ======================================================
+// PDF/Print داخل AppsGeyser (بدون window.print)
+// ======================================================
+function safeFileName(s) {
+  return String(s || '')
+    .replace(/[\\/:*?"<>|]+/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80) || 'invoice';
+}
 
-// زر PDF
+function getInvoiceDataForPdf() {
+  const title = (invoiceTitleInput ? invoiceTitleInput.value.trim() : '') || 'فاتورة';
+  const clientName = clientNameInput.value.trim() || '-';
+  const invoiceNumber = invoiceNumberInput.value.trim() || '-';
+  const date = invoiceDateInput.value || '-';
+  const currency = currencySelect.value || '-';
+
+  const rows = [];
+  itemsBody.querySelectorAll('tr').forEach((row, i) => {
+    const qty = row.querySelector('.qty-input')?.value || '';
+    const desc = row.querySelector('.desc-input')?.value || '';
+    const wpc = row.querySelector('.weight-per-carton-input')?.value || '';
+    const vpc = row.querySelector('.price-per-carton-input')?.value || '';
+    const tw = row.querySelector('.total-weight-input')?.value || '';
+    const tv = row.querySelector('.total-value-input')?.value || '';
+
+    // لا نرمي السطر الفاضي بالكامل
+    if (!qty && !desc && !wpc && !vpc && !tw && !tv) return;
+
+    rows.push([String(i + 1), desc, qty, wpc, vpc, tw, tv]);
+  });
+
+  return {
+    title,
+    clientName,
+    invoiceNumber,
+    date,
+    currency,
+    rows,
+    totals: {
+      qty: totalQtyEl.textContent || '0',
+      weight: totalWeightEl.textContent || '0',
+      value: totalValueEl.textContent || '0',
+    }
+  };
+}
+
+async function buildAndSavePdf() {
+  try {
+    if (!window.jspdf || !window.jspdf.jsPDF || !window.jspdf?.jsPDF) {
+      // بعض البيئات: jsPDF موجود في window.jspdf.jsPDF
+      // نحن سنتعامل مع الأكثر شيوعاً:
+    }
+
+    // jsPDF UMD
+    const jsPDF = (window.jspdf && (window.jspdf.jsPDF || window.jspdf)) ? (window.jspdf.jsPDF || window.jspdf) : null;
+    if (!jsPDF) {
+      alert('مكتبات PDF غير موجودة. تأكد أنك أضفت jsPDF و AutoTable في index.html.');
+      return;
+    }
+
+    const data = getInvoiceDataForPdf();
+    if (!data.rows.length) {
+      alert('لا توجد أصناف لإنشاء PDF.');
+      return;
+    }
+
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+    // عنوان
+    doc.setFontSize(18);
+    doc.text(data.title, 555, 40, { align: 'right' });
+
+    // معلومات
+    doc.setFontSize(11);
+    doc.text(`اسم العميل: ${data.clientName}`, 555, 70, { align: 'right' });
+    doc.text(`رقم الفاتورة: ${data.invoiceNumber}`, 555, 86, { align: 'right' });
+    doc.text(`التاريخ: ${data.date}`, 555, 102, { align: 'right' });
+    doc.text(`العملة: ${data.currency}`, 555, 118, { align: 'right' });
+
+    // جدول
+    if (typeof doc.autoTable !== 'function') {
+      alert('مكتبة AutoTable غير موجودة. تأكد أنك أضفت jsPDF AutoTable في index.html.');
+      return;
+    }
+
+    doc.autoTable({
+      startY: 140,
+      head: [[ '#', 'الصنف', 'العدد', 'وزن/كرتون', 'قيمة/كرتون', 'الوزن الكلي', 'القيمة الكلية' ]],
+      body: data.rows,
+      margin: { left: 40, right: 40 },
+      styles: { fontSize: 10, halign: 'right', cellPadding: 6 },
+      headStyles: { halign: 'right' },
+      didParseCell: (hook) => {
+        // توسيط الرقم والعدد
+        if (hook.column.index === 0 || hook.column.index === 2) {
+          hook.cell.styles.halign = 'center';
+        }
+      }
+    });
+
+    // إجماليات
+    const y = doc.lastAutoTable.finalY + 25;
+    doc.setFontSize(12);
+    doc.text(`إجمالي العدد: ${data.totals.qty}`, 555, y, { align: 'right' });
+    doc.text(`إجمالي الوزن: ${data.totals.weight}`, 555, y + 16, { align: 'right' });
+    doc.text(`إجمالي القيمة (${data.currency}): ${data.totals.value}`, 555, y + 32, { align: 'right' });
+
+    // حفظ
+    const fileName = `${safeFileName(data.title)}_${safeFileName(data.invoiceNumber || data.date)}.pdf`;
+    doc.save(fileName);
+
+  } catch (e) {
+    alert('حدث خطأ أثناء إنشاء PDF. إذا ظهر PDF لكن العربي مربعات، أخبرني لأعطيك نسخة بخط عربي.');
+  }
+}
+
+// زر PDF (يعمل داخل AppsGeyser)
 pdfBtn.addEventListener('click', () => {
-  preparePrintDescriptions();
-  window.print();
-  setTimeout(cleanupPrintDescriptions, 400);
+  buildAndSavePdf();
+});
+
+// زر طباعة: نفس PDF (لأن window.print لا يعمل داخل AppsGeyser)
+printBtn.addEventListener('click', () => {
+  buildAndSavePdf();
 });
 
 // ======================
-//  الصوت (Speech-to-Text)
+// الصوت (Speech-to-Text)
 // ======================
-
 let recognition = null;
 let recognitionActive = false;
 
@@ -256,9 +353,8 @@ function startVoiceForInput(targetInput) {
 }
 
 // ======================
-//  حفظ الفواتير (localStorage)
+// حفظ الفواتير (localStorage)
 // ======================
-
 const STORAGE_KEY = 'bassamInvoiceApp:savedInvoices';
 
 function loadSavedInvoicesFromStorage() {
@@ -405,9 +501,8 @@ function loadInvoice(id) {
 }
 
 // ======================
-//  زر التثبيت PWA
+// زر التثبيت PWA
 // ======================
-
 let deferredPrompt = null;
 
 window.addEventListener('beforeinstallprompt', (event) => {
