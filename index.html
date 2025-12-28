@@ -12,15 +12,9 @@
 <body>
   <div class="container">
 
-    <!-- عنوان الفاتورة قابل للتحرير -->
     <div class="invoice-title-wrap">
-      <input
-        id="invoiceTitle"
-        class="invoice-title-input"
-        type="text"
-        value="فاتورة بسام"
-        placeholder="اكتب عنوان الفاتورة (مثال: فاتورة تجارية)"
-      />
+      <input id="invoiceTitle" class="invoice-title-input" type="text" value="فاتورة بسام"
+             placeholder="اكتب عنوان الفاتورة (مثال: فاتورة تجارية)" />
     </div>
 
     <section class="invoice-header">
@@ -74,19 +68,14 @@
             <th>حذف</th>
           </tr>
         </thead>
-        <tbody id="itemsBody">
-          <!-- الصفوف تُنشأ من JavaScript -->
-        </tbody>
+        <tbody id="itemsBody"></tbody>
       </table>
     </div>
 
     <section class="totals">
       <p>إجمالي العدد: <span id="totalQty">0</span></p>
       <p>إجمالي الوزن (كجم): <span id="totalWeight">0</span></p>
-      <p>
-        إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>):
-        <span id="totalValue">0</span>
-      </p>
+      <p>إجمالي القيمة (<span id="totalCurrencyLabel">ريال سعودي</span>): <span id="totalValue">0</span></p>
     </section>
 
     <section id="savedInvoicesSection" class="saved-section">
@@ -95,16 +84,13 @@
       <div id="savedInvoicesList" class="saved-list"></div>
     </section>
 
-    <p class="footer-note">
-      تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة
-    </p>
+    <p class="footer-note">تطبيق فاتورة بسام – نموذج عدد / صنف / وزن / قيمة</p>
   </div>
 
-  <!-- مكتبات PDF (مهمة لعمل زر PDF داخل التطبيق) -->
+  <!-- مكتبات PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
-  <!-- ملف الجافاسكربت -->
   <script src="app.js"></script>
 </body>
 </html>
