@@ -1,4 +1,5 @@
 // عناصر رئيسية
+const appRoot = document.getElementById('appRoot');
 const itemsBody = document.getElementById('itemsBody');
 const totalQtyEl = document.getElementById('totalQty');
 const totalWeightEl = document.getElementById('totalWeight');
@@ -9,7 +10,6 @@ const clientNameInput = document.getElementById('clientName');
 const invoiceNumberInput = document.getElementById('invoiceNumber');
 const currencySelect = document.getElementById('currencySelect');
 const invoiceDateInput = document.getElementById('invoiceDate');
-
 const invoiceTitleInput = document.getElementById('invoiceTitle');
 
 const addRowBtn = document.getElementById('addRowBtn');
@@ -20,8 +20,29 @@ const installBtn = document.getElementById('installBtn');
 
 const savedInvoicesList = document.getElementById('savedInvoicesList');
 
+// إعداد التاريخ الحالي
+(function setToday() {
+  const today = new Date().toISOString().slice(0, 10);
+  invoiceDateInput.value = today;
+})();
+
+// تحديث النص حسب العملة
+currencySelect.addEventListener('change', () => {
+  totalCurrencyLabel.textContent = currencySelect.value;
+});
+
+// حماية بسيطة للنصوص
+function escapeHtml(str) {
+  return String(str || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 /* ======================================================
-   تجهيز نسخة طباعة نظيفة + حل WebView (فتح صفحة طباعة مستقلة)
+   طباعة/PDF بطريقة مستقلة (أفضل حل للـ APK + WebView)
    ====================================================== */
 function buildPrintableHTML() {
   const title = (invoiceTitleInput?.value || 'فاتورة').trim();
@@ -47,7 +68,7 @@ function buildPrintableHTML() {
     rows.push(`
       <tr>
         <td>${idx++}</td>
-        <td>${escapeHtml(desc)}</td>
+        <td style="text-align:right">${escapeHtml(desc)}</td>
         <td>${escapeHtml(qty)}</td>
         <td>${escapeHtml(wpc)}</td>
         <td>${escapeHtml(ppc)}</td>
@@ -61,7 +82,6 @@ function buildPrintableHTML() {
   const totalWeight = totalWeightEl.textContent || '0';
   const totalValue = totalValueEl.textContent || '0';
 
-  // صفحة مستقلة للطباعة (حتى لو الـ WebView يتعب مع window.print في نفس الصفحة)
   return `
 <!doctype html>
 <html lang="ar" dir="rtl">
@@ -72,7 +92,7 @@ function buildPrintableHTML() {
 <style>
   body{
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", "Noto Kufi Arabic", Tahoma, Arial, sans-serif;
-    margin:0; padding:18px; color:#111827; direction:rtl;
+    margin:0; padding:18px; color:#111827; direction:rtl; background:#fff;
   }
   .brand{
     border:1px solid #e5e7eb; border-radius:14px; padding:12px;
@@ -91,10 +111,9 @@ function buildPrintableHTML() {
   table{width:100%; border-collapse:collapse; margin-top:10px}
   th,td{border:1px solid #e5e7eb; padding:8px; text-align:center; font-size:12px}
   th{background:#f3f4f6}
-  td:nth-child(2){text-align:right}
   .totals{
     margin-top:12px; border:1px solid #e5e7eb; border-radius:14px; padding:10px;
-    display:grid; gap:6px; font-weight:800;
+    display:grid; gap:6px; font-weight:900;
   }
   .btns{display:flex; gap:10px; margin-top:14px; justify-content:center}
   button{
@@ -157,33 +176,15 @@ function openPrintWindow() {
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);
 
-  // محاولة فتح نافذة/تبويب جديد (في بعض WebView قد تُمنع)
   const win = window.open(url, '_blank');
   if (!win) {
     alert('الطباعة داخل APK قد تكون محجوبة. افتح نفس الصفحة في Google Chrome ثم اضغط طباعة/PDF.');
   }
 }
 
-// حماية بسيطة للنصوص
-function escapeHtml(str) {
-  return String(str || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-// إعداد التاريخ الحالي
-(function setToday() {
-  const today = new Date().toISOString().slice(0, 10);
-  invoiceDateInput.value = today;
-})();
-
-// تحديث النص حسب العملة
-currencySelect.addEventListener('change', () => {
-  totalCurrencyLabel.textContent = currencySelect.value;
-});
+// زر الطباعة / PDF
+printBtn.addEventListener('click', openPrintWindow);
+pdfBtn.addEventListener('click', openPrintWindow);
 
 // إنشاء صف جديد
 function createRow(initial = {}) {
@@ -232,7 +233,6 @@ function createRow(initial = {}) {
   `;
 
   itemsBody.appendChild(row);
-
   attachRowEvents(row);
   updateRowTotals(row);
   updateTotals();
@@ -245,7 +245,6 @@ function attachRowEvents(row) {
   const pricePerCartonInput = row.querySelector('.price-per-carton-input');
   const descInput = row.querySelector('.desc-input');
 
-  // تحديث المجاميع عند التغيير
   [qtyInput, weightPerCartonInput, pricePerCartonInput, descInput].forEach(input => {
     input.addEventListener('input', () => {
       updateRowTotals(row);
@@ -253,18 +252,14 @@ function attachRowEvents(row) {
     });
   });
 
-  // حذف الصف
-  const deleteBtn = row.querySelector('.delete-btn');
-  deleteBtn.addEventListener('click', () => {
+  row.querySelector('.delete-btn').addEventListener('click', () => {
     const ok = confirm('هل أنت متأكد من حذف هذا السطر؟');
     if (!ok) return;
     row.remove();
     updateTotals();
   });
 
-  // أزرار الصوت
-  const micButtons = row.querySelectorAll('[data-mic]');
-  micButtons.forEach(btn => {
+  row.querySelectorAll('[data-mic]').forEach(btn => {
     btn.addEventListener('click', () => {
       const wrap = btn.closest('.mic-wrap');
       const input = wrap ? wrap.querySelector('input') : null;
@@ -313,16 +308,9 @@ function updateTotals() {
 // زر إضافة سطر
 addRowBtn.addEventListener('click', () => createRow());
 
-// زر الطباعة
-printBtn.addEventListener('click', () => openPrintWindow());
-
-// زر PDF (نفس الطباعة لأن Android يسمح بحفظ PDF من نافذة الطباعة)
-pdfBtn.addEventListener('click', () => openPrintWindow());
-
 // ======================
 //  الصوت (Speech-to-Text)
 // ======================
-
 let recognition = null;
 let recognitionActive = false;
 
@@ -375,7 +363,6 @@ function startVoiceForInput(targetInput) {
 // ======================
 //  حفظ الفواتير (localStorage)
 // ======================
-
 const STORAGE_KEY = 'bassamInvoiceApp:savedInvoices';
 
 function loadSavedInvoicesFromStorage() {
@@ -476,7 +463,6 @@ function renderSavedInvoices() {
     });
 }
 
-// زر حفظ الفاتورة
 saveInvoiceBtn.addEventListener('click', () => {
   const invoice = captureCurrentInvoice();
 
@@ -493,7 +479,6 @@ saveInvoiceBtn.addEventListener('click', () => {
   alert('تم حفظ الفاتورة في هذا الجهاز ✅');
 });
 
-// تحميل فاتورة محفوظة
 function loadInvoice(id) {
   const invoices = loadSavedInvoicesFromStorage();
   const inv = invoices.find(i => i.id === id);
@@ -543,7 +528,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (isStandalone) installBtn.hidden = true;
 });
 
-// تسجيل Service Worker
+// تسجيل Service Worker (استخدم sw.js فقط)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
