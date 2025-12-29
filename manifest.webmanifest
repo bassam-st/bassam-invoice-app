@@ -1,12 +1,16 @@
 {
-  "name": "فاتورة بسام الذكية",
-  "short_name": "فاتورة بسام",
+  "name": "BassamInvoice",
+  "short_name": "BassamInvoice",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#16a34a",
+  "description": "تطبيق فواتير بسيط يدعم الطباعة وحفظ PDF وتسجيل الصوت",
+  "dir": "rtl",
+  "lang": "ar",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
