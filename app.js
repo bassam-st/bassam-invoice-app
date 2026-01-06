@@ -1,10 +1,11 @@
 /* ==============================
    Bassam Invoice App - FINAL
    A4 Print + PDF (Stable)
-   + Calculator Modal (NO PRINT)
+   + Editable Invoice Title
+   + Calculator (Samsung Layout) - NO PRINT
    ============================== */
 
-const STORAGE_KEY = "bassam_invoice_state_v3";
+const STORAGE_KEY = "bassam_invoice_state_v4";
 
 /* ---------- أدوات ---------- */
 const $ = (id) => document.getElementById(id);
@@ -38,6 +39,7 @@ function saveState(s){
 function collectState(){
   const rows = Array.from(document.querySelectorAll("tr[data-row='1']"));
   return {
+    invoiceTitle: $("invoiceTitle") ? ($("invoiceTitle").value || "فاتورة بسام") : "فاتورة بسام",
     customerName: $("customerName").value || "",
     invoiceNo: $("invoiceNo").value || "",
     currency: $("currency").value || "ريال سعودي",
@@ -107,6 +109,7 @@ function renderPreview(state){
   $("invoicePreview").innerHTML = `
     <div id="invoiceArea">
       <h3 style="margin:0;color:#0f7a36">مكتب بسام الشتيمي للتخليص الجمركي</h3>
+      <div style="font-weight:900;font-size:16px;margin-top:6px">${esc(state.invoiceTitle || "فاتورة")}</div>
       <div style="font-size:13px;margin:6px 0">
         جوال: 00967771997809 • البريد: Bassam.7111111@gmail.com
       </div>
@@ -171,6 +174,7 @@ th{background:#f0fdf4}
 <body onload="window.print()">
 <div class="invoice">
 <h2 style="color:#0f7a36;margin:0">مكتب بسام الشتيمي للتخليص الجمركي</h2>
+<h3 style="margin:6px 0 0 0">${esc(s.invoiceTitle || "فاتورة")}</h3>
 <div style="font-size:13px;margin:6px 0">
 العميل: ${esc(s.customerName||"-")} • رقم الفاتورة: ${esc(s.invoiceNo||"-")}<br>
 العملة: ${esc(s.currency)} • التاريخ: ${esc(s.invoiceDate)}
@@ -209,21 +213,18 @@ ${s.items.map((it,i)=>`
 }
 
 /* =========================================================
-   ===== Calculator Modal (NO PRINT) - Logic Added =====
+   ===== Calculator (Samsung Layout) - Logic =====
    ========================================================= */
 function initCalculator(){
-  const openBtn   = $("openCalcBtn");
-  const closeBtn  = $("closeCalcBtn");
-  const overlay   = $("calcOverlay");
-  const modal     = $("calcModal");
-  const input     = $("calcInput");
-  const clearBtn  = $("calcClearBtn");
-  const backBtn   = $("calcBackBtn");
-  const eqBtn     = $("calcEqBtn");
+  const openBtn = $("openCalcBtn");
+  const closeBtn = $("closeCalcBtn");
+  const overlay = $("calcOverlay");
+  const modal = $("calcModal");
+  const input = $("calcInput");
 
   if(!openBtn || !overlay || !modal || !input) return;
 
-  const keys = Array.from(document.querySelectorAll(".calc-key"));
+  const keys = Array.from(modal.querySelectorAll(".calc-key"));
 
   function openCalc(){
     overlay.style.display = "block";
@@ -232,7 +233,6 @@ function initCalculator(){
     modal.setAttribute("aria-hidden", "false");
     setTimeout(() => input.focus(), 0);
   }
-
   function closeCalc(){
     overlay.style.display = "none";
     modal.style.display = "none";
@@ -242,11 +242,17 @@ function initCalculator(){
 
   function safeEval(expr){
     const cleaned = String(expr ?? "").replace(/\s+/g, "");
-    if(!/^[0-9+\-*/().]+$/.test(cleaned)){
+    // السماح فقط بالأرقام والعمليات الأساسية والأقواس والنقطة و %
+    if(!/^[0-9+\-*/().%]+$/.test(cleaned)){
       throw new Error("INVALID_EXPR");
     }
+
+    // تحويل النسبة المئوية: 50% => (50/100)
+    const percentFixed = cleaned.replace(/(\d+(\.\d+)?)%/g, "($1/100)");
+
     // eslint-disable-next-line no-eval
-    return eval(cleaned);
+    const out = eval(percentFixed);
+    return out;
   }
 
   function doEqual(){
@@ -255,8 +261,31 @@ function initCalculator(){
       input.value = String(result);
       input.select();
     }catch(e){
-      alert("خطأ في العملية. استخدم أرقام و + - * / ( ) فقط.");
+      alert("خطأ في العملية. استخدم أرقام و + - × ÷ % ( ) فقط.");
     }
+  }
+
+  // زر الأقواس الذكي: يبدّل بين ( و )
+  function addParen(){
+    const v = input.value;
+    const opens = (v.match(/\(/g) || []).length;
+    const closes = (v.match(/\)/g) || []).length;
+    input.value += (opens > closes) ? ")" : "(";
+    input.focus();
+  }
+
+  // +/-
+  function togglePM(){
+    const v = input.value.trim();
+    if(!v) { input.value = "-"; input.focus(); return; }
+    if(v.startsWith("-")) input.value = v.slice(1);
+    else input.value = "-" + v;
+    input.focus();
+  }
+
+  function clearAll(){
+    input.value = "";
+    input.focus();
   }
 
   openBtn.addEventListener("click", openCalc);
@@ -265,30 +294,25 @@ function initCalculator(){
 
   document.addEventListener("keydown", (e)=>{
     if(modal.style.display === "block" && e.key === "Escape") closeCalc();
+    if(modal.style.display === "block" && e.key === "Enter") doEqual();
   });
 
   keys.forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      const k = btn.getAttribute("data-k") || "";
-      input.value += k;
-      input.focus();
+      const action = btn.getAttribute("data-action");
+      const k = btn.getAttribute("data-k");
+
+      if(action === "clear"){ clearAll(); return; }
+      if(action === "paren"){ addParen(); return; }
+      if(action === "pm"){ togglePM(); return; }
+      if(action === "eq"){ doEqual(); return; }
+
+      if(k){
+        // تحويل الرموز المعروضة لمدخلات صحيحة
+        input.value += k;
+        input.focus();
+      }
     });
-  });
-
-  clearBtn && clearBtn.addEventListener("click", ()=>{
-    input.value = "";
-    input.focus();
-  });
-
-  backBtn && backBtn.addEventListener("click", ()=>{
-    input.value = input.value.slice(0, -1);
-    input.focus();
-  });
-
-  eqBtn && eqBtn.addEventListener("click", doEqual);
-
-  input.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter") doEqual();
   });
 }
 
@@ -298,6 +322,7 @@ function initCalculator(){
 
   const st = loadState();
   if(st){
+    if($("invoiceTitle")) $("invoiceTitle").value = st.invoiceTitle || "فاتورة بسام";
     $("customerName").value = st.customerName||"";
     $("invoiceNo").value = st.invoiceNo||"";
     $("currency").value = st.currency||"ريال سعودي";
@@ -305,15 +330,19 @@ function initCalculator(){
     $("itemsBody").innerHTML="";
     (st.items?.length?st.items:[defaultRow()]).forEach(r=>addRow(r));
   }else{
+    if($("invoiceTitle")) $("invoiceTitle").value = "فاتورة بسام";
     addRow(defaultRow());
   }
 
   update();
-  ["customerName","invoiceNo","currency","invoiceDate"]
-    .forEach(id=>$(id).oninput=update);
 
-  $("addRowBtn").onclick=()=>{ addRow(defaultRow()); update(); };
+  ["invoiceTitle","customerName","invoiceNo","currency","invoiceDate"]
+    .filter(id => $(id))
+    .forEach(id => $(id).oninput = ()=>{ update(); saveState(collectState()); });
+
+  $("addRowBtn").onclick=()=>{ addRow(defaultRow()); update(); saveState(collectState()); };
   $("printBtn").onclick=printInvoiceA4;
 
+  // تشغيل الحاسبة
   initCalculator();
 })();
