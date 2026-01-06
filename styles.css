@@ -49,6 +49,24 @@ body{
 }
 .card-title{margin:0 0 12px 0;font-size:18px;color:#0f172a}
 
+/* عنوان الفاتورة القابل للتحرير */
+.invoice-title-row{ margin:0 0 12px 0; }
+.invoice-title-input{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:18px;
+  font-weight:900;
+  color:#0f172a;
+  outline:none;
+  background:#fff;
+}
+.invoice-title-input:focus{
+  border-color:#86efac;
+  box-shadow:0 0 0 4px rgba(22,163,74,.15);
+}
+
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:720px){ .grid-2{grid-template-columns:1fr} }
 
@@ -108,8 +126,6 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
 @media print{
   body{background:#fff}
   .brand-header, .card:not(.print-card), .footer { display:none !important; }
-
-  /* ===== إخفاء أي عنصر مضاف للتطبيق ولا نريده في الطباعة ===== */
   .no-print{ display:none !important; }
 }
 /* ===== تحسين الطباعة A4 ===== */
@@ -123,7 +139,6 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
     background: #fff !important;
   }
 
-  /* اجعل العرض يملأ الصفحة */
   .container {
     max-width: none !important;
     width: 100% !important;
@@ -131,7 +146,6 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
     margin: 0 !important;
   }
 
-  /* اجعل الفاتورة تتمدد */
   #invoiceArea {
     width: 100% !important;
     max-width: none !important;
@@ -140,19 +154,16 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
     border-radius: 10px !important;
   }
 
-  /* اجعل النص أوضح */
   #invoiceArea, #invoiceArea * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     font-size: 12.5pt;
   }
 
-  /* إخفاء عناصر لا تلزم للطباعة */
   .brand-header, .footer, .actions, .note, .voice-wrap, audio, .no-print {
     display: none !important;
   }
 
-  /* منع قص الجداول */
   table, tr, td, th {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -160,7 +171,7 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
 }
 
 /* =========================================================
-   ===== Calculator Modal (NO PRINT) - Styles Added =====
+   ===== Calculator Modal (NO PRINT) - Samsung Layout =====
    ========================================================= */
 
 .calc-overlay{
@@ -176,7 +187,7 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(420px, calc(100vw - 24px));
+  width: min(430px, calc(100vw - 24px));
   background: #fff;
   border: 1px solid rgba(0,0,0,.12);
   border-radius: 16px;
@@ -215,53 +226,52 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
   border-radius: 12px;
   border: 1px solid rgba(0,0,0,.15);
   outline: none;
-  font-size: 16px;
+  font-size: 18px;
   background:#fff;
+  font-weight: 800;
 }
 .calc-input:focus{
   border-color:#86efac;
   box-shadow:0 0 0 4px rgba(22,163,74,.15);
 }
 
-.calc-actions{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.calc-btn{
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #fff;
-  cursor: pointer;
-  font-weight: 900;
-}
-
-.calc-primary{
-  border-color: rgba(0,0,0,.18);
-  font-weight: 900;
-}
-
-.calc-grid{
-  margin-top: 10px;
+/* شبكة 4 أعمدة مثل الصورة */
+.calc-grid-samsung{
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
+/* الأزرار دائرية مثل الصورة */
 .calc-key{
-  padding: 12px 0;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #fff;
+  height: 64px;
+  border-radius: 999px;
+  border: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 900;
+  background: #111827;   /* أرقام/أزرار غامقة */
+  color: #fff;
 }
 
-.calc-op{ font-weight: 900; }
+/* أزرار الوظائف العليا (C,(),%) */
+.calc-fn{
+  background: #1f2937;
+  color: #fff;
+}
+
+/* أزرار العمليات يمين (÷ × − +) */
+.calc-op{
+  background: #d1d5db;   /* رمادي فاتح */
+  color: #111827;
+}
+
+/* زر = أخضر */
+.calc-eq{
+  background: var(--green);
+  color: #fff;
+}
 
 .calc-note{
   margin-top: 10px;
