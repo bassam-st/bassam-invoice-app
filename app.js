@@ -1,6 +1,7 @@
 /* ==============================
    Bassam Invoice App - FINAL
    A4 Print + PDF (Stable)
+   + Calculator Modal (NO PRINT)
    ============================== */
 
 const STORAGE_KEY = "bassam_invoice_state_v3";
@@ -207,6 +208,90 @@ ${s.items.map((it,i)=>`
   wdw.document.close();
 }
 
+/* =========================================================
+   ===== Calculator Modal (NO PRINT) - Logic Added =====
+   ========================================================= */
+function initCalculator(){
+  const openBtn   = $("openCalcBtn");
+  const closeBtn  = $("closeCalcBtn");
+  const overlay   = $("calcOverlay");
+  const modal     = $("calcModal");
+  const input     = $("calcInput");
+  const clearBtn  = $("calcClearBtn");
+  const backBtn   = $("calcBackBtn");
+  const eqBtn     = $("calcEqBtn");
+
+  if(!openBtn || !overlay || !modal || !input) return;
+
+  const keys = Array.from(document.querySelectorAll(".calc-key"));
+
+  function openCalc(){
+    overlay.style.display = "block";
+    modal.style.display = "block";
+    overlay.setAttribute("aria-hidden", "false");
+    modal.setAttribute("aria-hidden", "false");
+    setTimeout(() => input.focus(), 0);
+  }
+
+  function closeCalc(){
+    overlay.style.display = "none";
+    modal.style.display = "none";
+    overlay.setAttribute("aria-hidden", "true");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function safeEval(expr){
+    const cleaned = String(expr ?? "").replace(/\s+/g, "");
+    if(!/^[0-9+\-*/().]+$/.test(cleaned)){
+      throw new Error("INVALID_EXPR");
+    }
+    // eslint-disable-next-line no-eval
+    return eval(cleaned);
+  }
+
+  function doEqual(){
+    try{
+      const result = safeEval(input.value);
+      input.value = String(result);
+      input.select();
+    }catch(e){
+      alert("خطأ في العملية. استخدم أرقام و + - * / ( ) فقط.");
+    }
+  }
+
+  openBtn.addEventListener("click", openCalc);
+  overlay.addEventListener("click", closeCalc);
+  closeBtn && closeBtn.addEventListener("click", closeCalc);
+
+  document.addEventListener("keydown", (e)=>{
+    if(modal.style.display === "block" && e.key === "Escape") closeCalc();
+  });
+
+  keys.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const k = btn.getAttribute("data-k") || "";
+      input.value += k;
+      input.focus();
+    });
+  });
+
+  clearBtn && clearBtn.addEventListener("click", ()=>{
+    input.value = "";
+    input.focus();
+  });
+
+  backBtn && backBtn.addEventListener("click", ()=>{
+    input.value = input.value.slice(0, -1);
+    input.focus();
+  });
+
+  eqBtn && eqBtn.addEventListener("click", doEqual);
+
+  input.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter") doEqual();
+  });
+}
+
 /* ---------- بدء ---------- */
 (function boot(){
   $("invoiceDate").value = todayISO();
@@ -229,4 +314,6 @@ ${s.items.map((it,i)=>`
 
   $("addRowBtn").onclick=()=>{ addRow(defaultRow()); update(); };
   $("printBtn").onclick=printInvoiceA4;
+
+  initCalculator();
 })();
