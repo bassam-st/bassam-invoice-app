@@ -2,7 +2,9 @@
    Bassam Invoice App - FINAL
    A4 Print + PDF (Stable)
    + Editable Invoice Title
+   + AutoSave + Close Guard
    + Calculator (Samsung Layout) - NO PRINT
+   + Print Green Header + Totals Green
    ============================== */
 
 const STORAGE_KEY = "bassam_invoice_state_v4";
@@ -62,6 +64,66 @@ function totals(state){
   return { q, w, v };
 }
 
+/* ---------- حفظ تلقائي مضمون ---------- */
+let __saveTimer = null;
+function autoSaveNow(){
+  try { saveState(collectState()); } catch {}
+}
+function autoSaveSoon(){
+  clearTimeout(__saveTimer);
+  __saveTimer = setTimeout(autoSaveNow, 250);
+}
+function enableAutoSave(){
+  document.addEventListener("input", (e)=>{
+    const t = e.target;
+    if(t && (t.matches("input") || t.matches("select") || t.matches("textarea"))){
+      autoSaveSoon();
+    }
+  }, true);
+
+  document.addEventListener("change", (e)=>{
+    const t = e.target;
+    if(t && (t.matches("input") || t.matches("select") || t.matches("textarea"))){
+      autoSaveSoon();
+    }
+  }, true);
+
+  window.addEventListener("beforeunload", ()=>{
+    autoSaveNow();
+  });
+
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.visibilityState === "hidden"){
+      autoSaveNow();
+    }
+  });
+}
+
+/* ---------- زر الإغلاق مع تأكيد + حفظ ---------- */
+function initCloseGuard(){
+  const btn = $("closeBtn");
+  if(!btn) return;
+
+  btn.addEventListener("click", (e)=>{
+    e.preventDefault();
+
+    autoSaveNow();
+
+    const ok = confirm("تم حفظ عملك تلقائيًا.\nهل تريد الخروج؟");
+    if(!ok) return;
+
+    try{
+      if(window.history.length > 1){
+        window.history.back();
+      }else{
+        window.close();
+      }
+    }catch{
+      location.reload();
+    }
+  });
+}
+
 /* ---------- الجدول ---------- */
 function renumber(){
   document.querySelectorAll("tr[data-row='1'] .idx")
@@ -81,10 +143,10 @@ function addRow(row=defaultRow()){
     <td class="row-actions"><button type="button">×</button></td>
   `;
   tr.querySelector(".row-actions button").onclick=()=>{
-    tr.remove(); renumber(); update(); saveState(collectState());
+    tr.remove(); renumber(); update(); autoSaveNow();
   };
   tr.querySelectorAll("input").forEach(i=>{
-    i.oninput=()=>{ update(); saveState(collectState()); };
+    i.oninput=()=>{ update(); autoSaveSoon(); };
   });
   $("itemsBody").appendChild(tr);
   renumber();
@@ -110,6 +172,7 @@ function renderPreview(state){
     <div id="invoiceArea">
       <h3 style="margin:0;color:#0f7a36">مكتب بسام الشتيمي للتخليص الجمركي</h3>
       <div style="font-weight:900;font-size:16px;margin-top:6px">${esc(state.invoiceTitle || "فاتورة")}</div>
+
       <div style="font-size:13px;margin:6px 0">
         جوال: 00967771997809 • البريد: Bassam.7111111@gmail.com
       </div>
@@ -153,7 +216,7 @@ function update(){
   renderPreview(s);
 }
 
-/* ---------- طباعة A4 (القالب المستقل) ---------- */
+/* ---------- طباعة A4 (قالب مستقل) + أخضر للعناوين والإجماليات ---------- */
 function printInvoiceA4(){
   const s = collectState();
   const {q,w,v} = totals(s);
@@ -165,10 +228,61 @@ function printInvoiceA4(){
 @page{size:A4;margin:12mm}
 body{font-family:Arial,Tahoma;background:#fff}
 .invoice{width:100%}
-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
-th,td{border:1px solid #e5e7eb;padding:6px;text-align:center;word-wrap:break-word}
-th{background:#f0fdf4}
+
+:root{
+  --green:#16a34a;
+  --border:#e5e7eb;
+}
+
+/* جدول */
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size:12px;
+}
+th,td{
+  border:1px solid var(--border);
+  padding:6px;
+  text-align:center;
+  word-wrap:break-word;
+}
+th{
+  background: var(--green) !important;
+  color:#fff !important;
+  font-weight:800;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 .name{text-align:right;width:32%}
+
+/* شريط الإجماليات */
+.totals{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+.tot-box{
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+.tot-head{
+  background: var(--green) !important;
+  color:#fff !important;
+  font-weight:800;
+  padding:6px 8px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.tot-val{
+  padding:8px;
+  font-size:14px;
+  font-weight:900;
+  color:#111;
+  text-align:center;
+}
 </style>
 </head>
 <body onload="window.print()">
@@ -179,6 +293,7 @@ th{background:#f0fdf4}
 العميل: ${esc(s.customerName||"-")} • رقم الفاتورة: ${esc(s.invoiceNo||"-")}<br>
 العملة: ${esc(s.currency)} • التاريخ: ${esc(s.invoiceDate)}
 </div>
+
 <table>
 <thead>
 <tr>
@@ -200,11 +315,22 @@ ${s.items.map((it,i)=>`
 </tr>`).join("")}
 </tbody>
 </table>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px">
-<div>إجمالي العدد: <b>${q}</b></div>
-<div>إجمالي الوزن: <b>${f2(w)}</b></div>
-<div>إجمالي القيمة: <b>${f2(v)}</b></div>
+
+<div class="totals">
+  <div class="tot-box">
+    <div class="tot-head">إجمالي العدد</div>
+    <div class="tot-val">${q}</div>
+  </div>
+  <div class="tot-box">
+    <div class="tot-head">إجمالي الوزن</div>
+    <div class="tot-val">${f2(w)}</div>
+  </div>
+  <div class="tot-box">
+    <div class="tot-head">إجمالي القيمة</div>
+    <div class="tot-val">${f2(v)}</div>
+  </div>
 </div>
+
 </div>
 </body></html>`;
   const wdw = window.open("", "_blank");
@@ -242,14 +368,10 @@ function initCalculator(){
 
   function safeEval(expr){
     const cleaned = String(expr ?? "").replace(/\s+/g, "");
-    // السماح فقط بالأرقام والعمليات الأساسية والأقواس والنقطة و %
     if(!/^[0-9+\-*/().%]+$/.test(cleaned)){
       throw new Error("INVALID_EXPR");
     }
-
-    // تحويل النسبة المئوية: 50% => (50/100)
     const percentFixed = cleaned.replace(/(\d+(\.\d+)?)%/g, "($1/100)");
-
     // eslint-disable-next-line no-eval
     const out = eval(percentFixed);
     return out;
@@ -265,7 +387,6 @@ function initCalculator(){
     }
   }
 
-  // زر الأقواس الذكي: يبدّل بين ( و )
   function addParen(){
     const v = input.value;
     const opens = (v.match(/\(/g) || []).length;
@@ -274,7 +395,6 @@ function initCalculator(){
     input.focus();
   }
 
-  // +/-
   function togglePM(){
     const v = input.value.trim();
     if(!v) { input.value = "-"; input.focus(); return; }
@@ -308,7 +428,6 @@ function initCalculator(){
       if(action === "eq"){ doEqual(); return; }
 
       if(k){
-        // تحويل الرموز المعروضة لمدخلات صحيحة
         input.value += k;
         input.focus();
       }
@@ -318,6 +437,9 @@ function initCalculator(){
 
 /* ---------- بدء ---------- */
 (function boot(){
+  enableAutoSave();
+  initCloseGuard();
+
   $("invoiceDate").value = todayISO();
 
   const st = loadState();
@@ -338,11 +460,10 @@ function initCalculator(){
 
   ["invoiceTitle","customerName","invoiceNo","currency","invoiceDate"]
     .filter(id => $(id))
-    .forEach(id => $(id).oninput = ()=>{ update(); saveState(collectState()); });
+    .forEach(id => $(id).oninput = ()=>{ update(); autoSaveSoon(); });
 
-  $("addRowBtn").onclick=()=>{ addRow(defaultRow()); update(); saveState(collectState()); };
+  $("addRowBtn").onclick=()=>{ addRow(defaultRow()); update(); autoSaveNow(); };
   $("printBtn").onclick=printInvoiceA4;
 
-  // تشغيل الحاسبة
   initCalculator();
 })();
