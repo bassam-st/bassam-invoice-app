@@ -5,9 +5,12 @@
    + AutoSave + Close Guard
    + Calculator (Samsung Layout) - NO PRINT
    + Print Green Header + Totals Green
+   + Currency shown in totals header
+   + Amount in words (Arabic) with proper minor units
+   + Fixed footer line: "شامل أجور الشحن والتأمين"
    ============================== */
 
-const STORAGE_KEY = "bassam_invoice_state_v4";
+const STORAGE_KEY = "bassam_invoice_state_v6";
 
 /* ---------- أدوات ---------- */
 const $ = (id) => document.getElementById(id);
@@ -25,6 +28,115 @@ const esc = (s) => String(s ?? "")
   .replaceAll(">","&gt;").replaceAll('"',"&quot;")
   .replaceAll("'","&#039;");
 
+/* ---------- تحويل الرقم إلى كلمات عربية (للأعداد الصحيحة حتى الملايين) ---------- */
+function numberToArabicWordsInt(n){
+  n = Math.floor(Math.abs(Number(n) || 0));
+  if(n === 0) return "صفر";
+
+  const ones = [
+    "", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة",
+    "عشرة", "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر",
+    "ستة عشر", "سبعة عشر", "ثمانية عشر", "تسعة عشر"
+  ];
+  const tens = ["", "", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
+  const hundreds = ["", "مائة", "مائتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"];
+
+  function twoDigits(x){
+    if(x === 0) return "";
+    if(x < 20) return ones[x];
+    const t = Math.floor(x / 10);
+    const o = x % 10;
+    if(o === 0) return tens[t];
+    return `${ones[o]} و${tens[t]}`;
+  }
+
+  function threeDigits(x){
+    if(x === 0) return "";
+    const h = Math.floor(x / 100);
+    const r = x % 100;
+    const hPart = h ? hundreds[h] : "";
+    const rPart = twoDigits(r);
+    if(hPart && rPart) return `${hPart} و${rPart}`;
+    return hPart || rPart;
+  }
+
+  function groupName(g, unit){
+    if(unit === "thousand"){
+      if(g === 1) return "ألف";
+      if(g === 2) return "ألفان";
+      if(g >= 3 && g <= 10) return "آلاف";
+      return "ألف";
+    }
+    if(unit === "million"){
+      if(g === 1) return "مليون";
+      if(g === 2) return "مليونان";
+      if(g >= 3 && g <= 10) return "ملايين";
+      return "مليون";
+    }
+    return "";
+  }
+
+  const parts = [];
+  const millions = Math.floor(n / 1000000);
+  const thousands = Math.floor((n % 1000000) / 1000);
+  const rest = n % 1000;
+
+  if(millions){
+    const mWords = threeDigits(millions);
+    const mName = groupName(millions, "million");
+    parts.push(millions <= 2 ? mName : `${mWords} ${mName}`);
+  }
+  if(thousands){
+    const tWords = threeDigits(thousands);
+    const tName = groupName(thousands, "thousand");
+    parts.push(thousands <= 2 ? tName : `${tWords} ${tName}`);
+  }
+  if(rest){
+    parts.push(threeDigits(rest));
+  }
+
+  return parts.filter(Boolean).join(" و");
+}
+
+/* ---------- أسماء العملات والجزء الصغير بصيغ مختلفة ---------- */
+function currencyTerms(currency){
+  switch(currency){
+    case "ريال سعودي":
+      return { major: "ريال سعودي", minor: { one:"هللة", two:"هللتان", few:"هللات", many:"هللة" } };
+    case "درهم إماراتي":
+      return { major: "درهم إماراتي", minor: { one:"فلس", two:"فلسان", few:"فلوس", many:"فلس" } };
+    case "ريال يمني":
+      return { major: "ريال يمني", minor: { one:"فلس", two:"فلسان", few:"فلوس", many:"فلس" } };
+    case "دولار":
+      return { major: "دولار", minor: { one:"سنت", two:"سنتان", few:"سنتات", many:"سنت" } };
+    default:
+      return { major: currency || "عملة", minor: { one:"جزء", two:"جزآن", few:"أجزاء", many:"جزء" } };
+  }
+}
+function pickMinorWord(n, forms){
+  n = Math.abs(Math.floor(Number(n) || 0));
+  if(n === 1) return forms.one;
+  if(n === 2) return forms.two;
+  if(n >= 3 && n <= 10) return forms.few;
+  return forms.many;
+}
+function amountToArabicWords(amount, currency){
+  const { major, minor } = currencyTerms(currency);
+  const a = Math.max(0, Number(amount) || 0);
+
+  const intPart = Math.floor(a);
+  const fracPart = Math.round((a - intPart) * 100);
+
+  const intWords = numberToArabicWordsInt(intPart);
+
+  if(fracPart > 0){
+    const fracWords = numberToArabicWordsInt(fracPart);
+    const minorWord = pickMinorWord(fracPart, minor);
+    return `فقط: ${intWords} ${major} و${fracWords} ${minorWord} لا غير.`;
+  }
+  return `فقط: ${intWords} ${major} لا غير.`;
+}
+
 /* ---------- الحالة ---------- */
 function defaultRow(){
   return { name:"", qty:0, wPer:0, vPer:0 };
@@ -41,7 +153,7 @@ function saveState(s){
 function collectState(){
   const rows = Array.from(document.querySelectorAll("tr[data-row='1']"));
   return {
-    invoiceTitle: $("invoiceTitle") ? ($("invoiceTitle").value || "فاتورة بسام") : "فاتورة بسام",
+    invoiceTitle: $("invoiceTitle") ? ($("invoiceTitle").value || "فاتورة") : "فاتورة",
     customerName: $("customerName").value || "",
     invoiceNo: $("invoiceNo").value || "",
     currency: $("currency").value || "ريال سعودي",
@@ -106,9 +218,7 @@ function initCloseGuard(){
 
   btn.addEventListener("click", (e)=>{
     e.preventDefault();
-
     autoSaveNow();
-
     const ok = confirm("تم حفظ عملك تلقائيًا.\nهل تريد الخروج؟");
     if(!ok) return;
 
@@ -168,6 +278,8 @@ function renderPreview(state){
     </tr>`).join("")
   : `<tr><td colspan="7" style="text-align:center">لا توجد أصناف</td></tr>`;
 
+  const words = amountToArabicWords(v, state.currency);
+
   $("invoicePreview").innerHTML = `
     <div id="invoiceArea">
       <h3 style="margin:0;color:#0f7a36">مكتب بسام الشتيمي للتخليص الجمركي</h3>
@@ -183,6 +295,7 @@ function renderPreview(state){
         <div>العملة: ${esc(state.currency)}</div>
         <div>التاريخ: ${esc(state.invoiceDate)}</div>
       </div>
+
       <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:12px" border="1">
         <thead style="background:#f0fdf4">
           <tr>
@@ -193,10 +306,19 @@ function renderPreview(state){
         </thead>
         <tbody>${body}</tbody>
       </table>
+
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px">
         <div>إجمالي العدد: <b>${q}</b></div>
         <div>إجمالي الوزن: <b>${f2(w)}</b></div>
-        <div>إجمالي القيمة: <b>${f2(v)}</b></div>
+        <div>إجمالي القيمة - ${esc(state.currency)}: <b>${f2(v)}</b></div>
+      </div>
+
+      <div style="margin-top:12px;font-size:14px;font-weight:800;line-height:1.9">
+        ${esc(words)}
+      </div>
+
+      <div style="margin-top:10px;font-size:14px;font-weight:900">
+        شامل أجور الشحن والتأمين
       </div>
     </div>
   `;
@@ -216,10 +338,11 @@ function update(){
   renderPreview(s);
 }
 
-/* ---------- طباعة A4 (قالب مستقل) + أخضر للعناوين والإجماليات ---------- */
+/* ---------- طباعة A4 (قالب مستقل) + أخضر للعناوين والإجماليات + العملة + كتابيًا + سطر ثابت ---------- */
 function printInvoiceA4(){
   const s = collectState();
   const {q,w,v} = totals(s);
+  const words = amountToArabicWords(v, s.currency);
 
   const html = `
 <!doctype html><html lang="ar" dir="rtl">
@@ -245,15 +368,13 @@ th,td{
   border:1px solid var(--border);
   padding:6px;
   text-align:center;
-  word-wrap:break-word;
-}
+  word-wrap:break-word}
 th{
   background: var(--green) !important;
   color:#fff !important;
   font-weight:800;
   -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
+  print-color-adjust: exact}
 .name{text-align:right;width:32%}
 
 /* شريط الإجماليات */
@@ -261,28 +382,34 @@ th{
   margin-top:10px;
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-}
+  gap:8px}
 .tot-box{
   border:1px solid var(--border);
   border-radius:10px;
-  overflow:hidden;
-}
+  overflow:hidden}
 .tot-head{
   background: var(--green) !important;
   color:#fff !important;
   font-weight:800;
   padding:6px 8px;
   -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
+  print-color-adjust: exact}
 .tot-val{
   padding:8px;
   font-size:14px;
   font-weight:900;
   color:#111;
-  text-align:center;
-}
+  text-align:center}
+
+.words{
+  margin-top:14px;
+  font-size:14px;
+  font-weight:800;
+  line-height:1.9}
+.fixedline{
+  margin-top:10px;
+  font-size:14px;
+  font-weight:900}
 </style>
 </head>
 <body onload="window.print()">
@@ -326,10 +453,13 @@ ${s.items.map((it,i)=>`
     <div class="tot-val">${f2(w)}</div>
   </div>
   <div class="tot-box">
-    <div class="tot-head">إجمالي القيمة</div>
+    <div class="tot-head">إجمالي القيمة - ${esc(s.currency)}</div>
     <div class="tot-val">${f2(v)}</div>
   </div>
 </div>
+
+<div class="words">${esc(words)}</div>
+<div class="fixedline">شامل أجور الشحن والتأمين</div>
 
 </div>
 </body></html>`;
@@ -444,7 +574,7 @@ function initCalculator(){
 
   const st = loadState();
   if(st){
-    if($("invoiceTitle")) $("invoiceTitle").value = st.invoiceTitle || "فاتورة بسام";
+    if($("invoiceTitle")) $("invoiceTitle").value = st.invoiceTitle || "فاتورة";
     $("customerName").value = st.customerName||"";
     $("invoiceNo").value = st.invoiceNo||"";
     $("currency").value = st.currency||"ريال سعودي";
@@ -452,7 +582,7 @@ function initCalculator(){
     $("itemsBody").innerHTML="";
     (st.items?.length?st.items:[defaultRow()]).forEach(r=>addRow(r));
   }else{
-    if($("invoiceTitle")) $("invoiceTitle").value = "فاتورة بسام";
+    if($("invoiceTitle")) $("invoiceTitle").value = "فاتورة";
     addRow(defaultRow());
   }
 
