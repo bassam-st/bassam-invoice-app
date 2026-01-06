@@ -126,6 +126,11 @@
         <div class="actions">
           <button class="btn btn-ghost" id="closeBtn" type="button">إغلاق</button>
 
+          <!-- زر الآلة الحاسبة (لا يظهر في الطباعة) -->
+          <button class="btn btn-outline no-print" id="openCalcBtn" type="button">
+            آلة حاسبة
+          </button>
+
           <button class="btn btn-outline" id="downloadPdfBtn" type="button">
             تنزيل PDF مباشر
           </button>
@@ -147,5 +152,55 @@
     </footer>
 
   </div>
+
+  <!-- ===== Calculator Modal (NO PRINT) ===== -->
+  <div id="calcOverlay" class="calc-overlay no-print" aria-hidden="true"></div>
+
+  <div id="calcModal" class="calc-modal no-print" role="dialog" aria-modal="true" aria-labelledby="calcTitle" aria-hidden="true">
+    <div class="calc-header">
+      <div id="calcTitle" class="calc-title">آلة حاسبة</div>
+      <button id="closeCalcBtn" type="button" class="calc-close" aria-label="إغلاق">×</button>
+    </div>
+
+    <div class="calc-body">
+      <input id="calcInput" class="calc-input" type="text" inputmode="decimal"
+             placeholder="اكتب عملية مثل: 1250+300-50  أو  3*12.5" />
+
+      <div class="calc-actions">
+        <button id="calcClearBtn" type="button" class="calc-btn">مسح</button>
+        <button id="calcBackBtn" type="button" class="calc-btn">رجوع</button>
+        <button id="calcEqBtn" type="button" class="calc-btn calc-primary">=</button>
+      </div>
+
+      <div class="calc-grid">
+        <button class="calc-key" data-k="7">7</button>
+        <button class="calc-key" data-k="8">8</button>
+        <button class="calc-key" data-k="9">9</button>
+        <button class="calc-key calc-op" data-k="/">÷</button>
+
+        <button class="calc-key" data-k="4">4</button>
+        <button class="calc-key" data-k="5">5</button>
+        <button class="calc-key" data-k="6">6</button>
+        <button class="calc-key calc-op" data-k="*">×</button>
+
+        <button class="calc-key" data-k="1">1</button>
+        <button class="calc-key" data-k="2">2</button>
+        <button class="calc-key" data-k="3">3</button>
+        <button class="calc-key calc-op" data-k="-">−</button>
+
+        <button class="calc-key" data-k="0">0</button>
+        <button class="calc-key" data-k=".">.</button>
+        <button class="calc-key" data-k="(">(</button>
+        <button class="calc-key" data-k=")">)</button>
+
+        <button class="calc-key calc-op" data-k="+">+</button>
+      </div>
+
+      <div class="calc-note">
+        يمكنك نسخ النتيجة والصقها في أي خانة داخل الفاتورة.
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
