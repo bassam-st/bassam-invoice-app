@@ -49,24 +49,6 @@ body{
 }
 .card-title{margin:0 0 12px 0;font-size:18px;color:#0f172a}
 
-/* عنوان الفاتورة القابل للتحرير */
-.invoice-title-row{ margin:0 0 12px 0; }
-.invoice-title-input{
-  width:100%;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:10px 12px;
-  font-size:18px;
-  font-weight:900;
-  color:#0f172a;
-  outline:none;
-  background:#fff;
-}
-.invoice-title-input:focus{
-  border-color:#86efac;
-  box-shadow:0 0 0 4px rgba(22,163,74,.15);
-}
-
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:720px){ .grid-2{grid-template-columns:1fr} }
 
@@ -122,10 +104,30 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
 
 .voice-wrap{display:flex;gap:10px;flex-wrap:wrap}
 
+/* ============ عنوان الفاتورة القابل للتحرير ============ */
+.invoice-title-row{ margin-bottom:12px; }
+.invoice-title-input{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:18px;
+  font-weight:900;
+  color:#0f172a;
+  outline:none;
+  background:#fff;
+}
+.invoice-title-input:focus{
+  border-color:#86efac;
+  box-shadow:0 0 0 4px rgba(22,163,74,.15);
+}
+
 /* طباعة */
 @media print{
   body{background:#fff}
   .brand-header, .card:not(.print-card), .footer { display:none !important; }
+
+  /* ===== إخفاء أي عنصر مضاف للتطبيق ولا نريده في الطباعة ===== */
   .no-print{ display:none !important; }
 }
 /* ===== تحسين الطباعة A4 ===== */
@@ -135,49 +137,47 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
 }
 
 @media print {
-  html, body {
-    background: #fff !important;
+  html, body { background:#fff !important; }
+
+  .container{
+    max-width:none !important;
+    width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
   }
 
-  .container {
-    max-width: none !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  #invoiceArea{
+    width:100% !important;
+    max-width:none !important;
+    box-shadow:none !important;
+    border:1px solid #e5e7eb !important;
+    border-radius:10px !important;
   }
 
-  #invoiceArea {
-    width: 100% !important;
-    max-width: none !important;
-    box-shadow: none !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 10px !important;
-  }
-
-  #invoiceArea, #invoiceArea * {
+  #invoiceArea, #invoiceArea *{
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     font-size: 12.5pt;
   }
 
-  .brand-header, .footer, .actions, .note, .voice-wrap, audio, .no-print {
-    display: none !important;
+  .brand-header, .footer, .actions, .note, .voice-wrap, audio, .no-print{
+    display:none !important;
   }
 
-  table, tr, td, th {
+  table, tr, td, th{
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 }
 
 /* =========================================================
-   ===== Calculator Modal (NO PRINT) - Samsung Layout =====
+   ===== Calculator Modal - Samsung Style (NO PRINT) =====
    ========================================================= */
 
 .calc-overlay{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.35);
+  background: rgba(0,0,0,.45);
   display: none;
   z-index: 9998;
 }
@@ -187,32 +187,34 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(430px, calc(100vw - 24px));
-  background: #fff;
-  border: 1px solid rgba(0,0,0,.12);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  width: min(420px, calc(100vw - 22px));
+  background: #0b0f14;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
   display: none;
   z-index: 9999;
   direction: rtl;
+  color: #fff;
 }
 
 .calc-header{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(0,0,0,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
-.calc-title{ font-weight: 900; color:#0f172a; }
+.calc-title{ font-weight: 900; color:#fff; }
 
 .calc-close{
   width: 40px;
   height: 34px;
   border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color:#fff;
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
@@ -222,59 +224,62 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
 
 .calc-input{
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.15);
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
   outline: none;
   font-size: 18px;
-  background:#fff;
-  font-weight: 800;
+  background: #000;
+  color:#fff;
+  direction:ltr;
+  text-align:left;
 }
 .calc-input:focus{
-  border-color:#86efac;
-  box-shadow:0 0 0 4px rgba(22,163,74,.15);
+  border-color: rgba(22,163,74,.7);
+  box-shadow: 0 0 0 4px rgba(22,163,74,.18);
 }
 
-/* شبكة 4 أعمدة مثل الصورة */
 .calc-grid-samsung{
   margin-top: 12px;
-  display: grid;
+  display:grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
-/* الأزرار دائرية مثل الصورة */
 .calc-key{
-  height: 64px;
+  border: none;
   border-radius: 999px;
-  border: 0;
-  cursor: pointer;
-  font-size: 18px;
+  height: 64px;
+  font-size: 22px;
   font-weight: 900;
-  background: #111827;   /* أرقام/أزرار غامقة */
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select:none;
+}
+
+.calc-key.dark{
+  background: #1a1f26;
   color: #fff;
 }
 
-/* أزرار الوظائف العليا (C,(),%) */
-.calc-fn{
-  background: #1f2937;
-  color: #fff;
+.calc-key.light{
+  background: #bfc3c7;
+  color: #111;
 }
 
-/* أزرار العمليات يمين (÷ × − +) */
-.calc-op{
-  background: #d1d5db;   /* رمادي فاتح */
-  color: #111827;
-}
-
-/* زر = أخضر */
-.calc-eq{
+.calc-key.eq{
   background: var(--green);
-  color: #fff;
+  color:#fff;
+}
+
+.calc-key:active{
+  transform: scale(.98);
 }
 
 .calc-note{
   margin-top: 10px;
   font-size: 12px;
-  color:#64748b;
+  color: rgba(255,255,255,.7);
 }
