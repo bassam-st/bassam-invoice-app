@@ -35,7 +35,12 @@
     <main id="appRoot">
 
       <section class="card">
-        <h2 class="card-title">فاتورة بسام</h2>
+        <!-- عنوان الفاتورة قابل للتحرير -->
+        <div class="invoice-title-row">
+          <input id="invoiceTitle" class="invoice-title-input" type="text"
+                 value="فاتورة بسام"
+                 placeholder="اكتب عنوان الفاتورة (مثال: فاتورة محمد)" />
+        </div>
 
         <div class="grid-2">
           <div class="field">
@@ -166,38 +171,36 @@
       <input id="calcInput" class="calc-input" type="text" inputmode="decimal"
              placeholder="اكتب عملية مثل: 1250+300-50  أو  3*12.5" />
 
-      <div class="calc-actions">
-        <button id="calcClearBtn" type="button" class="calc-btn">مسح</button>
-        <button id="calcBackBtn" type="button" class="calc-btn">رجوع</button>
-        <button id="calcEqBtn" type="button" class="calc-btn calc-primary">=</button>
-      </div>
+      <!-- نفس ترتيب الأزرار مثل الصورة -->
+      <div class="calc-grid calc-grid-samsung">
+        <button class="calc-key calc-fn" data-act="clear">C</button>
+        <button class="calc-key calc-fn" data-act="paren">()</button>
+        <button class="calc-key calc-fn" data-act="percent">%</button>
+        <button class="calc-key calc-op" data-k="/">÷</button>
 
-      <div class="calc-grid">
         <button class="calc-key" data-k="7">7</button>
         <button class="calc-key" data-k="8">8</button>
         <button class="calc-key" data-k="9">9</button>
-        <button class="calc-key calc-op" data-k="/">÷</button>
+        <button class="calc-key calc-op" data-k="*">×</button>
 
         <button class="calc-key" data-k="4">4</button>
         <button class="calc-key" data-k="5">5</button>
         <button class="calc-key" data-k="6">6</button>
-        <button class="calc-key calc-op" data-k="*">×</button>
+        <button class="calc-key calc-op" data-k="-">−</button>
 
         <button class="calc-key" data-k="1">1</button>
         <button class="calc-key" data-k="2">2</button>
         <button class="calc-key" data-k="3">3</button>
-        <button class="calc-key calc-op" data-k="-">−</button>
+        <button class="calc-key calc-op" data-k="+">+</button>
 
+        <button class="calc-key calc-fn" data-act="toggleSign">+/−</button>
         <button class="calc-key" data-k="0">0</button>
         <button class="calc-key" data-k=".">.</button>
-        <button class="calc-key" data-k="(">(</button>
-        <button class="calc-key" data-k=")">)</button>
-
-        <button class="calc-key calc-op" data-k="+">+</button>
+        <button class="calc-key calc-eq" data-act="equal">=</button>
       </div>
 
       <div class="calc-note">
-        يمكنك نسخ النتيجة والصقها في أي خانة داخل الفاتورة.
+        بعد (=) سيتم تحديد النتيجة لتنسخها بسهولة وتلصقها في أي خانة.
       </div>
     </div>
   </div>
