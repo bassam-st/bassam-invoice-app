@@ -108,6 +108,9 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
 @media print{
   body{background:#fff}
   .brand-header, .card:not(.print-card), .footer { display:none !important; }
+
+  /* ===== إخفاء أي عنصر مضاف للتطبيق ولا نريده في الطباعة ===== */
+  .no-print{ display:none !important; }
 }
 /* ===== تحسين الطباعة A4 ===== */
 @page {
@@ -145,7 +148,7 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
   }
 
   /* إخفاء عناصر لا تلزم للطباعة */
-  .brand-header, .footer, .actions, .note, .voice-wrap, audio {
+  .brand-header, .footer, .actions, .note, .voice-wrap, audio, .no-print {
     display: none !important;
   }
 
@@ -154,4 +157,114 @@ table.items{width:100%;border-collapse:collapse;min-width:840px}
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+}
+
+/* =========================================================
+   ===== Calculator Modal (NO PRINT) - Styles Added =====
+   ========================================================= */
+
+.calc-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: none;
+  z-index: 9998;
+}
+
+.calc-modal{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, calc(100vw - 24px));
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  display: none;
+  z-index: 9999;
+  direction: rtl;
+}
+
+.calc-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.calc-title{ font-weight: 900; color:#0f172a; }
+
+.calc-close{
+  width: 40px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.calc-body{ padding: 12px; }
+
+.calc-input{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.15);
+  outline: none;
+  font-size: 16px;
+  background:#fff;
+}
+.calc-input:focus{
+  border-color:#86efac;
+  box-shadow:0 0 0 4px rgba(22,163,74,.15);
+}
+
+.calc-actions{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.calc-btn{
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.calc-primary{
+  border-color: rgba(0,0,0,.18);
+  font-weight: 900;
+}
+
+.calc-grid{
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.calc-key{
+  padding: 12px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.calc-op{ font-weight: 900; }
+
+.calc-note{
+  margin-top: 10px;
+  font-size: 12px;
+  color:#64748b;
 }
